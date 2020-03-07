@@ -4,4 +4,9 @@
     <string name="log_button">Login</string>
     <string name="reg_button">Register</string>
     <string name="pass_text">Password</string>
+    <string name="write_name">Write your username:</string>
+    <string name="write_pass">Write your password:</string>
+    <string name="write_reppassw">Repeat your password:</string>
+    <string name="write_email">Write your email:</string>
+    <string name="register_button">Register</string>
 </resources>
