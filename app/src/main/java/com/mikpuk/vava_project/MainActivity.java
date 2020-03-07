@@ -18,9 +18,4 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ReggActivity.class);
         startActivity(intent);
     }
-
-    public void logInit()
-    {
-
-    }
 }
