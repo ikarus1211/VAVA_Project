@@ -7,34 +7,46 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/NameText"
         android:layout_width="180dp"
         android:layout_height="40dp"
         android:layout_marginStart="110dp"
         android:layout_marginTop="320dp"
         android:layout_marginBottom="660dp"
-        android:text="TextView"
+        android:text="@string/user_name"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="180dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="110dp"
-        android:layout_marginTop="250dp"
-        android:text="TextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <Button
-        android:id="@+id/Login"
+        android:id="@+id/LoginButton"
         android:layout_width="140dp"
         android:layout_height="60dp"
         android:layout_marginStart="125dp"
         android:layout_marginTop="330dp"
-        android:text="Button"
+        android:text="@string/log_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/PasswText"
+        android:layout_width="180dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="110dp"
+        android:layout_marginTop="250dp"
+        android:ems="10"
+        android:inputType="textPassword"
+        android:text="@string/pass_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/RegisterButton"
+        android:layout_width="140dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="125dp"
+        android:layout_marginTop="420dp"
+        android:text="@string/reg_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
