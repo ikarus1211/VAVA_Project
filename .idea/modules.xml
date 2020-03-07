@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/VAVA_Project.iml" filepath="$PROJECT_DIR$/.idea/VAVA_Project.iml" />
       <module fileurl="file://$PROJECT_DIR$/Vava_Project.iml" filepath="$PROJECT_DIR$/Vava_Project.iml" group="Vava_Project" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="Vava_Project/app" />
     </modules>
