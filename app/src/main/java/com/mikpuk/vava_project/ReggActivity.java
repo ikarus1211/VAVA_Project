@@ -16,6 +16,7 @@ public class ReggActivity extends AppCompatActivity {
     EditText passwordText1 = null;
     EditText passwordText2 = null;
     EditText emailText = null; //Na tomto sme sa dohodli? Ale tak da sa implementovat
+                                // To tam je zatial len pre efekt
 
     SQLConnector connector = new SQLConnector();
 

@@ -9,4 +9,7 @@
     <string name="write_reppassw">Repeat your password:</string>
     <string name="write_email">Write your email:</string>
     <string name="register_button">Register</string>
+    <string name="acepted_req">Accepted</string>
+    <string name="myreq_button">My request</string>
+    <string name="map_req">Map view</string>
 </resources>
