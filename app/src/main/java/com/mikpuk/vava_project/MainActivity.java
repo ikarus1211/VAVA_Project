@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Nacitanie UI premennych
         loginButton = findViewById(R.id.LoginButton);
-        registerButton = findViewById(R.id.button);
+        registerButton = findViewById(R.id.RegisterButton);
         loginText = findViewById(R.id.editText);
         passwordText = findViewById(R.id.PasswText);
 
@@ -44,35 +44,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //Na testovanie zatial
-        /*new Thread() {
-            public void run() {
-                connector.connectToDB();
-                if(connector.isConnectedToDB()) {
-
-                    //connector.deleteUserDB();
-
-                    //connector.addUserToDB("Tester123","testik123");
-
-                    int id = connector.getUserInDB("Tester123","testik123");
-                    if(id > 0)
-                        System.out.println("FOUND - ID: "+id);
-                    else
-                        System.out.println("NOT FOUND "+id);
-
-                    int id2 = connector.getUserInDB("tester123","testik123");
-                    if(id2 > 0)
-                        System.out.println("FOUND - ID: "+id2);
-                    else
-                        System.out.println("NOT FOUND "+id2);
-
-                    connector.closeConnection();
-                }
-                else {
-                    System.out.println("Not connected to database");
-                }
-            }
-        }.start();*/
     }
 
     //Pokus o najdenie pouzivatela v DB a nasledne prihlasenie
@@ -89,6 +60,13 @@ public class MainActivity extends AppCompatActivity {
                 //Kontrola riesena zatial takto
                 if (id > 0) {
                     showToast("Logged in");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                           loadMenu();
+                        }
+                    });
+
                 }
                 else {
                     showToast("Logging in failed");
@@ -117,5 +95,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
+    private void loadMenu ()
+    {
+        Intent intent = new Intent(this, MenuScreen.class);
+        startActivity(intent);
+    }
 }

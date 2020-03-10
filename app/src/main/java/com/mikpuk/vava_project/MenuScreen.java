@@ -3,7 +3,6 @@ package com.mikpuk.vava_project;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -14,7 +13,7 @@ public class MenuScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_screen);
-        ListView myLView = (ListView) findViewById(R.id.lisView);
+        ListView myLView = findViewById(R.id.lisView);
 /*
        Moje vlastne testovanie
  */

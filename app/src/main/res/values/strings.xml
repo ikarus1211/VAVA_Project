@@ -12,4 +12,9 @@
     <string name="acepted_req">Accepted</string>
     <string name="myreq_button">My request</string>
     <string name="map_req">Map view</string>
+    <string name="menu_dis">Distance</string>
+    <string name="menu_adres">Address</string>
+    <string name="item_name">Item name</string>
+    <string name="menu_description">Description</string>
+    <string name="button_accept">Accept the order</string>
 </resources>
