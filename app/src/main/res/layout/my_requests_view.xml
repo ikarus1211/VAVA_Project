@@ -8,14 +8,12 @@
     <LinearLayout
         android:layout_width="374dp"
         android:layout_height="98dp"
+        android:baselineAligned="false"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.578"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.173"
-        android:baselineAligned="false">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="60dp"
@@ -24,19 +22,19 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/listName"
+                android:id="@+id/myListName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/user_name" />
 
             <TextView
-                android:id="@+id/listAdress"
+                android:id="@+id/myListAdress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/menu_adres" />
 
             <TextView
-                android:id="@+id/listDistance"
+                android:id="@+id/myListDistance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/menu_dis" />
@@ -49,13 +47,13 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/listItem"
+                android:id="@+id/myListItem"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/item_name" />
 
             <TextView
-                android:id="@+id/listDes"
+                android:id="@+id/myListDes"
                 android:layout_width="match_parent"
                 android:layout_height="81dp"
                 android:text="@string/menu_description" />
@@ -66,13 +64,13 @@
             android:layout_height="100dp"
             android:orientation="vertical">
 
-            <ImageButton
-                android:id="@+id/imageButton"
+
+            <ImageView
+                android:id="@+id/imageView"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:contentDescription="@string/button_accept"
-                app:srcCompat="?android:attr/textCheckMark" />
+                android:layout_height="49dp"
+                app:srcCompat="@android:drawable/ic_menu_info_details"
+                android:contentDescription="@string/info" />
         </LinearLayout>
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

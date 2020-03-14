@@ -7,19 +7,19 @@
     tools:context=".MenuScreen">
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/myReqButton"
         android:layout_width="110dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="16dp"
         android:text="@string/myreq_button"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button3"
+        app:layout_constraintEnd_toStartOf="@+id/accpetButton"
         app:layout_constraintTop_toBottomOf="@+id/lisView"
         app:layout_constraintVertical_bias="1.0" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/accpetButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -32,14 +32,14 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/mapbutton"
         android:layout_width="110dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginBottom="16dp"
         android:text="@string/map_req"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button3"
+        app:layout_constraintStart_toEndOf="@+id/accpetButton"
         app:layout_constraintTop_toBottomOf="@+id/lisView"
         app:layout_constraintVertical_bias="1.0" />
 

@@ -2,18 +2,37 @@ package com.mikpuk.vava_project;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 
 public class MenuScreen extends AppCompatActivity {
 
+    Button myReqButton = null;
+    Button acReqButton = null;
+    Button mapButton = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_screen);
         ListView myLView = findViewById(R.id.lisView);
+
+        myReqButton = findViewById(R.id.myReqButton);
+        acReqButton = findViewById(R.id.accpetButton);
+        mapButton = findViewById(R.id.mapbutton);
+
+        myReqButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loadMyReqUi();
+            }
+        });
+
 /*
        Moje vlastne testovanie
  */
@@ -37,4 +56,11 @@ public class MenuScreen extends AppCompatActivity {
         ItemAdapter adapter = new ItemAdapter(this, R.layout.custom_list_view, myList);
         myLView.setAdapter(adapter);
     }
+
+    private void loadMyReqUi()
+    {
+        Intent intent = new Intent(this, UsersRequest.class);
+        startActivity(intent);
+    }
+
 }

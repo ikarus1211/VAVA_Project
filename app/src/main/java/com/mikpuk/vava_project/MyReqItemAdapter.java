@@ -8,19 +8,14 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import java.util.List;
 
-/*
-   This is custom adapter for list view.
-   It creates one block of tifferent textViews witch is than taken to create list view.
- */
-public class ItemAdapter extends ArrayAdapter<Person> {
+public class MyReqItemAdapter extends ArrayAdapter<Person> {
 
     private Context mContext;
     private int mResource;
 
-    public ItemAdapter(@NonNull Context context, int resource, @NonNull List<Person> objects) {
+    public MyReqItemAdapter(@NonNull Context context, int resource, @NonNull List<Person> objects) {
         super(context, resource, objects);
         mContext = context;
         mResource = resource;
@@ -39,10 +34,10 @@ public class ItemAdapter extends ArrayAdapter<Person> {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate(mResource, parent, false);
 
-        TextView textName = (TextView) convertView.findViewById(R.id.listName);
-        TextView textItemName = (TextView) convertView.findViewById(R.id.listItem);
-        TextView textAdress = (TextView) convertView.findViewById(R.id.listAdress);
-        TextView textDes = (TextView) convertView.findViewById(R.id.listDes);
+        TextView textName = (TextView) convertView.findViewById(R.id.myListName);
+        TextView textItemName = (TextView) convertView.findViewById(R.id.myListItem);
+        TextView textAdress = (TextView) convertView.findViewById(R.id.myListAdress);
+        TextView textDes = (TextView) convertView.findViewById(R.id.myListDes);
 
         textName.setText(name);
         textAdress.setText(adress);
@@ -52,6 +47,4 @@ public class ItemAdapter extends ArrayAdapter<Person> {
         return convertView;
 
     }
-
-
 }

@@ -17,4 +17,6 @@
     <string name="item_name">Item name</string>
     <string name="menu_description">Description</string>
     <string name="button_accept">Accept the order</string>
+    <string name="create_st">Create</string>
+    <string name="info">Info</string>
 </resources>
