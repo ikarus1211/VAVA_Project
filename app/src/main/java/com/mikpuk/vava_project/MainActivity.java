@@ -1,13 +1,32 @@
 package com.mikpuk.vava_project;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+
+
+
+import static com.mikpuk.vava_project.Constants.ERROR_DIALOG_REQUEST;
+import static com.mikpuk.vava_project.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
+import static com.mikpuk.vava_project.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -15,8 +34,10 @@ public class MainActivity extends AppCompatActivity {
     Button registerButton = null;
     EditText loginText = null;
     EditText passwordText = null;
-
     SQLConnector connector = new SQLConnector();
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,14 +80,7 @@ public class MainActivity extends AppCompatActivity {
                 int id = connector.getUserInDB(username, password);
                 //Kontrola riesena zatial takto
                 if (id > 0) {
-                    showToast("Logged in");
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                           loadMenu();
-                        }
-                    });
-
+                    loadMenu();
                 }
                 else {
                     showToast("Logging in failed");
@@ -100,4 +114,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MenuScreen.class);
         startActivity(intent);
     }
+
+
+
 }
