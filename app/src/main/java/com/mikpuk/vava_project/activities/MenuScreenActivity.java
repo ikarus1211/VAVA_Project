@@ -1,4 +1,4 @@
-package com.mikpuk.vava_project;
+package com.mikpuk.vava_project.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +21,9 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.mikpuk.vava_project.OtherReqItemAdapter;
+import com.mikpuk.vava_project.Person;
+import com.mikpuk.vava_project.R;
 
 import java.util.ArrayList;
 
@@ -28,7 +31,7 @@ import static com.mikpuk.vava_project.Constants.ERROR_DIALOG_REQUEST;
 import static com.mikpuk.vava_project.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
 import static com.mikpuk.vava_project.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
 
-public class MenuScreen extends AppCompatActivity {
+public class MenuScreenActivity extends AppCompatActivity {
 
     Button myReqButton = null;
     Button acReqButton = null;
@@ -39,7 +42,7 @@ public class MenuScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_menu_screen);
+        setContentView(R.layout.layout_main_menu);
         ListView myLView = findViewById(R.id.lisView);
 
         myReqButton = findViewById(R.id.myReqButton);
@@ -88,19 +91,19 @@ public class MenuScreen extends AppCompatActivity {
         myList.add(number6);
         myList.add(number7);
 
-        ItemAdapter adapter = new ItemAdapter(this, R.layout.custom_list_view, myList);
+        OtherReqItemAdapter adapter = new OtherReqItemAdapter(this, R.layout.item_main_menu, myList);
         myLView.setAdapter(adapter);
     }
 
     private void loadMyReqUi()
     {
-        Intent intent = new Intent(this, UsersRequest.class);
+        Intent intent = new Intent(this, MyRequestsActivity.class);
         startActivity(intent);
     }
 
     private void loadMapUI()
     {
-        Intent intent = new Intent(this,MyMapView.class);
+        Intent intent = new Intent(this, MapViewActivity.class);
         startActivity(intent);
     }
 
@@ -110,7 +113,7 @@ public class MenuScreen extends AppCompatActivity {
     public boolean isServicesOK(){
         Log.d(TAG, "isServicesOK: checking google services version");
 
-        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MenuScreen.this);
+        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MenuScreenActivity.this);
 
         if(available == ConnectionResult.SUCCESS){
             //everything is fine and the user can make map requests
@@ -120,7 +123,7 @@ public class MenuScreen extends AppCompatActivity {
         else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
             //an error occured but we can resolve it
             Log.d(TAG, "isServicesOK: an error occured but we can fix it");
-            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MenuScreen.this, available, ERROR_DIALOG_REQUEST);
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MenuScreenActivity.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
         }else{
             Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();

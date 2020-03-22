@@ -1,4 +1,4 @@
-package com.mikpuk.vava_project;
+package com.mikpuk.vava_project.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,7 +9,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class ReggActivity extends AppCompatActivity {
+import com.mikpuk.vava_project.R;
+import com.mikpuk.vava_project.db_things.SQLConnector;
+import com.mikpuk.vava_project.db_things.SQLQueries;
+
+public class RegistrationActivity extends AppCompatActivity {
 
     Button registerButton = null;
     EditText usernameText = null;
@@ -23,7 +27,7 @@ public class ReggActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_regg2);
+        setContentView(R.layout.layout_registration);
 
         //Nacitanie UI premennych
         registerButton = findViewById(R.id.button);
@@ -56,9 +60,9 @@ public class ReggActivity extends AppCompatActivity {
                     connector.connectToDB();
                 }
                 //Kontrola riesena zatial takto
-                if(connector.addUserToDB(username,password1)) {
+                if(SQLQueries.registerUser(username,password1,connector.getConnection())) {
                     showToast("User registered");
-                    loadMainMenu();
+                    loadLoginScreen();
                 }
                 else {
                     showToast("Error while registering?");
@@ -67,13 +71,13 @@ public class ReggActivity extends AppCompatActivity {
         }.start();
     }
 
-    //Zavretie registracneho okna a navrat do hlavneho menu
-    private void loadMainMenu()
+    //Zavretie registracneho okna a navrat do login screenu
+    private void loadLoginScreen()
     {
         //Zavretie SQL pripojenia
         connector.closeConnection();
 
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //Aby sa pouzivatel nevratil back tlacidlom do registracie
         startActivity(intent);
     }

@@ -1,4 +1,4 @@
-package com.mikpuk.vava_project;
+package com.mikpuk.vava_project.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -12,10 +12,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.mikpuk.vava_project.R;
 
 import static com.mikpuk.vava_project.Constants.MAPVIEW_BUNDLE_KEY;
 
@@ -23,7 +22,7 @@ import static com.mikpuk.vava_project.Constants.MAPVIEW_BUNDLE_KEY;
 /*
 https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/main/java/com/example/mapdemo/RawMapViewDemoActivity.java
  */
-    public class MyMapView extends AppCompatActivity implements OnMapReadyCallback {
+    public class MapViewActivity extends AppCompatActivity implements OnMapReadyCallback {
 
         private MapView mMapView;
 
@@ -32,7 +31,7 @@ https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_my_map_view);
+            setContentView(R.layout.layout_map_view);
 
             // *** IMPORTANT ***
             // MapView requires that the Bundle you pass contain _ONLY_ MapView SDK

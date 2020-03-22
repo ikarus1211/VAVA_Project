@@ -1,4 +1,4 @@
-package com.mikpuk.vava_project;
+package com.mikpuk.vava_project.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,35 +8,39 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.mikpuk.vava_project.MyReqItemAdapter;
+import com.mikpuk.vava_project.Person;
+import com.mikpuk.vava_project.R;
+
 import java.util.ArrayList;
 /*
     Class for displaying request that user created
  */
-public class UsersRequest extends AppCompatActivity {
+public class MyRequestsActivity extends AppCompatActivity {
 
     Button createReq = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_users_request);
+        setContentView(R.layout.layout_my_requests);
 
         ListView myLView = findViewById(R.id.reqListView);
         createReq = findViewById(R.id.createButton);
         createReq.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                creatingRequest();
+                loadCreateReqWindow();
             }
         });
 
 
-        MyReqItemAdapter adapter = new MyReqItemAdapter(this, R.layout.my_requests_view, fillReqList());
+        MyReqItemAdapter adapter = new MyReqItemAdapter(this, R.layout.item_my_request, fillReqList());
         myLView.setAdapter(adapter);
     }
 
-    private void creatingRequest()
+    private void loadCreateReqWindow()
     {
-        Intent intent = new Intent(this, RequestCreation.class);
+        Intent intent = new Intent(this, CreateMyRequestActivity.class);
         startActivity(intent);
     }
     private ArrayList<Person> fillReqList()

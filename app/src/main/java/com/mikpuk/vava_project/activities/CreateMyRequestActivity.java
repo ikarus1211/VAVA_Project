@@ -1,4 +1,4 @@
-package com.mikpuk.vava_project;
+package com.mikpuk.vava_project.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,11 +7,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.mikpuk.vava_project.R;
+
 
 /*
     Class for working wotch request creating
  */
-public class RequestCreation extends AppCompatActivity {
+public class CreateMyRequestActivity extends AppCompatActivity {
 
     Button createReq = null;
     EditText itemNameText = null;
@@ -20,7 +22,7 @@ public class RequestCreation extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_request_creation);
+        setContentView(R.layout.layout_my_request_creation);
 
         createReq = findViewById(R.id.createReqButton);
         itemNameText = findViewById(R.id.reqCreationItem);
@@ -29,12 +31,12 @@ public class RequestCreation extends AppCompatActivity {
         createReq.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                requestCreation();
+                createRequest();
             }
         });
     }
 
-    private void requestCreation()
+    private void createRequest()
     {
 
     }

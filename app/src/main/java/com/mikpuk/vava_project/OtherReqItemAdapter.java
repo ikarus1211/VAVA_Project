@@ -15,12 +15,12 @@ import java.util.List;
    This is custom adapter for list view.
    It creates one block of tifferent textViews witch is than taken to create list view.
  */
-public class ItemAdapter extends ArrayAdapter<Person> {
+public class OtherReqItemAdapter extends ArrayAdapter<Person> {
 
     private Context mContext;
     private int mResource;
 
-    public ItemAdapter(@NonNull Context context, int resource, @NonNull List<Person> objects) {
+    public OtherReqItemAdapter(@NonNull Context context, int resource, @NonNull List<Person> objects) {
         super(context, resource, objects);
         mContext = context;
         mResource = resource;

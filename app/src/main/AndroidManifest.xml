@@ -18,13 +18,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MyMapView"></activity>
-        <activity android:name=".MapView" />
-        <activity android:name=".RequestCreation" />
-        <activity android:name=".UsersRequest" />
-        <activity android:name=".MenuScreen" />
-        <activity android:name=".ReggActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".activities.MapViewActivity" />
+        <activity android:name=".activities.CreateMyRequestActivity" />
+        <activity android:name=".activities.MyRequestsActivity" />
+        <activity android:name=".activities.MenuScreenActivity" />
+        <activity android:name=".activities.RegistrationActivity" />
+        <activity android:name=".activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

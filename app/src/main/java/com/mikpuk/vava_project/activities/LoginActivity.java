@@ -1,34 +1,19 @@
-package com.mikpuk.vava_project;
+package com.mikpuk.vava_project.activities;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 
+import com.mikpuk.vava_project.R;
+import com.mikpuk.vava_project.db_things.SQLConnector;
+import com.mikpuk.vava_project.db_things.SQLQueries;
 
-
-import static com.mikpuk.vava_project.Constants.ERROR_DIALOG_REQUEST;
-import static com.mikpuk.vava_project.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
-import static com.mikpuk.vava_project.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
-
-public class MainActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     Button loginButton = null;
     Button registerButton = null;
@@ -42,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.layout_login);
 
         //Nacitanie UI premennych
         loginButton = findViewById(R.id.LoginButton);
@@ -77,10 +62,10 @@ public class MainActivity extends AppCompatActivity {
                 if (!connector.isConnectedToDB()) {
                     connector.connectToDB();
                 }
-                int id = connector.getUserInDB(username, password);
+                int id = SQLQueries.getUserID(username,password,connector.getConnection());
                 //Kontrola riesena zatial takto
                 if (id > 0) {
-                    loadMenu();
+                    loadMenuScreen();
                 }
                 else {
                     showToast("Logging in failed");
@@ -95,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         //Zrusenie SQL pripojenia pred prepnutim na druhu scenu
         connector.closeConnection();
 
-        Intent intent = new Intent(this, ReggActivity.class);
+        Intent intent = new Intent(this, RegistrationActivity.class);
         startActivity(intent);
     }
 
@@ -109,9 +94,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    private void loadMenu ()
+    private void loadMenuScreen ()
     {
-        Intent intent = new Intent(this, MenuScreen.class);
+        //Nacitanie hlavneho menu
+        Intent intent = new Intent(this, MenuScreenActivity.class);
         startActivity(intent);
     }
 
