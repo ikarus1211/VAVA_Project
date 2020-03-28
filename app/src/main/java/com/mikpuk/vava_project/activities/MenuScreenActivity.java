@@ -5,12 +5,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +23,13 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.mikpuk.vava_project.OtherReqItemAdapter;
 import com.mikpuk.vava_project.Person;
 import com.mikpuk.vava_project.R;
@@ -28,6 +37,7 @@ import com.mikpuk.vava_project.R;
 import java.util.ArrayList;
 
 import static com.mikpuk.vava_project.Constants.ERROR_DIALOG_REQUEST;
+import static com.mikpuk.vava_project.Constants.LOCATION_PERM_CODE;
 import static com.mikpuk.vava_project.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
 import static com.mikpuk.vava_project.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
 
@@ -36,7 +46,11 @@ public class MenuScreenActivity extends AppCompatActivity {
     Button myReqButton = null;
     Button acReqButton = null;
     Button mapButton = null;
-    private boolean mLocationPermissionGranted = false;
+    private boolean permissionGranted = false;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private Location mLocation;
+
+
     private static final String TAG = "MainActivity";
 
     @Override
@@ -44,6 +58,7 @@ public class MenuScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main_menu);
         ListView myLView = findViewById(R.id.lisView);
+        getLocationPermission();
 
         myReqButton = findViewById(R.id.myReqButton);
         acReqButton = findViewById(R.id.accpetButton);
@@ -56,20 +71,7 @@ public class MenuScreenActivity extends AppCompatActivity {
             }
         });
 
-        mapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(checkMapServices()){
-                    if(mLocationPermissionGranted){
-                        loadMapUI();
-                    }
-                    else{
-                        getLocationPermission();
-                    }
-                }
 
-            }
-        });
 
 /*
        Moje vlastne testovanie
@@ -95,130 +97,142 @@ public class MenuScreenActivity extends AppCompatActivity {
         myLView.setAdapter(adapter);
     }
 
+
+    /*
+     * Function checks permissions and then initialize the button form mapView
+     */
+    private void init()
+    {
+        System.out.println("Everything ok");
+        if (permissionGranted)
+        {
+            getDeviceLocation();
+        }
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MenuScreenActivity.this, MapViewActivity.class );
+                intent.putExtra("location", mLocation);
+                startActivity(intent);
+            }
+        });
+    }
+
+
     private void loadMyReqUi()
     {
         Intent intent = new Intent(this, MyRequestsActivity.class);
         startActivity(intent);
     }
 
-    private void loadMapUI()
-    {
-        Intent intent = new Intent(this, MapViewActivity.class);
-        startActivity(intent);
-    }
 
     /*
-    Checks if google services are enabled
- */
-    public boolean isServicesOK(){
-        Log.d(TAG, "isServicesOK: checking google services version");
-
-        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MenuScreenActivity.this);
-
-        if(available == ConnectionResult.SUCCESS){
-            //everything is fine and the user can make map requests
-            Log.d(TAG, "isServicesOK: Google Play Services is working");
-            return true;
-        }
-        else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
-            //an error occured but we can resolve it
-            Log.d(TAG, "isServicesOK: an error occured but we can fix it");
-            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MenuScreenActivity.this, available, ERROR_DIALOG_REQUEST);
-            dialog.show();
-        }else{
-            Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
-        }
-        return false;
-    }
-    /*
-        If GPS is not enabled this will ask to do so
+     * Function gets location of device and stores it into mLocation variable
      */
-    private boolean checkMapServices(){
-        if(isServicesOK()){
-            if(isMapsEnabled()){
-                return true;
-            }
-        }
-        return false;
-    }
+    private void getDeviceLocation()
+    {
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        try {
 
-    private void buildAlertMessageNoGps() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("This application requires GPS to work properly, do you want to enable it?")
-                .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                        Intent enableGpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
+            // If permission is granted continue
+            if(permissionGranted)
+            {
+                Task location = fusedLocationProviderClient.getLastLocation();
+                location.addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if(task.isSuccessful())
+                        {
+                            System.out.println("Found it");
+                            mLocation = (Location) task.getResult();
+                        }
+                        else
+                        {
+                            System.out.println("Not found it");
+                        }
                     }
                 });
-        final AlertDialog alert = builder.create();
-        alert.show();
+            }
+        } catch (SecurityException e)
+        {
+            System.out.println("Exception");
+        }
+
     }
+
 
     /*
-           Checks if GPS is enabled
+     * Function which checks if the permissions were granted
      */
-    public boolean isMapsEnabled(){
-        final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
-
-        if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
-            buildAlertMessageNoGps();
-            return false;
-        }
-        return true;
-    }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        mLocationPermissionGranted = false;
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mLocationPermissionGranted = true;
-                    loadMapUI();
-                }
-            }
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "onActivityResult: called.");
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_ENABLE_GPS: {
-                if(mLocationPermissionGranted){
-                    loadMapUI();
-                }
-                else{
-                    getLocationPermission();
+        permissionGranted = false;
+        System.out.println("4");
+        switch (requestCode)
+        {
+            case LOCATION_PERM_CODE:
+            {
+                if (grantResults.length > 0)
+                {
+                    for(int i = 0; i < grantResults.length; i++)
+                    {
+                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                            permissionGranted = false;
+                            return;
+                        }
+                    }
+                    permissionGranted = true;
+                    init();
+                    System.out.print("GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
                 }
             }
         }
 
     }
+
+
 
     @Override
     protected void onResume() {
         super.onResume();
 
     }
+
+
+    /*
+     * Request location permission, so that we can get the location of the
+     * device.
+     */
     private void getLocationPermission() {
-        /*
-         * Request location permission, so that we can get the location of the
-         * device.
-         */
+
+        String[] premissions = {Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION};
+
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mLocationPermissionGranted = true;
+                == PackageManager.PERMISSION_GRANTED)
 
-        } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        {
+            System.out.println("1");
+            if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED)
+            {
+                permissionGranted = true;
+                init();
+            }
+            else
+            {
+                System.out.println("2");
+                ActivityCompat.requestPermissions(this, premissions, LOCATION_PERM_CODE );
+            }
         }
+        else
+        {
+            System.out.println("3");
+            ActivityCompat.requestPermissions(this, premissions, LOCATION_PERM_CODE );
+        }
+
     }
+
 }
