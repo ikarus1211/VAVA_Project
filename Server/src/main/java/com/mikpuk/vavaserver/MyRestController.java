@@ -6,10 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
-
 @RestController
 public class MyRestController {
     @RequestMapping(value = "/register/{username}/{password}")
@@ -32,9 +28,10 @@ public class MyRestController {
         }
     }
 
-    @RequestMapping(value = "/getuser/{id}")
+    //Zatial nepouzivame ale moze sa hodit neskor
+    @RequestMapping(value = "/getuserbyid/{id}")
     @ResponseBody
-    public ResponseEntity<User> getUser(@PathVariable int id, @RequestHeader("auth") String authorization)
+    public ResponseEntity<User> getUserById(@PathVariable int id, @RequestHeader("auth") String authorization)
     {
         if(!isUserAuthorized(authorization))
             return new ResponseEntity<User>(HttpStatus.UNAUTHORIZED);
@@ -43,11 +40,32 @@ public class MyRestController {
         UserJdbcTemplate userJdbcTemplate = (UserJdbcTemplate) context.getBean("userJdbcTemplate");
 
         try {
-            User user = userJdbcTemplate.getUser(id);
-            return new ResponseEntity<User>(userJdbcTemplate.getUser(id), HttpStatus.OK);
+            User user = userJdbcTemplate.getUserById(id);
+            return new ResponseEntity<User>(user, HttpStatus.OK);
         }catch (Exception e)
         {
             //Toto nastava napr pri neexistujucom ID
+            return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/getuserbydata/{username}/{password}")
+    @ResponseBody
+    public ResponseEntity<User> getUserByData(@PathVariable String username, @PathVariable String password, @RequestHeader("auth") String authorization)
+    {
+        if(!isUserAuthorized(authorization))
+            return new ResponseEntity<User>(HttpStatus.UNAUTHORIZED);
+
+        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+        UserJdbcTemplate userJdbcTemplate = (UserJdbcTemplate) context.getBean("userJdbcTemplate");
+
+        try {
+            User user = userJdbcTemplate.getUserByData(username,password);
+            return new ResponseEntity<User>(user, HttpStatus.OK);
+        }catch (Exception e)
+        {
+            //Toto nastava napr pri neexistujucom ID
+            e.printStackTrace();
             return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -59,14 +77,29 @@ public class MyRestController {
 
     private static String getAuthToken()
     {
-        Properties properties = new Properties();
+        return "MyToken123Haha.!@";
+        //Zatial neviem, preco dolne sposoby nefunguju
+
+        /*Properties properties = new Properties();
+        try {
+            properties.load(new FileInputStream("config.properties"));
+            return (String)properties.get("token");
+        } catch (IOException e) {
+            System.out.println("NOT FOUND! :(");
+        }
+        try {
+            properties.load(new FileInputStream("com.mikpuk.config.properties"));
+            return (String)properties.get("token");
+        } catch (IOException e) {
+            System.out.println("NOT FOUND! :(");
+        }
         try {
             properties.load(new FileInputStream("src/main/resources/config.properties"));
             return (String)properties.get("token");
         } catch (IOException e) {
             System.out.println("NOT FOUND! :(");
             return "";
-        }
+        }*/
     }
 
 

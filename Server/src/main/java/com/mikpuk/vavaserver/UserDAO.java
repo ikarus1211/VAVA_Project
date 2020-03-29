@@ -6,6 +6,6 @@ public interface UserDAO {
 
     public void setDataSource(DataSource dataSource);
     public void createUser(String name,String password);
-    public User getUser(int id);
-    public int checkAvailableCredentials(String username, String password);
+    public User getUserById(int id);
+    public User getUserByData(String username,String password);
 }

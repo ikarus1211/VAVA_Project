@@ -4,8 +4,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 //MD5 hashing bol prevzany zo stranky https://howtodoinjava.com/security/how-to-generate-secure-password-hash-md5-sha-pbkdf2-bcrypt-examples/
-class MD5Hashing {
-        static String getSecurePassword(String passwordToHash)
+public class MD5Hashing {
+        public static String getSecurePassword(String passwordToHash)
         {
             String generatedPassword = null;
             try {

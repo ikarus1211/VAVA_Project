@@ -23,14 +23,16 @@ public class UserJdbcTemplate implements UserDAO {
     }
 
     @Override
-    public User getUser(int id) {
+    public User getUserById(int id) {
         String query = "select * from users where id = ?";
         return jdbcTemplate.queryForObject(query, new Object[]{id}, new UserMapper());
     }
 
     @Override
-    public int checkAvailableCredentials(String username, String password) {
-        String query = "select COUNT(*) from users where username = ? and password = ?";
-        return jdbcTemplate.queryForObject(query, new Object[]{username,password}, Integer.class);
+    public User getUserByData(String username,String password) {
+        String query = "select * from users where username = ? and password = ?";
+        return jdbcTemplate.queryForObject(query, new Object[]{username,password}, new UserMapper());
     }
+
+
 }

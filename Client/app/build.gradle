@@ -21,6 +21,15 @@ android {
         }
     }
 
+    //Pre spring boot
+    packagingOptions {
+        exclude "META-INF/ASL2.0"
+        exclude "META-INF/LICENCE"
+        exclude "META-INF/license.txt"
+        exclude "META-INF/NOTICE"
+        exclude "META-INF/notice.txt"
+    }
+
 }
 
 dependencies {
@@ -33,5 +42,12 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
+
+    //Rest spring boot
+    implementation 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
+    //Potrebne pre GET REST
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.6.3'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.6.0'
+
 
 }

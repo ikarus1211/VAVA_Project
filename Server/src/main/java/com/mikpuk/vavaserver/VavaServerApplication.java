@@ -31,14 +31,14 @@ public class VavaServerApplication {
 		String AUTH_TOKEN = getAuthToken();
 
 		try {
-			String uri = "http://localhost:5000/getuser/{id}";
+			String uri = "http://localhost:5000/getuserbydata/{username}/{password}";
 			RestTemplate restTemplate = new RestTemplate();
 
 			HttpHeaders httpHeaders = new HttpHeaders();
 			httpHeaders.add("auth",MD5Hashing.getSecurePassword(AUTH_TOKEN));
 
 			ResponseEntity<User> user5 = restTemplate.exchange(uri, HttpMethod.GET,
-					new HttpEntity<String>(httpHeaders), User.class, 1);
+					new HttpEntity<String>(httpHeaders), User.class, "yt",MD5Hashing.getSecurePassword("yt"));
 			System.out.println("User: " + user5.getBody().getUsername());
 			System.out.println("STATUS CODE " + user5.getStatusCode());
 		} catch (HttpServerErrorException e)
@@ -47,14 +47,16 @@ public class VavaServerApplication {
 		} catch (HttpClientErrorException e2)
 		{
 			System.out.println("CLIENT EXCEPTION! "+e2.getRawStatusCode());
+			e2.printStackTrace();
 		} catch (Exception e3)
 		{
 			System.out.println("caught other exception");
+			e3.printStackTrace();
 		}
 
 
 		try {
-			String uri2 = "http://localhost:5000/register/{name}/{pass}";
+			String uri2 = "http://vavaserver-env-2.eba-z8cwmvuf.eu-central-1.elasticbeanstalk.com/register/{name}/{pass}";
 			RestTemplate restTemplate2 = new RestTemplate();
 
 			HttpHeaders httpHeaders2 = new HttpHeaders();
@@ -81,14 +83,17 @@ public class VavaServerApplication {
 
 	private static String getAuthToken()
 	{
-		Properties properties = new Properties();
+		return "MyToken123Haha.!@";
+
+		/*Properties properties = new Properties();
 		try {
 			properties.load(new FileInputStream("src/main/resources/config.properties"));
 			return (String)properties.get("token");
 		} catch (IOException e) {
 			System.out.println("NOT FOUND! :(");
 			return "";
-		}
+		}*/
+
 	}
 
 }

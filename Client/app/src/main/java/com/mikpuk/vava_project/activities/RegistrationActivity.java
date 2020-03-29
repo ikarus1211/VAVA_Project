@@ -10,8 +10,15 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.mikpuk.vava_project.R;
-import com.mikpuk.vava_project.db_things.SQLConnector;
-import com.mikpuk.vava_project.db_things.SQLQueries;
+import com.mikpuk.vava_project.db_things.MD5Hashing;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
 
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -21,8 +28,6 @@ public class RegistrationActivity extends AppCompatActivity {
     EditText passwordText2 = null;
     EditText emailText = null; //Na tomto sme sa dohodli? Ale tak da sa implementovat
                                 // To tam je zatial len pre efekt
-
-    SQLConnector connector = new SQLConnector();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,43 +48,64 @@ public class RegistrationActivity extends AppCompatActivity {
         });
     }
 
-    //Skontrolovanie vstupov (PRIDAT!) a registrovanie do DB
-    private void registerUser()
+    //Zavretie registracneho okna a navrat do login screenu
+    private void loadLoginScreen()
     {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //Aby sa pouzivatel nevratil back tlacidlom do registracie
+        startActivity(intent);
+    }
+
+    //Skontrolovanie vstupov (PRIDAT!) a registrovanie do DB
+    public void registerUser()
+    {
+
         final String username = usernameText.getText().toString();
         final String password1 = passwordText1.getText().toString();
         final String password2 = passwordText2.getText().toString();
-        new Thread() {
+
+        new Thread()
+        {
             public void run() {
-                if(!password1.equals(password2)){
-                    showToast("Passwords do not match");
-                    return;
-                }
-                if(!connector.isConnectedToDB())
-                {
-                    connector.connectToDB();
-                }
-                //Kontrola riesena zatial takto
-                if(SQLQueries.registerUser(username,password1,connector.getConnection())) {
+                try {
+                    if(!password1.equals(password2)){
+                        showToast("Passwords do not match");
+                        return;
+                    }
+
+                    //Pridat do configu a nacitavat z neho
+                    String TOKEN = "MyToken123Haha.!@";
+                    String AUTH_TOKEN = MD5Hashing.getSecurePassword(TOKEN);
+
+                    String uri2 = "http://vavaserver-env-2.eba-z8cwmvuf.eu-central-1.elasticbeanstalk.com/register/{name}/{pass}";
+                    RestTemplate restTemplate = new RestTemplate();
+
+                    HttpHeaders httpHeaders = new HttpHeaders();
+                    httpHeaders.add("auth", AUTH_TOKEN);
+
+                    ResponseEntity<Void> user = restTemplate.exchange(uri2, HttpMethod.POST,
+                            new HttpEntity<String>(httpHeaders), Void.class, username,MD5Hashing.getSecurePassword(password1));
+
+                    System.out.println("STATUS CODE " + user.getStatusCode());
                     showToast("User registered");
                     loadLoginScreen();
-                }
-                else {
+                } catch (HttpServerErrorException e)
+                {
+                    System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
+                    showToast("Error while registering?");
+                } catch (HttpClientErrorException e2)
+                {
+                    System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
+                    showToast("Error while registering?");
+                } catch (Exception e3)
+                {
+                    System.out.println("caught other exception");
+                    e3.printStackTrace();
                     showToast("Error while registering?");
                 }
             }
         }.start();
-    }
 
-    //Zavretie registracneho okna a navrat do login screenu
-    private void loadLoginScreen()
-    {
-        //Zavretie SQL pripojenia
-        connector.closeConnection();
-
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //Aby sa pouzivatel nevratil back tlacidlom do registracie
-        startActivity(intent);
     }
 
     //Toto vyhodi bublinu s infom

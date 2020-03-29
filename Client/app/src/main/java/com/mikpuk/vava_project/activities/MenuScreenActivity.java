@@ -58,11 +58,12 @@ public class MenuScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main_menu);
         ListView myLView = findViewById(R.id.lisView);
-        getLocationPermission();
 
         myReqButton = findViewById(R.id.myReqButton);
         acReqButton = findViewById(R.id.accpetButton);
         mapButton = findViewById(R.id.mapbutton);
+
+        getLocationPermission();
 
         myReqButton.setOnClickListener(new View.OnClickListener() {
             @Override
