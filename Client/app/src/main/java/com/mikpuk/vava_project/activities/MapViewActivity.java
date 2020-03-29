@@ -51,7 +51,7 @@ https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/
     public void onMapReady(GoogleMap googleMap) {
             Toast.makeText(this, "Map is ready", Toast.LENGTH_SHORT).show();
             Intent intent = getIntent();
-            Location mLocation = intent.getParcelableExtra("location");
+            mLocation = intent.getParcelableExtra("location");
             mMap = googleMap;
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()),15f));
             mMap.setMyLocationEnabled(true);

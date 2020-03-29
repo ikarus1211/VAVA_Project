@@ -19,7 +19,108 @@ public class VavaServerApplication {
 		SpringApplication.run(VavaServerApplication.class, args);
 
 		//testCase();
+		//testCase2();
 	}
+
+	public static void testCase2()
+	{
+		String AUTH_TOKEN = getAuthToken();
+
+		/*try {
+			String uri = "http://localhost:5000/createitem/{name}/{description}/{longtitude}/{latitude}/{user_id}/{type_id}";
+			RestTemplate restTemplate = new RestTemplate();
+
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.add("auth",MD5Hashing.getSecurePassword(AUTH_TOKEN));
+
+			restTemplate.exchange(uri, HttpMethod.GET,
+					new HttpEntity<String>(httpHeaders), Item.class,"metla","popis",1.1,2.2,1,7);
+		} catch (HttpServerErrorException e)
+		{
+			System.out.println("SERVER EXCEPTION! "+e.getRawStatusCode());
+		} catch (HttpClientErrorException e2)
+		{
+			System.out.println("CLIENT EXCEPTION! "+e2.getRawStatusCode());
+			e2.printStackTrace();
+		} catch (Exception e3)
+		{
+			System.out.println("caught other exception");
+			e3.printStackTrace();
+		}*/
+
+		/*try {
+			String uri = "http://localhost:5000/getitem/{id}";
+			RestTemplate restTemplate = new RestTemplate();
+
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.add("auth",MD5Hashing.getSecurePassword(AUTH_TOKEN));
+
+			ResponseEntity<Item> item = restTemplate.exchange(uri, HttpMethod.GET,
+					new HttpEntity<String>(httpHeaders), Item.class,"1");
+			System.out.println(item.getBody().getName()+ " | "+item.getBody().getDescription());
+		} catch (HttpServerErrorException e)
+		{
+			System.out.println("SERVER EXCEPTION! "+e.getRawStatusCode());
+		} catch (HttpClientErrorException e2)
+		{
+			System.out.println("CLIENT EXCEPTION! "+e2.getRawStatusCode());
+			e2.printStackTrace();
+		} catch (Exception e3)
+		{
+			System.out.println("caught other exception");
+			e3.printStackTrace();
+		}*/
+
+		try {
+			String uri = "http://localhost:5000/getitems/{id}";
+			RestTemplate restTemplate = new RestTemplate();
+
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.add("auth",MD5Hashing.getSecurePassword(AUTH_TOKEN));
+
+			ResponseEntity<Item[]> items = restTemplate.exchange(uri, HttpMethod.GET,
+					new HttpEntity<String>(httpHeaders), Item[].class,"1");
+			for (Item item:items.getBody()) {
+				System.out.println(item.getName()+ " | "+item.getDescription());
+			}
+
+		} catch (HttpServerErrorException e)
+		{
+			System.out.println("SERVER EXCEPTION! "+e.getRawStatusCode());
+		} catch (HttpClientErrorException e2)
+		{
+			System.out.println("CLIENT EXCEPTION! "+e2.getRawStatusCode());
+			e2.printStackTrace();
+		} catch (Exception e3)
+		{
+			System.out.println("caught other exception");
+			e3.printStackTrace();
+		}
+
+		try {
+			String uri = "http://localhost:5000/updateitem/{id}/{name}/{description}/{longtitude}/{latitude}/{accepted}";
+			RestTemplate restTemplate = new RestTemplate();
+
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.add("auth",MD5Hashing.getSecurePassword(AUTH_TOKEN));
+
+			restTemplate.exchange(uri, HttpMethod.GET,
+					new HttpEntity<String>(httpHeaders), Item.class,3,"metla5","speci popisok ",3.3,4.4,true);
+		} catch (HttpServerErrorException e)
+		{
+			System.out.println("SERVER EXCEPTION! "+e.getRawStatusCode());
+		} catch (HttpClientErrorException e2)
+		{
+			System.out.println("CLIENT EXCEPTION! "+e2.getRawStatusCode());
+			e2.printStackTrace();
+		} catch (Exception e3)
+		{
+			System.out.println("caught other exception");
+			e3.printStackTrace();
+		}
+
+	}
+
 	//Testovanie klienta - DEBUG na localhoste
 	public static void testCase()
 	{
