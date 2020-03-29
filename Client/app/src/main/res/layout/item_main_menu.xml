@@ -6,16 +6,16 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="374dp"
+        android:layout_width="match_parent"
         android:layout_height="98dp"
+        android:baselineAligned="false"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.578"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.173"
-        android:baselineAligned="false">
+        app:layout_constraintVertical_bias="0.173">
 
         <LinearLayout
             android:layout_width="60dp"

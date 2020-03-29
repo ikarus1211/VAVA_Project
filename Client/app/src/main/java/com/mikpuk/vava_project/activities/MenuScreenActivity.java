@@ -60,7 +60,7 @@ public class MenuScreenActivity extends AppCompatActivity {
         ListView myLView = findViewById(R.id.lisView);
 
         myReqButton = findViewById(R.id.myReqButton);
-        acReqButton = findViewById(R.id.accpetButton);
+        acReqButton = findViewById(R.id.acceptButton);
         mapButton = findViewById(R.id.mapbutton);
 
         getLocationPermission();

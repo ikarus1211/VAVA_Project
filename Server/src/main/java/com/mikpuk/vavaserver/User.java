@@ -1,5 +1,6 @@
 package com.mikpuk.vavaserver;
 
+//Classa, ktora v sebe udrziava udaje o pouzivatelovi
 public class User {
 
     private int id;

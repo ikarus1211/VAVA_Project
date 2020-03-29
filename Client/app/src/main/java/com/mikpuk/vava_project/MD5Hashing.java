@@ -1,4 +1,4 @@
-package com.mikpuk.vava_project.db_things;
+package com.mikpuk.vava_project;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

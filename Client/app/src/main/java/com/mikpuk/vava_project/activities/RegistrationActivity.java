@@ -2,23 +2,31 @@ package com.mikpuk.vava_project.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.R;
-import com.mikpuk.vava_project.db_things.MD5Hashing;
+import com.mikpuk.vava_project.MD5Hashing;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -56,52 +64,64 @@ public class RegistrationActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    //Skontrolovanie vstupov (PRIDAT!) a registrovanie do DB
+    //Skontrolovanie vstupov a registrovanie do DB
     public void registerUser()
     {
-
         final String username = usernameText.getText().toString();
         final String password1 = passwordText1.getText().toString();
         final String password2 = passwordText2.getText().toString();
 
+        if(!password1.equals(password2)){
+            showToast("Passwords do not match");
+            return;
+        }
+
+        if(username.isEmpty() || password1.isEmpty())
+        {
+            showToast("All fields must be filled!");
+            return;
+        }
+
+        //Call REST web services
         new Thread()
         {
             public void run() {
                 try {
-                    if(!password1.equals(password2)){
-                        showToast("Passwords do not match");
-                        return;
-                    }
+                    String AUTH_TOKEN = ConfigManager.getAuthToken(getApplicationContext());
 
-                    //Pridat do configu a nacitavat z neho
-                    String TOKEN = "MyToken123Haha.!@";
-                    String AUTH_TOKEN = MD5Hashing.getSecurePassword(TOKEN);
-
-                    String uri2 = "http://vavaserver-env-2.eba-z8cwmvuf.eu-central-1.elasticbeanstalk.com/register/{name}/{pass}";
+                    String uri2 = ConfigManager.getApiUrl(getApplicationContext())+"/register/{username}/{password}";
                     RestTemplate restTemplate = new RestTemplate();
 
+                    //Vytvorenie hlaviciek s tokenom
                     HttpHeaders httpHeaders = new HttpHeaders();
                     httpHeaders.add("auth", AUTH_TOKEN);
 
-                    ResponseEntity<Void> user = restTemplate.exchange(uri2, HttpMethod.POST,
-                            new HttpEntity<String>(httpHeaders), Void.class, username,MD5Hashing.getSecurePassword(password1));
+                    //Poslanie udajov na vytvorenie zaznamu v databaze
+                    restTemplate.exchange(uri2, HttpMethod.POST, new HttpEntity<String>(httpHeaders),
+                            Void.class, username,MD5Hashing.getSecurePassword(password1));
 
-                    System.out.println("STATUS CODE " + user.getStatusCode());
                     showToast("User registered");
                     loadLoginScreen();
                 } catch (HttpServerErrorException e)
                 {
+                    //Error v pripade chyby servera
                     System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
-                    showToast("Error while registering?");
+                    showToast("SERVER ERROR "+e.getStatusCode());
                 } catch (HttpClientErrorException e2)
                 {
+                    //Error v pripade ziadosti klienka
                     System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
-                    showToast("Error while registering?");
+                    if(e2.getStatusCode() == HttpStatus.BAD_REQUEST)
+                    {
+                        showToast("Username already used!");
+                        return;
+                    }
+                    e2.printStackTrace();
+                    showToast("CLIENT ERROR "+e2.getStatusCode());
                 } catch (Exception e3)
                 {
-                    System.out.println("caught other exception");
                     e3.printStackTrace();
-                    showToast("Error while registering?");
+                    showToast("SOMETHING WENT WRONG");
                 }
             }
         }.start();

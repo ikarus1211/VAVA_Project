@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="374dp"
+        android:layout_width="match_parent"
         android:layout_height="98dp"
         android:baselineAligned="false"
         android:orientation="horizontal"

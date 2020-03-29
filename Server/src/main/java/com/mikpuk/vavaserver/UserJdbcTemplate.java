@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 
+//Tata classa sluzi na volanie SQL queries. Datasource je dany v beans.xml
 public class UserJdbcTemplate implements UserDAO {
 
     private DataSource dataSource;

@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+//Tato classa sluzi na spristupnenie REST sluzieb
 @RestController
 public class MyRestController {
     @RequestMapping(value = "/register/{username}/{password}")
@@ -15,6 +16,7 @@ public class MyRestController {
         if(!isUserAuthorized(authorization))
             return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
 
+        //Nacitanie XML a bean
         ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
         UserJdbcTemplate userJdbcTemplate = (UserJdbcTemplate) context.getBean("userJdbcTemplate");
 
@@ -40,6 +42,7 @@ public class MyRestController {
         UserJdbcTemplate userJdbcTemplate = (UserJdbcTemplate) context.getBean("userJdbcTemplate");
 
         try {
+            //Nacitanie XML a bean
             User user = userJdbcTemplate.getUserById(id);
             return new ResponseEntity<User>(user, HttpStatus.OK);
         }catch (Exception e)
@@ -56,6 +59,7 @@ public class MyRestController {
         if(!isUserAuthorized(authorization))
             return new ResponseEntity<User>(HttpStatus.UNAUTHORIZED);
 
+        //Nacitanie XML a bean
         ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
         UserJdbcTemplate userJdbcTemplate = (UserJdbcTemplate) context.getBean("userJdbcTemplate");
 
@@ -64,7 +68,7 @@ public class MyRestController {
             return new ResponseEntity<User>(user, HttpStatus.OK);
         }catch (Exception e)
         {
-            //Toto nastava napr pri neexistujucom ID
+            //Toto nastava napr pri neexistujucom uzivatelovi
             e.printStackTrace();
             return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
         }

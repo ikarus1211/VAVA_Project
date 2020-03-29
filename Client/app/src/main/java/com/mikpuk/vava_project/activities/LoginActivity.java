@@ -1,14 +1,12 @@
 package com.mikpuk.vava_project.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,27 +14,28 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.User;
-import com.mikpuk.vava_project.db_things.MD5Hashing;
-import com.mikpuk.vava_project.db_things.SQLConnector;
-import com.mikpuk.vava_project.db_things.SQLQueries;
+import com.mikpuk.vava_project.MD5Hashing;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import static com.mikpuk.vava_project.Constants.ERROR_DIALOG_REQUEST;
-import static com.mikpuk.vava_project.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
+import static com.mikpuk.vava_project.Constants.ERROR_DIALOG_REQUEST;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -45,7 +44,6 @@ public class LoginActivity extends AppCompatActivity {
     Button registerButton = null;
     EditText loginText = null;
     EditText passwordText = null;
-    SQLConnector connector = new SQLConnector();
 
 
 
@@ -67,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
             loginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    logInUserRest();
+                    logInUser();
                 }
             });
         }
@@ -76,18 +74,15 @@ public class LoginActivity extends AppCompatActivity {
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                regInit();
+                loadRegistrationScreen();
             }
         });
 
     }
 
 
-    public void regInit()
+    public void loadRegistrationScreen()
     {
-        //Zrusenie SQL pripojenia pred prepnutim na druhu scenu
-        connector.closeConnection();
-
         Intent intent = new Intent(this, RegistrationActivity.class);
         startActivity(intent);
     }
@@ -133,53 +128,60 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     //Pokus o najdenie pouzivatela v DB a nasledne prihlasenie
-    private void logInUserRest() {
+    private void logInUser() {
         final String username = loginText.getText().toString();
         final String password = passwordText.getText().toString();
 
+        if(username.isEmpty() || password.isEmpty()) {
+            showToast("Enter your username and password");
+            return;
+        }
+
+        //Call REST web services
         new Thread() {
             public void run() {
-                //Pridat do configu a nacitavat z neho
-                String TOKEN = "MyToken123Haha.!@";
-                String AUTH_TOKEN = MD5Hashing.getSecurePassword(TOKEN);
-
-                if(username.isEmpty() || password.isEmpty()) {
-                    showToast("You need to fill info!");
-                    return;
-                }
+                String AUTH_TOKEN = ConfigManager.getAuthToken(getApplicationContext());
 
                 try {
-                    String uri = "http://vavaserver-env-2.eba-z8cwmvuf.eu-central-1.elasticbeanstalk.com/getuserbydata/{username}/{password}";
+                    String uri = ConfigManager.getApiUrl(getApplicationContext())+"/getuserbydata/{username}/{password}";
                     RestTemplate restTemplate = new RestTemplate();
 
-                    //Nezabudnut pridat pri GET !!!
+                    //Nezabudnut pridat pri HttpMethod.GET !!!
                     restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
+                    //Vytvorenie hlaviciek s tokenom
                     HttpHeaders httpHeaders = new HttpHeaders();
                     httpHeaders.add("auth", AUTH_TOKEN);
 
-                    ResponseEntity<User> user5 = restTemplate.exchange(uri, HttpMethod.GET,
+                    //Poslanie udajov a cakanie na objekt
+                    ResponseEntity<User> user = restTemplate.exchange(uri, HttpMethod.GET,
                             new HttpEntity<String>(httpHeaders), User.class,
                             username,MD5Hashing.getSecurePassword(password));
 
-                    System.out.println("User: " + user5.getBody().getUsername());
-                    System.out.println("STATUS CODE " + user5.getStatusCode());
+                    System.out.println("User: " + user.getBody().getUsername());
 
                     loadMenuScreen();
                 } catch (HttpServerErrorException e)
                 {
+                    //Error v pripade chyby servera
                     System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
-                    showToast("Logging in failed");
+                    showToast("SERVER ERROR "+e.getStatusCode());
                 } catch (HttpClientErrorException e2)
                 {
+                    //Error v pripade ziadosti klienka
                     System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
+                    if(e2.getStatusCode() == HttpStatus.BAD_REQUEST)
+                    {
+                        showToast("Check your username or password");
+                        return;
+                    }
                     e2.printStackTrace();
-                    showToast("Logging in failed");
+                    showToast("CLIENT ERROR "+e2.getStatusCode());
                 } catch (Exception e3)
                 {
                     System.out.println("caught other exception");
                     e3.printStackTrace();
-                    showToast("Logging in failed");
+                    showToast("SOMETHING WENT WRONG");
                 }
 
             }

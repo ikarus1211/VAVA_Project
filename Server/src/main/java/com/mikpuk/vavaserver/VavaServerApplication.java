@@ -2,8 +2,6 @@ package com.mikpuk.vavaserver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -12,9 +10,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
 
 @SpringBootApplication
 public class VavaServerApplication {
@@ -22,10 +17,10 @@ public class VavaServerApplication {
 	public static void main(String[] args) {
 
 		SpringApplication.run(VavaServerApplication.class, args);
-		//Testovanie klienta
+
 		//testCase();
 	}
-
+	//Testovanie klienta - DEBUG na localhoste
 	public static void testCase()
 	{
 		String AUTH_TOKEN = getAuthToken();
@@ -56,7 +51,7 @@ public class VavaServerApplication {
 
 
 		try {
-			String uri2 = "http://vavaserver-env-2.eba-z8cwmvuf.eu-central-1.elasticbeanstalk.com/register/{name}/{pass}";
+			String uri2 = "http://localhost:5000/register/{name}/{pass}";
 			RestTemplate restTemplate2 = new RestTemplate();
 
 			HttpHeaders httpHeaders2 = new HttpHeaders();
