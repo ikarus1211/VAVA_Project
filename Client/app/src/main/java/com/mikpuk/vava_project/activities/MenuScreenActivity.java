@@ -12,6 +12,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -47,8 +49,10 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static com.mikpuk.vava_project.Constants.ERROR_DIALOG_REQUEST;
 import static com.mikpuk.vava_project.Constants.LOCATION_PERM_CODE;
@@ -65,6 +69,7 @@ public class MenuScreenActivity extends AppCompatActivity {
     private Location mLocation;
     private User user = null;
     ListView myLView=null;
+    private String finalAdress;
 
     private static final String TAG = "MainActivity";
 
@@ -81,8 +86,10 @@ public class MenuScreenActivity extends AppCompatActivity {
         myReqButton = findViewById(R.id.myReqButton);
         acReqButton = findViewById(R.id.acceptButton);
         mapButton = findViewById(R.id.mapbutton);
-
+        getGpsStatus();
         getLocationPermission();
+
+
 
         myReqButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,10 +99,46 @@ public class MenuScreenActivity extends AppCompatActivity {
         });
 
         //Spusta nacitanie listView
-       // AsyncOtherItemsGetter getter = new AsyncOtherItemsGetter();
-        ///getter.execute();
+       AsyncOtherItemsGetter getter = new AsyncOtherItemsGetter();
+        getter.execute();
 
     }
+
+    private void getGpsStatus()
+    {
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            Toast.makeText(this, "GPS Enabled", Toast.LENGTH_SHORT).show();
+        }else{
+            showGPSDisabledAlertToUser();
+        }
+    }
+
+    // TODO maybe rework
+    private void showGPSDisabledAlertToUser()
+    {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage("GPS is disabled in your device. Would you like to enable it?")
+                .setCancelable(false)
+                .setPositiveButton("Goto Settings Page To Enable GPS",
+                        new DialogInterface.OnClickListener(){
+                            public void onClick(DialogInterface dialog, int id){
+                                Intent callGPSSettingIntent = new Intent(
+                                        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(callGPSSettingIntent);
+                            }
+                        });
+        alertDialogBuilder.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener(){
+                    public void onClick(DialogInterface dialog, int id){
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
+    }
+
 
     private void fillMyRequestsList(Item[] items)
     {
@@ -106,7 +149,7 @@ public class MenuScreenActivity extends AppCompatActivity {
         }
 
         System.out.println("VYKONAM 6");
-        final  OtherReqItemAdapter adapter = new OtherReqItemAdapter(this, R.layout.item_my_request, itemList,user.getUsername());
+        final  OtherReqItemAdapter adapter = new OtherReqItemAdapter(this, R.layout.item_main_menu, itemList,user.getUsername());
 
         runOnUiThread(new Runnable() {
             public void run() {
@@ -124,18 +167,21 @@ public class MenuScreenActivity extends AppCompatActivity {
     private void init()
     {
         System.out.println("Everything ok");
-        if (permissionGranted)
-        {
-            getDeviceLocation();
+        if (permissionGranted) {
+            // Not working yet
+            /*GpsFunctions gpsFunctions = new GpsFunctions();
+            mLocation = gpsFunctions.getDeviceLocation();
+            System.out.println("Address "+gpsFunctions.generateAddress());*/
+
+            mapButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(MenuScreenActivity.this, MapViewActivity.class);
+                    intent.putExtra("location", mLocation);
+                    startActivity(intent);
+                }
+            });
         }
-        mapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MenuScreenActivity.this, MapViewActivity.class );
-                intent.putExtra("location", mLocation);
-                startActivity(intent);
-            }
-        });
     }
 
 
@@ -166,6 +212,9 @@ public class MenuScreenActivity extends AppCompatActivity {
                         {
                             System.out.println("Found it");
                             mLocation = (Location) task.getResult();
+                            System.out.println("Address "+mLocation);
+
+
                         }
                         else
                         {
@@ -310,5 +359,7 @@ public class MenuScreenActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
 }

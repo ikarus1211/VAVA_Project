@@ -5,15 +5,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import java.util.List;
 
 /*
    This is custom adapter for list view.
-   It creates one block of tifferent textViews witch is than taken to create list view.
+   It creates one block of different textViews witch is than taken to create list view.
  */
 public class OtherReqItemAdapter extends ArrayAdapter<Item> {
 
@@ -38,7 +38,6 @@ public class OtherReqItemAdapter extends ArrayAdapter<Item> {
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate(mResource, parent, false);
-
 
         TextView textName = (TextView) convertView.findViewById(R.id.listNameX);
         TextView textItemName = (TextView) convertView.findViewById(R.id.listItemX);
