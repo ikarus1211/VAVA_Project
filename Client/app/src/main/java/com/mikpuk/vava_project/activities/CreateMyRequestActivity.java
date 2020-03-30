@@ -13,6 +13,7 @@ import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.Item;
 import com.mikpuk.vava_project.MD5Hashing;
 import com.mikpuk.vava_project.R;
+import com.mikpuk.vava_project.User;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -32,11 +33,14 @@ public class CreateMyRequestActivity extends AppCompatActivity {
     Button createReq = null;
     EditText itemNameText = null;
     EditText descriptionText = null;
+    User user = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_my_request_creation);
+
+        user = (User)getIntent().getSerializableExtra("user");
 
         createReq = findViewById(R.id.createReqButton);
         itemNameText = findViewById(R.id.reqCreationItem);
@@ -54,7 +58,6 @@ public class CreateMyRequestActivity extends AppCompatActivity {
     {
         final float latitude = 0.01f;
         final float longtitude = 0.02f;
-        final int userId = 1;
 
         //Call REST web services
         new Thread()
@@ -72,7 +75,7 @@ public class CreateMyRequestActivity extends AppCompatActivity {
 
                     restTemplate.exchange(uri, HttpMethod.GET,
                             new HttpEntity<String>(httpHeaders), Item.class,itemNameText.getText(),descriptionText.getText(),
-                            longtitude,latitude,userId,7);
+                            longtitude,latitude,user.getId(),7);
 
                     showToast("ITEM ADDED!");
                     loadNewRequestScreen();
@@ -86,11 +89,6 @@ public class CreateMyRequestActivity extends AppCompatActivity {
                 {
                     //Error v pripade ziadosti klienka
                     System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
-                    if(e2.getStatusCode() == HttpStatus.BAD_REQUEST)
-                    {
-                        showToast("Username already used!");
-                        return;
-                    }
                     e2.printStackTrace();
                     showToast("CLIENT ERROR "+e2.getStatusCode());
                 } catch (Exception e3)
@@ -117,6 +115,7 @@ public class CreateMyRequestActivity extends AppCompatActivity {
     {
         Intent intent = new Intent(this, MyRequestsActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //Aby sa pouzivatel nevratil back tlacidlom do vytvorenia requestu
+        intent.putExtra("user",user);
         startActivity(intent);
     }
 }

@@ -97,10 +97,12 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-    private void loadMenuScreen ()
+    private void loadMenuScreen (User user)
     {
         //Nacitanie hlavneho menu
         Intent intent = new Intent(this, MenuScreenActivity.class);
+        showToast(user.getUsername());
+        intent.putExtra("user",user);
         startActivity(intent);
         finish();
     }
@@ -127,6 +129,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         return false;
     }
+
 
     //Pokus o najdenie pouzivatela v DB a nasledne prihlasenie
     private void logInUser() {
@@ -161,7 +164,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     System.out.println("User: " + user.getBody().getUsername());
 
-                    loadMenuScreen();
+                    loadMenuScreen(user.getBody());
                 } catch (HttpServerErrorException e)
                 {
                     //Error v pripade chyby servera

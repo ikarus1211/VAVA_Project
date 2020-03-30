@@ -33,6 +33,7 @@ import com.google.android.gms.tasks.Task;
 import com.mikpuk.vava_project.OtherReqItemAdapter;
 import com.mikpuk.vava_project.Person;
 import com.mikpuk.vava_project.R;
+import com.mikpuk.vava_project.User;
 
 import java.util.ArrayList;
 
@@ -49,7 +50,7 @@ public class MenuScreenActivity extends AppCompatActivity {
     private boolean permissionGranted = false;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Location mLocation;
-
+    private User user = null;
 
     private static final String TAG = "MainActivity";
 
@@ -58,6 +59,8 @@ public class MenuScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main_menu);
         ListView myLView = findViewById(R.id.lisView);
+
+        user = (User)getIntent().getSerializableExtra("user");
 
         myReqButton = findViewById(R.id.myReqButton);
         acReqButton = findViewById(R.id.acceptButton);
@@ -123,6 +126,7 @@ public class MenuScreenActivity extends AppCompatActivity {
     private void loadMyReqUi()
     {
         Intent intent = new Intent(this, MyRequestsActivity.class);
+        intent.putExtra("user",user);
         startActivity(intent);
     }
 

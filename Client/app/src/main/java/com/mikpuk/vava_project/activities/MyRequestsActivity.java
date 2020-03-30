@@ -52,9 +52,7 @@ public class MyRequestsActivity extends AppCompatActivity {
             }
         });
 
-        //Zatial na debug
-        user = new User("UserNamePlaceholder");
-        user.setId(1);
+        user = (User)getIntent().getSerializableExtra("user");
 
         AsyncItemGetter asyncItemGetter = new AsyncItemGetter();
         asyncItemGetter.execute();
@@ -64,6 +62,7 @@ public class MyRequestsActivity extends AppCompatActivity {
     private void loadCreateReqWindow()
     {
         Intent intent = new Intent(this, CreateMyRequestActivity.class);
+        intent.putExtra("user",user);
         startActivity(intent);
     }
 
@@ -83,7 +82,6 @@ public class MyRequestsActivity extends AppCompatActivity {
             }
         });
     }
-
 
     //Toto vyhodi bublinu s infom - len pre nas
     private void showToast(final String text)
@@ -126,11 +124,6 @@ public class MyRequestsActivity extends AppCompatActivity {
             {
                 //Error v pripade ziadosti klienka
                 System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
-                if(e2.getStatusCode() == HttpStatus.BAD_REQUEST)
-                {
-                    showToast("Username already used!");
-                    return null;
-                }
                 e2.printStackTrace();
                 showToast("CLIENT ERROR "+e2.getStatusCode());
             } catch (Exception e3)
