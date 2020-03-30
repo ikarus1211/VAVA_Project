@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -30,12 +31,24 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.mikpuk.vava_project.ConfigManager;
+import com.mikpuk.vava_project.Item;
+import com.mikpuk.vava_project.MyReqItemAdapter;
 import com.mikpuk.vava_project.OtherReqItemAdapter;
 import com.mikpuk.vava_project.Person;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.User;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.mikpuk.vava_project.Constants.ERROR_DIALOG_REQUEST;
 import static com.mikpuk.vava_project.Constants.LOCATION_PERM_CODE;
@@ -51,6 +64,7 @@ public class MenuScreenActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Location mLocation;
     private User user = null;
+    ListView myLView=null;
 
     private static final String TAG = "MainActivity";
 
@@ -58,7 +72,9 @@ public class MenuScreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main_menu);
-        ListView myLView = findViewById(R.id.lisView);
+        System.out.println("VYKONAM 4");
+        myLView = findViewById(R.id.lisView);
+        System.out.println("VYKONAM 5");
 
         user = (User)getIntent().getSerializableExtra("user");
 
@@ -75,31 +91,31 @@ public class MenuScreenActivity extends AppCompatActivity {
             }
         });
 
+        //Spusta nacitanie listView
+       // AsyncOtherItemsGetter getter = new AsyncOtherItemsGetter();
+        ///getter.execute();
 
-
-/*
-       Moje vlastne testovanie
- */
-        Person number1 = new Person("David", "Nadlan", "Pero", "Moje Modre azurove pero");
-        Person number2 = new Person("Divad", "Rajcan", "Rajciak", "Chybas mi");
-        Person number3 = new Person("Peter", "Topik", "Alkohol", "Dopekla");
-        Person number4 = new Person("Retep", "Batovany", "Pero", "Kybel maciek");
-        Person number5 = new Person("Jano", "Naj Diera", "je", "Prievidza");
-        Person number6 = new Person("Onaj", "Kuko", "Horky", "ma Sliz");
-        Person number7 = new Person("Corona", "China", "Virus", "Covid-19");
-
-        ArrayList<Person> myList = new ArrayList<>();
-        myList.add(number1);
-        myList.add(number2);
-        myList.add(number3);
-        myList.add(number4);
-        myList.add(number5);
-        myList.add(number6);
-        myList.add(number7);
-
-        OtherReqItemAdapter adapter = new OtherReqItemAdapter(this, R.layout.item_main_menu, myList);
-        myLView.setAdapter(adapter);
     }
+
+    private void fillMyRequestsList(Item[] items)
+    {
+        List<Item> itemList = new ArrayList<>();
+        for (Item item:items
+        ) {
+            itemList.add(item);
+        }
+
+        System.out.println("VYKONAM 6");
+        final  OtherReqItemAdapter adapter = new OtherReqItemAdapter(this, R.layout.item_my_request, itemList,user.getUsername());
+
+        runOnUiThread(new Runnable() {
+            public void run() {
+                myLView.setAdapter(adapter);
+            }
+        });
+    }
+
+
 
 
     /*
@@ -238,6 +254,61 @@ public class MenuScreenActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, premissions, LOCATION_PERM_CODE );
         }
 
+    }
+
+
+    class AsyncOtherItemsGetter extends AsyncTask<Void,Void,Void>
+    {
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            try {
+                String AUTH_TOKEN = ConfigManager.getAuthToken(getApplicationContext());
+
+                String uri = ConfigManager.getApiUrl(getApplicationContext())+
+                        "/getotheritems/{id}";
+                RestTemplate restTemplate = new RestTemplate();
+                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+                HttpHeaders httpHeaders = new HttpHeaders();
+                httpHeaders.add("auth",AUTH_TOKEN);
+
+                Item[] items = restTemplate.exchange(uri, HttpMethod.GET,
+                        new HttpEntity<String>(httpHeaders), Item[].class,user.getId()).getBody();
+
+                showToast("ITEMS LOADED!");
+                fillMyRequestsList(items);
+
+            } catch (HttpServerErrorException e)
+            {
+                //Error v pripade chyby servera
+                System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
+                showToast("SERVER ERROR "+e.getStatusCode());
+            } catch (HttpClientErrorException e2)
+            {
+                //Error v pripade ziadosti klienka
+                System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
+                e2.printStackTrace();
+                showToast("CLIENT ERROR "+e2.getStatusCode());
+            } catch (Exception e3)
+            {
+                e3.printStackTrace();
+                showToast("SOMETHING WENT WRONG");
+            }
+
+            return null;
+        }
+
+    }
+
+    //Toto vyhodi bublinu s infom - len pre nas
+    private void showToast(final String text)
+    {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 }

@@ -33,7 +33,6 @@ public class ItemJdbcTemplate implements ItemDAO {
     public List<Item> getItemsByUser(long id) {
         String query = "select * from items where user_id = ?";
         return jdbcTemplate.query(query, new Object[]{id}, new ItemMapper());
-
     }
 
     @Override
@@ -42,5 +41,17 @@ public class ItemJdbcTemplate implements ItemDAO {
         String query = "update items set name = ?,description = ?,longtitude = ?,latitude = ?, accepted = ? where id = ?;";
         jdbcTemplate.update(query, name,description,longtitude,latitude,true,id);
         System.out.println("Updated Item " + name);
+    }
+
+    @Override
+    public List<Item> getOtherItems(long id) {
+        String query = "select * from items where user_id != ? and accepted = false ORDER BY id DESC";
+        return jdbcTemplate.query(query, new Object[]{id}, new ItemMapper());
+    }
+
+    @Override
+    public List<Item> getApprovedItems(long id) {
+        String query = "SELECT * from vavaDB.approved_items a INNER JOIN vavaDB.items i ON a.id = i.id WHERE a.user_id = ?;";
+        return jdbcTemplate.query(query, new Object[]{id}, new ItemMapper());
     }
 }

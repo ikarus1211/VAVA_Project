@@ -24,7 +24,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/listName"
+                android:id="@+id/listNameX"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/user_name" />
@@ -36,7 +36,7 @@
                 android:text="@string/menu_adres" />
 
             <TextView
-                android:id="@+id/listDistance"
+                android:id="@+id/listDistanceX"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/menu_dis" />
@@ -49,13 +49,13 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/listItem"
+                android:id="@+id/listItemX"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/item_name" />
 
             <TextView
-                android:id="@+id/listDes"
+                android:id="@+id/listDesX"
                 android:layout_width="match_parent"
                 android:layout_height="81dp"
                 android:text="@string/menu_description" />

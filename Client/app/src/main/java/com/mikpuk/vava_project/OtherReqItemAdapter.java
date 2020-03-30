@@ -15,37 +15,43 @@ import java.util.List;
    This is custom adapter for list view.
    It creates one block of tifferent textViews witch is than taken to create list view.
  */
-public class OtherReqItemAdapter extends ArrayAdapter<Person> {
+public class OtherReqItemAdapter extends ArrayAdapter<Item> {
 
     private Context mContext;
     private int mResource;
+    private String userName;
 
-    public OtherReqItemAdapter(@NonNull Context context, int resource, @NonNull List<Person> objects) {
+    public OtherReqItemAdapter(@NonNull Context context, int resource, @NonNull List<Item> objects, @NonNull String name) {
         super(context, resource, objects);
         mContext = context;
         mResource = resource;
-
+        this.userName = name;
+        System.out.println("VYKONAVAM 1");
     }
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        String name = getItem(position).getName();
-        String adress = getItem(position).getAdress();
-        String itemName = getItem(position).getItemName();
+        //String adress = getItem(position).getAdress();
+        System.out.println("VYKONAVAM 2");
+        String itemName = getItem(position).getName();
         String description = getItem(position).getDescription();
-
-        Person person = new Person(name, adress, itemName, description);
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate(mResource, parent, false);
 
-        TextView textName = (TextView) convertView.findViewById(R.id.listName);
-        TextView textItemName = (TextView) convertView.findViewById(R.id.listItem);
-        TextView textAdress = (TextView) convertView.findViewById(R.id.listAdress);
-        TextView textDes = (TextView) convertView.findViewById(R.id.listDes);
 
-        textName.setText(name);
-        textAdress.setText(adress);
+        TextView textName = (TextView) convertView.findViewById(R.id.listNameX);
+        TextView textItemName = (TextView) convertView.findViewById(R.id.listItemX);
+        //TextView textAdress = (TextView) convertView.findViewById(R.id.listAdress);
+        TextView textDes = (TextView) convertView.findViewById(R.id.listDesX);
+
+        if(textName == null)
+            System.out.println("null text");
+        if(userName == null)
+            System.out.println("null user");
+
+        textName.setText(userName);
+        //textAdress.setText(adress);
         textDes.setText(description);
         textItemName.setText(itemName);
 

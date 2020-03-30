@@ -16,7 +16,7 @@ public class MyRestController {
     public ResponseEntity<Void> registerUser(@PathVariable String username, @PathVariable String password, @RequestHeader("auth") String authorization)
     {
         if(!isUserAuthorized(authorization))
-            return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         //Nacitanie XML a bean
         ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
@@ -24,11 +24,11 @@ public class MyRestController {
 
         try {
             userJdbcTemplate.createUser(username, password);
-            return new ResponseEntity<Void>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e)
         {
             //Nastava pri duplikate mena a pod
-            return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -120,6 +120,50 @@ public class MyRestController {
         }
     }
 
+    @RequestMapping(value = "/getapproveditems/{id}")
+    @ResponseBody
+    public ResponseEntity<List<Item>> getApprovedItems(@PathVariable Long id, @RequestHeader("auth") String authorization)
+    {
+        if(!isUserAuthorized(authorization))
+            return new ResponseEntity<List<Item>>(HttpStatus.UNAUTHORIZED);
+
+        //Nacitanie XML a bean
+        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+        ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
+
+        try {
+            List<Item> items = itemJdbcTemplate.getApprovedItems(id);
+            return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
+        }catch (Exception e)
+        {
+            //Toto nastava napr pri neexistujucom uzivatelovi
+            e.printStackTrace();
+            return new ResponseEntity<List<Item>>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/getotheritems/{id}")
+    @ResponseBody
+    public ResponseEntity<List<Item>> getOtherItems(@PathVariable Long id, @RequestHeader("auth") String authorization)
+    {
+        if(!isUserAuthorized(authorization))
+            return new ResponseEntity<List<Item>>(HttpStatus.UNAUTHORIZED);
+
+        //Nacitanie XML a bean
+        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+        ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
+
+        try {
+            List<Item> items = itemJdbcTemplate.getOtherItems(id);
+            return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
+        }catch (Exception e)
+        {
+            //Toto nastava napr pri neexistujucom uzivatelovi
+            e.printStackTrace();
+            return new ResponseEntity<List<Item>>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @RequestMapping(value = "/createitem/{name}/{description}/{longtitude}/{latitude}/{user_id}/{type_id}")
     @ResponseBody
     public ResponseEntity<Void> createItem(@PathVariable String name, @PathVariable String description,@PathVariable float longtitude,
@@ -127,7 +171,7 @@ public class MyRestController {
                                            @RequestHeader("auth") String authorization)
     {
         if(!isUserAuthorized(authorization))
-            return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         //Nacitanie XML a bean
         ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
@@ -135,12 +179,12 @@ public class MyRestController {
 
         try {
             itemJdbcTemplate.createItem(name,description,longtitude,latitude,user_id,type_id);
-            return new ResponseEntity<Void>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e)
         {
             //Toto nastava napr pri neexistujucom uzivatelovi
             e.printStackTrace();
-            return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -151,7 +195,7 @@ public class MyRestController {
                                            @RequestHeader("auth") String authorization)
     {
         if(!isUserAuthorized(authorization))
-            return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         //Nacitanie XML a bean
         ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
@@ -159,12 +203,12 @@ public class MyRestController {
 
         try {
             itemJdbcTemplate.updateItem(id,name,description,longtitude,latitude,accepted);
-            return new ResponseEntity<Void>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e)
         {
             //Toto nastava napr pri neexistujucom uzivatelovi
             e.printStackTrace();
-            return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 

@@ -10,4 +10,6 @@ public interface ItemDAO {
     public Item getItem(long id);
     public List<Item> getItemsByUser(long id);
     public void updateItem(long id, String name, String description, float longtitude, float latitude, boolean accepted);
+    public List<Item> getOtherItems(long id);
+    public List<Item> getApprovedItems(long id);
 }

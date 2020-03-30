@@ -54,7 +54,7 @@ public class MyRequestsActivity extends AppCompatActivity {
 
         user = (User)getIntent().getSerializableExtra("user");
 
-        AsyncItemGetter asyncItemGetter = new AsyncItemGetter();
+        AsyncMyItemsGetter asyncItemGetter = new AsyncMyItemsGetter();
         asyncItemGetter.execute();
 
     }
@@ -94,7 +94,7 @@ public class MyRequestsActivity extends AppCompatActivity {
         });
     }
 
-    class AsyncItemGetter extends AsyncTask<Void,Void,Void>
+    class AsyncMyItemsGetter extends AsyncTask<Void,Void,Void>
     {
         @Override
         protected Void doInBackground(Void... voids) {
