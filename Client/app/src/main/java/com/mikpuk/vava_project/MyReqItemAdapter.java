@@ -10,37 +10,35 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import java.util.List;
 
-public class MyReqItemAdapter extends ArrayAdapter<Person> {
+public class MyReqItemAdapter extends ArrayAdapter<Item> {
 
     private Context mContext;
     private int mResource;
+    private String userName;
 
-    public MyReqItemAdapter(@NonNull Context context, int resource, @NonNull List<Person> objects) {
+    public MyReqItemAdapter(@NonNull Context context, int resource, @NonNull List<Item> objects, @NonNull String userName) {
         super(context, resource, objects);
         mContext = context;
         mResource = resource;
-
+        this.userName = userName;
     }
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        String name = getItem(position).getName();
-        String adress = getItem(position).getAdress();
-        String itemName = getItem(position).getItemName();
+        //String adress = getItem(position).getAdress();
+        String itemName = getItem(position).getName();
         String description = getItem(position).getDescription();
-
-        Person person = new Person(name, adress, itemName, description);
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate(mResource, parent, false);
 
         TextView textName = (TextView) convertView.findViewById(R.id.myListName);
         TextView textItemName = (TextView) convertView.findViewById(R.id.myListItem);
-        TextView textAdress = (TextView) convertView.findViewById(R.id.myListAdress);
+        //TextView textAdress = (TextView) convertView.findViewById(R.id.myListAdress);
         TextView textDes = (TextView) convertView.findViewById(R.id.myListDes);
 
-        textName.setText(name);
-        textAdress.setText(adress);
+        textName.setText(userName);
+        //textAdress.setText(adress);
         textDes.setText(description);
         textItemName.setText(itemName);
 

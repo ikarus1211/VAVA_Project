@@ -2,6 +2,7 @@ package com.mikpuk.vava_project.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -73,6 +74,9 @@ public class CreateMyRequestActivity extends AppCompatActivity {
                             new HttpEntity<String>(httpHeaders), Item.class,itemNameText.getText(),descriptionText.getText(),
                             longtitude,latitude,userId,7);
 
+                    showToast("ITEM ADDED!");
+                    loadNewRequestScreen();
+
                 } catch (HttpServerErrorException e)
                 {
                     //Error v pripade chyby servera
@@ -107,5 +111,12 @@ public class CreateMyRequestActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void loadNewRequestScreen()
+    {
+        Intent intent = new Intent(this, MyRequestsActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //Aby sa pouzivatel nevratil back tlacidlom do vytvorenia requestu
+        startActivity(intent);
     }
 }

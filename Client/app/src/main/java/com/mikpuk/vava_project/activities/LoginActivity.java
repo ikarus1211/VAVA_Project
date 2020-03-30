@@ -102,6 +102,7 @@ public class LoginActivity extends AppCompatActivity {
         //Nacitanie hlavneho menu
         Intent intent = new Intent(this, MenuScreenActivity.class);
         startActivity(intent);
+        finish();
     }
     /*
      * Checking if google play services are available
