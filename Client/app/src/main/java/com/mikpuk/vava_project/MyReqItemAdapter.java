@@ -31,6 +31,8 @@ public class MyReqItemAdapter extends ArrayAdapter<Item> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         AppLocationManager appLocationManager = new AppLocationManager(mContext);
 
+        System.out.println("---------- "+getItem(position).getLatitude()+" | "+getItem(position).getLongtitude());
+
         String adress = appLocationManager.generateAddress(getItem(position).getLatitude(), getItem(position).getLongtitude());
         String itemName = getItem(position).getName();
         String description = getItem(position).getDescription();

@@ -49,7 +49,7 @@ public class MenuScreenActivity extends AppCompatActivity {
     private Location mLocation;
     private User user = null;
     ListView myLView=null;
-    private String finalAdress;
+    private AppLocationManager appLocationManager;
 
     private static final String TAG = "MainActivity";
 
@@ -149,8 +149,7 @@ public class MenuScreenActivity extends AppCompatActivity {
         System.out.println("Everything ok");
         if (permissionGranted) {
 
-            // Not working yet
-            AppLocationManager appLocationManager = new AppLocationManager(MenuScreenActivity.this);
+            appLocationManager = new AppLocationManager(MenuScreenActivity.this);
             mLocation = appLocationManager.getmLocation();
             System.out.println(appLocationManager.getmLocation());
             System.out.println(appLocationManager.generateAddress());
@@ -158,6 +157,14 @@ public class MenuScreenActivity extends AppCompatActivity {
             mapButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    mLocation = appLocationManager.getmLocation();
+                    System.out.println(appLocationManager.getmLocation());
+                    System.out.println(appLocationManager.generateAddress());
+
+                    if(mLocation == null) {
+                        showToast("Location not set");
+                        return;
+                    }
                     Intent intent = new Intent(MenuScreenActivity.this, MapViewActivity.class);
                     intent.putExtra("location", mLocation);
                     startActivity(intent);

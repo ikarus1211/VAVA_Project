@@ -62,6 +62,8 @@ public class CreateMyRequestActivity extends AppCompatActivity {
         final float latitude = (float) appLocationManager.getLatitude();
         final float longitude = (float) appLocationManager.getLongitude();
 
+        System.out.println("!!!!!!!!!!!!!!!!! "+longitude+" | "+latitude);
+
         //Call REST web services
         new Thread()
         {

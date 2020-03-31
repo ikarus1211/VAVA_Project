@@ -15,9 +15,13 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
-
 
 
 import java.io.IOException;
@@ -52,8 +56,37 @@ public class AppLocationManager implements LocationListener {
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1,
                 0, this);
         setMostRecentLocation(locationManager.getLastKnownLocation(provider));
+        getDeviceLocation();
 
     }
+
+    private void getDeviceLocation()
+    {
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
+        try {
+                Task location = fusedLocationProviderClient.getLastLocation();
+                location.addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if(task.isSuccessful())
+                        {
+                            System.out.println("Found it");
+                            mLocation = (Location) task.getResult();
+                        }
+                        else
+                        {
+                            System.out.println("Not found it");
+                        }
+                    }
+                });
+
+        } catch (SecurityException e)
+        {
+            System.out.println("Exception");
+        }
+
+    }
+
 
     private void setMostRecentLocation(Location lastKnownLocation) {
         System.out.println("Heeeeeeeereeeeeeeee");
@@ -71,7 +104,7 @@ public class AppLocationManager implements LocationListener {
             addresses = geocoder.getFromLocation(mLocation.getLatitude(), mLocation.getLongitude(), 1);
             finalAddress = addresses.get(0).getAddressLine(0);
             System.out.println("Final address " + finalAddress);
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("IO Excepltion");
         }
         return finalAddress;
