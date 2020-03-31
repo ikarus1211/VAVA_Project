@@ -72,8 +72,8 @@ public class MyRequestsActivity extends AppCompatActivity {
     private void fillMyRequestsList(Item[] items)
     {
         List<Item> itemList = new ArrayList<>();
-        for (Item item:items
-             ) {
+        for (Item item:items)
+        {
             itemList.add(item);
         }
 

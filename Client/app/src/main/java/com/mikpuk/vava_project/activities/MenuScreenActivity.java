@@ -7,37 +7,22 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.Item;
-import com.mikpuk.vava_project.MyReqItemAdapter;
 import com.mikpuk.vava_project.OtherReqItemAdapter;
-import com.mikpuk.vava_project.Person;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.User;
 
@@ -49,15 +34,10 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-import static com.mikpuk.vava_project.Constants.ERROR_DIALOG_REQUEST;
 import static com.mikpuk.vava_project.Constants.LOCATION_PERM_CODE;
-import static com.mikpuk.vava_project.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
-import static com.mikpuk.vava_project.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
 
 public class MenuScreenActivity extends AppCompatActivity {
 
@@ -168,10 +148,12 @@ public class MenuScreenActivity extends AppCompatActivity {
     {
         System.out.println("Everything ok");
         if (permissionGranted) {
+
             // Not working yet
-            /*GpsFunctions gpsFunctions = new GpsFunctions();
-            mLocation = gpsFunctions.getDeviceLocation();
-            System.out.println("Address "+gpsFunctions.generateAddress());*/
+            AppLocationManager appLocationManager = new AppLocationManager(MenuScreenActivity.this);
+            mLocation = appLocationManager.getmLocation();
+            System.out.println(appLocationManager.getmLocation());
+            System.out.println(appLocationManager.generateAddress());
 
             mapButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -193,42 +175,6 @@ public class MenuScreenActivity extends AppCompatActivity {
     }
 
 
-    /*
-     * Function gets location of device and stores it into mLocation variable
-     */
-    private void getDeviceLocation()
-    {
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        try {
-
-            // If permission is granted continue
-            if(permissionGranted)
-            {
-                Task location = fusedLocationProviderClient.getLastLocation();
-                location.addOnCompleteListener(new OnCompleteListener() {
-                    @Override
-                    public void onComplete(@NonNull Task task) {
-                        if(task.isSuccessful())
-                        {
-                            System.out.println("Found it");
-                            mLocation = (Location) task.getResult();
-                            System.out.println("Address "+mLocation);
-
-
-                        }
-                        else
-                        {
-                            System.out.println("Not found it");
-                        }
-                    }
-                });
-            }
-        } catch (SecurityException e)
-        {
-            System.out.println("Exception");
-        }
-
-    }
 
 
     /*

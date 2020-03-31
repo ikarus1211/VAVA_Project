@@ -56,8 +56,11 @@ public class CreateMyRequestActivity extends AppCompatActivity {
 
     private void createRequest()
     {
-        final float latitude = 0.01f;
-        final float longtitude = 0.02f;
+        AppLocationManager appLocationManager = new AppLocationManager(this);
+
+
+        final float latitude = (float) appLocationManager.getLatitude();
+        final float longitude = (float) appLocationManager.getLongitude();
 
         //Call REST web services
         new Thread()
@@ -75,7 +78,7 @@ public class CreateMyRequestActivity extends AppCompatActivity {
 
                     restTemplate.exchange(uri, HttpMethod.GET,
                             new HttpEntity<String>(httpHeaders), Item.class,itemNameText.getText(),descriptionText.getText(),
-                            longtitude,latitude,user.getId(),7);
+                            longitude,latitude,user.getId(),7);
 
                     showToast("ITEM ADDED!");
                     loadNewRequestScreen();

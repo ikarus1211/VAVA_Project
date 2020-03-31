@@ -9,6 +9,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.mikpuk.vava_project.activities.AppLocationManager;
+
 import java.util.List;
 
 /*
@@ -31,7 +34,9 @@ public class OtherReqItemAdapter extends ArrayAdapter<Item> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        //String adress = getItem(position).getAdress();
+        AppLocationManager appLocationManager = new AppLocationManager(mContext);
+
+        String adress = appLocationManager.generateAddress(getItem(position).getLatitude(), getItem(position).getLongtitude());
         System.out.println("VYKONAVAM 2");
         String itemName = getItem(position).getName();
         String description = getItem(position).getDescription();
@@ -41,7 +46,7 @@ public class OtherReqItemAdapter extends ArrayAdapter<Item> {
 
         TextView textName = (TextView) convertView.findViewById(R.id.listNameX);
         TextView textItemName = (TextView) convertView.findViewById(R.id.listItemX);
-        //TextView textAdress = (TextView) convertView.findViewById(R.id.listAdress);
+        TextView textAdress = (TextView) convertView.findViewById(R.id.listAdress);
         TextView textDes = (TextView) convertView.findViewById(R.id.listDesX);
 
         if(textName == null)
@@ -50,7 +55,7 @@ public class OtherReqItemAdapter extends ArrayAdapter<Item> {
             System.out.println("null user");
 
         textName.setText(userName);
-        //textAdress.setText(adress);
+        textAdress.setText(adress);
         textDes.setText(description);
         textItemName.setText(itemName);
 

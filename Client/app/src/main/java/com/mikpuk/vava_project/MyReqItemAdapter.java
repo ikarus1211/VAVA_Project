@@ -8,6 +8,10 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.mikpuk.vava_project.activities.AppLocationManager;
+import com.mikpuk.vava_project.activities.MyRequestsActivity;
+
 import java.util.List;
 
 public class MyReqItemAdapter extends ArrayAdapter<Item> {
@@ -25,7 +29,9 @@ public class MyReqItemAdapter extends ArrayAdapter<Item> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        //String adress = getItem(position).getAdress();
+        AppLocationManager appLocationManager = new AppLocationManager(mContext);
+
+        String adress = appLocationManager.generateAddress(getItem(position).getLatitude(), getItem(position).getLongtitude());
         String itemName = getItem(position).getName();
         String description = getItem(position).getDescription();
 
@@ -34,11 +40,11 @@ public class MyReqItemAdapter extends ArrayAdapter<Item> {
 
         TextView textName = (TextView) convertView.findViewById(R.id.myListName);
         TextView textItemName = (TextView) convertView.findViewById(R.id.myListItem);
-        //TextView textAdress = (TextView) convertView.findViewById(R.id.myListAdress);
+        TextView textAdress = (TextView) convertView.findViewById(R.id.myListAdress);
         TextView textDes = (TextView) convertView.findViewById(R.id.myListDes);
 
         textName.setText(userName);
-        //textAdress.setText(adress);
+        textAdress.setText(adress);
         textDes.setText(description);
         textItemName.setText(itemName);
 
