@@ -5,12 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.mikpuk.vava_project.activities.AppLocationManager;
 
 import java.util.List;
 
@@ -22,13 +19,11 @@ public class OtherReqItemAdapter extends ArrayAdapter<Item> {
 
     private Context mContext;
     private int mResource;
-    private String userName;
 
-    public OtherReqItemAdapter(@NonNull Context context, int resource, @NonNull List<Item> objects, @NonNull String name) {
+    public OtherReqItemAdapter(@NonNull Context context, int resource, @NonNull List<Item> objects) {
         super(context, resource, objects);
         mContext = context;
         mResource = resource;
-        this.userName = name;
         System.out.println("VYKONAVAM 1");
     }
     @NonNull
@@ -40,6 +35,7 @@ public class OtherReqItemAdapter extends ArrayAdapter<Item> {
         System.out.println("VYKONAVAM 2");
         String itemName = getItem(position).getName();
         String description = getItem(position).getDescription();
+        String userName = getItem(position).getUser_name();
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate(mResource, parent, false);
@@ -49,10 +45,6 @@ public class OtherReqItemAdapter extends ArrayAdapter<Item> {
         TextView textAdress = (TextView) convertView.findViewById(R.id.listAdress);
         TextView textDes = (TextView) convertView.findViewById(R.id.listDesX);
 
-        if(textName == null)
-            System.out.println("null text");
-        if(userName == null)
-            System.out.println("null user");
 
         textName.setText(userName);
         textAdress.setText(adress);

@@ -1,4 +1,4 @@
-package com.mikpuk.vava_project.activities;
+package com.mikpuk.vava_project;
 
 
 import android.Manifest;
@@ -31,21 +31,16 @@ import java.util.Locale;
 
 public class AppLocationManager implements LocationListener {
 
-    private LocationManager locationManager;
     private Location mLocation = null;
-    private String latitude;
-    private String longitude;
-    private Criteria criteria;
-    private String provider;
     private Context mContext;
 
     public AppLocationManager(Context context) {
         mContext = context;
-        locationManager = (LocationManager) context
+        LocationManager locationManager = (LocationManager) context
                 .getSystemService(Context.LOCATION_SERVICE);
-        criteria = new Criteria();
+        Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        provider = locationManager.getBestProvider(criteria, true);
+        String provider = locationManager.getBestProvider(criteria, true);
 
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED)
@@ -82,7 +77,7 @@ public class AppLocationManager implements LocationListener {
 
         } catch (SecurityException e)
         {
-            System.out.println("Exception");
+            System.out.println("Exception in getDeviceLocation()");
         }
 
     }
@@ -105,13 +100,13 @@ public class AppLocationManager implements LocationListener {
             finalAddress = addresses.get(0).getAddressLine(0);
             System.out.println("Final address " + finalAddress);
         } catch (Exception e) {
-            System.out.println("IO Excepltion");
+            System.out.println("Exception in generateAdress()");
         }
         return finalAddress;
 
     }
 
-    public String generateAddress(float lat, float lon) {
+    public String generateAddress(double lat, double lon) {
         Geocoder geocoder;
         List<Address> addresses;
         String finalAddress = null;
@@ -129,68 +124,44 @@ public class AppLocationManager implements LocationListener {
 
     }
 
+    //DOCASNE RIESENI!!! Aby som dokazal pridat ziadost
     public double getLatitude() {
-        return mLocation.getLatitude();
+        if(mLocation == null)
+            return 0.0;
+        else
+            return mLocation.getLatitude();
     }
-
     public double getLongitude() {
-        return mLocation.getLongitude();
+        if(mLocation == null)
+            return 0.00;
+        else
+            return mLocation.getLongitude();
     }
     public Location getmLocation()
     {
         return mLocation;
     }
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * android.location.LocationListener#onLocationChanged(android.location.
-     * Location)
-     */
+
     @Override
     public void onLocationChanged(Location location) {
         double lon = (double) (location.getLongitude());/// * 1E6);
         double lat = (double) (location.getLatitude());// * 1E6);
 
-        latitude = lat + "";
-        longitude = lon + "";
+        String latitude = lat + "";
+        String longitude = lon + "";
 
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * android.location.LocationListener#onProviderDisabled(java.lang.String)
-     */
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
     @Override
     public void onProviderDisabled(String arg0) {
-        // TODO Auto-generated method stub
-
     }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * android.location.LocationListener#onProviderEnabled(java.lang.String)
-     */
     @Override
     public void onProviderEnabled(String arg0) {
-        // TODO Auto-generated method stub
-
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see android.location.LocationListener#onStatusChanged(java.lang.String,
-     * int, android.os.Bundle)
-     */
-    @Override
-    public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-        // TODO Auto-generated method stub
 
-    }
 
 }

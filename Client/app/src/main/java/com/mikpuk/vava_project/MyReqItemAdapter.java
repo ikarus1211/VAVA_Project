@@ -9,22 +9,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.mikpuk.vava_project.activities.AppLocationManager;
-import com.mikpuk.vava_project.activities.MyRequestsActivity;
-
 import java.util.List;
 
 public class MyReqItemAdapter extends ArrayAdapter<Item> {
 
     private Context mContext;
     private int mResource;
-    private String userName;
 
-    public MyReqItemAdapter(@NonNull Context context, int resource, @NonNull List<Item> objects, @NonNull String userName) {
+    public MyReqItemAdapter(@NonNull Context context, int resource, @NonNull List<Item> objects) {
         super(context, resource, objects);
         mContext = context;
         mResource = resource;
-        this.userName = userName;
     }
     @NonNull
     @Override
@@ -36,6 +31,7 @@ public class MyReqItemAdapter extends ArrayAdapter<Item> {
         String adress = appLocationManager.generateAddress(getItem(position).getLatitude(), getItem(position).getLongtitude());
         String itemName = getItem(position).getName();
         String description = getItem(position).getDescription();
+        String userName = getItem(position).getUser_name();
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate(mResource, parent, false);

@@ -24,7 +24,7 @@ public class UserJdbcTemplate implements UserDAO {
     }
 
     @Override
-    public User getUserById(int id) {
+    public User getUserById(long id) {
         String query = "select * from users where id = ?";
         return jdbcTemplate.queryForObject(query, new Object[]{id}, new UserMapper());
     }

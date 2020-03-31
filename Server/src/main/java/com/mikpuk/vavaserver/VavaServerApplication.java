@@ -6,6 +6,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -20,7 +21,41 @@ public class VavaServerApplication {
 
 		//testCase();
 		//testCase2();
+		//testCase3();
 	}
+
+	public static void testCase3()
+	{
+		String AUTH_TOKEN = MD5Hashing.getSecurePassword(getAuthToken());
+
+		try {
+
+			String uri = "http://localhost:5000"+
+					"/createitem/{name}/{description}/{longtitude}/{latitude}/{user_id}/{type_id}";
+			RestTemplate restTemplate = new RestTemplate();
+			restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.add("auth",AUTH_TOKEN);
+
+			restTemplate.exchange(uri, HttpMethod.POST,
+					new HttpEntity<String>(httpHeaders), Item.class,"testik","desc test",
+					0.0,0.0,1,7);
+
+		} catch (HttpServerErrorException e)
+		{
+			//Error v pripade chyby servera
+			System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
+		} catch (HttpClientErrorException e2)
+		{
+			//Error v pripade ziadosti klienka
+			System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
+			e2.printStackTrace();
+		} catch (Exception e3)
+		{
+			e3.printStackTrace();
+		}
+	}
+
 
 	public static void testCase2()
 	{

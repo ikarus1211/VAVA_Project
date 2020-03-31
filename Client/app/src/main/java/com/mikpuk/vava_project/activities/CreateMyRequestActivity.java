@@ -9,16 +9,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.mikpuk.vava_project.AppLocationManager;
 import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.Item;
-import com.mikpuk.vava_project.MD5Hashing;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.User;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -59,8 +58,8 @@ public class CreateMyRequestActivity extends AppCompatActivity {
         AppLocationManager appLocationManager = new AppLocationManager(this);
 
 
-        final float latitude = (float) appLocationManager.getLatitude();
-        final float longitude = (float) appLocationManager.getLongitude();
+        final double latitude = appLocationManager.getLatitude();
+        final double longitude = appLocationManager.getLongitude();
 
         System.out.println("!!!!!!!!!!!!!!!!! "+longitude+" | "+latitude);
 
@@ -78,7 +77,7 @@ public class CreateMyRequestActivity extends AppCompatActivity {
                     HttpHeaders httpHeaders = new HttpHeaders();
                     httpHeaders.add("auth",AUTH_TOKEN);
 
-                    restTemplate.exchange(uri, HttpMethod.GET,
+                    restTemplate.exchange(uri, HttpMethod.POST,
                             new HttpEntity<String>(httpHeaders), Item.class,itemNameText.getText(),descriptionText.getText(),
                             longitude,latitude,user.getId(),7);
 

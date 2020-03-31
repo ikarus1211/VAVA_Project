@@ -3,7 +3,7 @@ package com.mikpuk.vavaserver;
 //Classa, ktora v sebe udrziava udaje o pouzivatelovi
 public class User {
 
-    private int id;
+    private long id;
     private String username;
     private int reputation;
 
@@ -13,11 +13,11 @@ public class User {
         this.username = username;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

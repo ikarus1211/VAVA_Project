@@ -12,10 +12,11 @@ public class ItemMapper implements RowMapper<Item> {
         item.setId(rs.getLong("id"));
         item.setAccepted(rs.getBoolean("accepted"));
         item.setDescription(rs.getString("description"));
-        item.setLatitude(rs.getFloat("latitude"));
-        item.setLongtitude(rs.getFloat("longtitude"));
+        item.setLatitude(rs.getDouble("latitude"));
+        item.setLongtitude(rs.getDouble("longitude"));
         item.setName(rs.getString("name"));
-        item.setType_id(rs.getInt("type_id"));
+        item.setType_id(rs.getLong("type_id"));
+        item.setUser_name(rs.getString("username"));
 
         return item;
     }

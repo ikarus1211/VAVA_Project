@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.mikpuk.vava_project.AppLocationManager;
 import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.Item;
 import com.mikpuk.vava_project.OtherReqItemAdapter;
@@ -129,7 +130,7 @@ public class MenuScreenActivity extends AppCompatActivity {
         }
 
         System.out.println("VYKONAM 6");
-        final  OtherReqItemAdapter adapter = new OtherReqItemAdapter(this, R.layout.item_main_menu, itemList,user.getUsername());
+        final  OtherReqItemAdapter adapter = new OtherReqItemAdapter(this, R.layout.item_main_menu, itemList);
 
         runOnUiThread(new Runnable() {
             public void run() {

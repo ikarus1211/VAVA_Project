@@ -35,7 +35,7 @@ public class MyRestController {
     //Zatial nepouzivame ale moze sa hodit neskor
     @RequestMapping(value = "/getuserbyid/{id}")
     @ResponseBody
-    public ResponseEntity<User> getUserById(@PathVariable int id, @RequestHeader("auth") String authorization)
+    public ResponseEntity<User> getUserById(@PathVariable long id, @RequestHeader("auth") String authorization)
     {
         if(!isUserAuthorized(authorization))
             return new ResponseEntity<User>(HttpStatus.UNAUTHORIZED);
@@ -100,7 +100,7 @@ public class MyRestController {
 
     @RequestMapping(value = "/getitems/{id}")
     @ResponseBody
-    public ResponseEntity<List<Item>> getItems(@PathVariable Long id, @RequestHeader("auth") String authorization)
+    public ResponseEntity<List<Item>> getItemsByUser(@PathVariable Long id, @RequestHeader("auth") String authorization)
     {
         if(!isUserAuthorized(authorization))
             return new ResponseEntity<List<Item>>(HttpStatus.UNAUTHORIZED);
@@ -166,8 +166,8 @@ public class MyRestController {
 
     @RequestMapping(value = "/createitem/{name}/{description}/{longtitude}/{latitude}/{user_id}/{type_id}")
     @ResponseBody
-    public ResponseEntity<Void> createItem(@PathVariable String name, @PathVariable String description,@PathVariable float longtitude,
-                                           @PathVariable float latitude,@PathVariable long user_id, @PathVariable long type_id,
+    public ResponseEntity<Void> createItem(@PathVariable String name, @PathVariable String description,@PathVariable double longtitude,
+                                           @PathVariable double latitude,@PathVariable long user_id, @PathVariable long type_id,
                                            @RequestHeader("auth") String authorization)
     {
         if(!isUserAuthorized(authorization))
@@ -190,8 +190,8 @@ public class MyRestController {
 
     @RequestMapping(value = "/updateitem/{id}/{name}/{description}/{longtitude}/{latitude}/{accepted}")
     @ResponseBody
-    public ResponseEntity<Void> updateItem(@PathVariable String name, @PathVariable String description,@PathVariable float longtitude,
-                                           @PathVariable float latitude,@PathVariable long id, @PathVariable boolean accepted,
+    public ResponseEntity<Void> updateItem(@PathVariable String name, @PathVariable String description,@PathVariable double longtitude,
+                                           @PathVariable double latitude,@PathVariable long id, @PathVariable boolean accepted,
                                            @RequestHeader("auth") String authorization)
     {
         if(!isUserAuthorized(authorization))

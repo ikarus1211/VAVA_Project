@@ -5,21 +5,22 @@ public class Item {
     private long id;
     private String name;
     private String description;
-    private float longtitude;
-    private float latitude;
-    private long  used_id;
+    private double longitude;
+    private double latitude;
+    private long  user_id;
+    private String user_name;
     private boolean accepted;
     private long type_id;
 
     public Item(){}
 
-    public Item(long id, String name, String description, float longtitude, float latitude, long used_id, boolean accepted, long type_id) {
+    public Item(long id, String name, String description, float longtitude, float latitude, long user_id, boolean accepted, long type_id) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.longtitude = longtitude;
+        this.longitude = longtitude;
         this.latitude = latitude;
-        this.used_id = used_id;
+        this.user_id = user_id;
         this.accepted = accepted;
         this.type_id = type_id;
     }
@@ -48,28 +49,36 @@ public class Item {
         this.description = description;
     }
 
-    public float getLongtitude() {
-        return longtitude;
+    public double getLongtitude() {
+        return longitude;
     }
 
-    public void setLongtitude(float longtitude) {
-        this.longtitude = longtitude;
+    public void setLongtitude(double longtitude) {
+        this.longitude = longtitude;
     }
 
-    public float getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(float latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
+    public String getUser_name() {
+        return user_name;
+    }
+
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
+    }
+
     public long getUsed_id() {
-        return used_id;
+        return user_id;
     }
 
     public void setUsed_id(long used_id) {
-        this.used_id = used_id;
+        this.user_id = used_id;
     }
 
     public boolean isAccepted() {

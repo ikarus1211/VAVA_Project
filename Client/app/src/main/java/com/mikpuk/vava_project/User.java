@@ -2,9 +2,10 @@ package com.mikpuk.vava_project;
 
 import java.io.Serializable;
 
+//Classa, ktora v sebe udrziava udaje o pouzivatelovi
 public class User implements Serializable {
 
-    private int id;
+    private long id;
     private String username;
     private int reputation;
 
@@ -14,11 +15,11 @@ public class User implements Serializable {
         this.username = username;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

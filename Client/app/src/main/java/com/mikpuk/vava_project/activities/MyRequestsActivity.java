@@ -3,8 +3,6 @@ package com.mikpuk.vava_project.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -15,14 +13,12 @@ import android.widget.Toast;
 import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.Item;
 import com.mikpuk.vava_project.MyReqItemAdapter;
-import com.mikpuk.vava_project.Person;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.User;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -30,7 +26,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /*
     Class for displaying request that user created
@@ -77,7 +72,7 @@ public class MyRequestsActivity extends AppCompatActivity {
             itemList.add(item);
         }
 
-        final MyReqItemAdapter adapter = new MyReqItemAdapter(this, R.layout.item_my_request, itemList,user.getUsername());
+        final MyReqItemAdapter adapter = new MyReqItemAdapter(this, R.layout.item_my_request, itemList);
 
         runOnUiThread(new Runnable() {
             public void run() {
