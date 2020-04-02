@@ -1,31 +1,41 @@
 package com.mikpuk.vava_project;
 
+
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.mikpuk.vava_project.activities.MyRequestsActivity;
+import com.mikpuk.vava_project.activities.PopUpMyRequest;
+
 import java.util.List;
+import java.util.zip.Inflater;
 
 public class MyReqItemAdapter extends ArrayAdapter<Item> {
 
     private Context mContext;
     private int mResource;
+    private ImageView popUpButton;
+
 
     public MyReqItemAdapter(@NonNull Context context, int resource, @NonNull List<Item> objects) {
         super(context, resource, objects);
         mContext = context;
         mResource = resource;
+
     }
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         AppLocationManager appLocationManager = new AppLocationManager(mContext);
-
         System.out.println("---------- "+getItem(position).getLatitude()+" | "+getItem(position).getLongtitude());
 
         String adress = appLocationManager.generateAddress(getItem(position).getLatitude(), getItem(position).getLongtitude());
@@ -35,6 +45,7 @@ public class MyReqItemAdapter extends ArrayAdapter<Item> {
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate(mResource, parent, false);
+
 
         TextView textName = (TextView) convertView.findViewById(R.id.myListName);
         TextView textItemName = (TextView) convertView.findViewById(R.id.myListItem);
@@ -49,4 +60,6 @@ public class MyReqItemAdapter extends ArrayAdapter<Item> {
         return convertView;
 
     }
+
+
 }

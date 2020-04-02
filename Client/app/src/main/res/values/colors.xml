@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <color name="background">#131d38</color>
+    <color name="popUpBackground">#3b486b</color>
+    <color name="orangePrimary">#e7711a</color>
+    <color name="pureWhite">#ffffff</color>
+    <color name="textGreen">#45bc62</color>
+    <color name="textBlue">#007cf9</color>
 </resources>

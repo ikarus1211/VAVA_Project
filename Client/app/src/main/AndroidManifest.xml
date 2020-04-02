@@ -22,6 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".activities.PopUpMyRequest">
+
+        </activity>
         <activity android:name=".activities.MapViewActivity" />
         <activity android:name=".activities.CreateMyRequestActivity" />
         <activity android:name=".activities.MyRequestsActivity" />
