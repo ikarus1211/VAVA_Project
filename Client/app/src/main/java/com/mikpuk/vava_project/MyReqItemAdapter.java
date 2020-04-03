@@ -17,6 +17,7 @@ import com.mikpuk.vava_project.activities.MyRequestsActivity;
 import com.mikpuk.vava_project.activities.PopUpMyRequest;
 
 import java.util.List;
+import java.util.Random;
 import java.util.zip.Inflater;
 
 public class MyReqItemAdapter extends ArrayAdapter<Item> {
@@ -34,10 +35,12 @@ public class MyReqItemAdapter extends ArrayAdapter<Item> {
     }
     @NonNull
     @Override
-    public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        AppLocationManager appLocationManager = new AppLocationManager(mContext);
-        System.out.println("---------- "+getItem(position).getLatitude()+" | "+getItem(position).getLongtitude());
+    public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent)
+    {
 
+        AppLocationManager appLocationManager = new AppLocationManager(mContext);
+
+        System.out.println("---------- "+getItem(position).getLatitude()+" | "+getItem(position).getLongtitude());
         String adress = appLocationManager.generateAddress(getItem(position).getLatitude(), getItem(position).getLongtitude());
         String itemName = getItem(position).getName();
         String description = getItem(position).getDescription();
@@ -47,19 +50,20 @@ public class MyReqItemAdapter extends ArrayAdapter<Item> {
         convertView = inflater.inflate(mResource, parent, false);
 
 
-        TextView textName = (TextView) convertView.findViewById(R.id.myListName);
+        TextView textDistance = (TextView) convertView.findViewById(R.id.myReqDistance);
         TextView textItemName = (TextView) convertView.findViewById(R.id.myListItem);
         TextView textAdress = (TextView) convertView.findViewById(R.id.myListAdress);
-        TextView textDes = (TextView) convertView.findViewById(R.id.myListDes);
+        BackGrounPicker bp = new BackGrounPicker();
+        bp.randomBackground(textDistance);
 
-        textName.setText(userName);
+
         textAdress.setText(adress);
-        textDes.setText(description);
         textItemName.setText(itemName);
 
         return convertView;
 
     }
+
 
 
 }

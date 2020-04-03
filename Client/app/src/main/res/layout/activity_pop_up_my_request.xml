@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="300dp"
     android:layout_height="450dp"
-    android:background="@color/popUpBackground"
+    android:background="@drawable/borrow_it_light"
     android:padding="5dp"
     android:layout_gravity="center">
     <TextView

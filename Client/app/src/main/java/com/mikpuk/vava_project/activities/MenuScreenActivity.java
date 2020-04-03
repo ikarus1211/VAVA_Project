@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,8 +16,10 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -51,6 +54,7 @@ public class MenuScreenActivity extends AppCompatActivity {
     private User user = null;
     ListView myLView=null;
     private AppLocationManager appLocationManager;
+    private Dialog mDialog;
 
     private static final String TAG = "MainActivity";
 
@@ -61,7 +65,7 @@ public class MenuScreenActivity extends AppCompatActivity {
         System.out.println("VYKONAM 4");
         myLView = findViewById(R.id.lisView);
         System.out.println("VYKONAM 5");
-
+        mDialog = new Dialog(this);
         user = (User)getIntent().getSerializableExtra("user");
 
         myReqButton = findViewById(R.id.myReqButton);
@@ -70,7 +74,12 @@ public class MenuScreenActivity extends AppCompatActivity {
         getGpsStatus();
         getLocationPermission();
 
-
+        myLView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                runDialog(i);
+            }
+        });
 
         myReqButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,10 +88,47 @@ public class MenuScreenActivity extends AppCompatActivity {
             }
         });
 
+        acReqButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loadAccepted();
+            }
+        });
+
         //Spusta nacitanie listView
        AsyncOtherItemsGetter getter = new AsyncOtherItemsGetter();
         getter.execute();
 
+    }
+    private void runDialog(int pos)
+    {
+        mDialog.setContentView(R.layout.activity_pop_up_my_request);
+        TextView txtclose;
+        TextView textName;
+        TextView textItemName;
+        TextView textDescription;
+        TextView textAddress;
+
+        txtclose = mDialog.findViewById(R.id.popTxtClose);
+        textName = mDialog.findViewById(R.id.popMyName);
+        textItemName = mDialog.findViewById(R.id.popItemName);
+        textDescription = mDialog.findViewById(R.id.popMyDescription);
+        textAddress = mDialog.findViewById(R.id.popAddress);
+
+        textName.setText(user.getUsername());
+        Item item = (Item)myLView.getItemAtPosition(pos);
+        textItemName.setText(item.getName());
+        textDescription.setText(item.getDescription());
+        textAddress.setText(appLocationManager.generateAddress(item.getLatitude(), item.getLongtitude()));
+
+
+        txtclose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDialog.dismiss();
+            }
+        });
+        mDialog.show();
     }
 
     private void getGpsStatus()
@@ -182,7 +228,12 @@ public class MenuScreenActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-
+    private void loadAccepted()
+    {
+        Intent intent = new Intent(this, AcceptedRequest.class);
+        intent.putExtra("user",user);
+        startActivity(intent);
+    }
 
 
     /*

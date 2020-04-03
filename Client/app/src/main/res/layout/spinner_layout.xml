@@ -1,0 +1,11 @@
+
+    <TextView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/customSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:gravity="left"
+        android:textColor="@color/orangePrimary"
+        android:padding="5dip"
+        />

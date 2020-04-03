@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.mikpuk.vava_project.AppLocationManager;
@@ -34,10 +36,18 @@ public class CreateMyRequestActivity extends AppCompatActivity {
     EditText descriptionText = null;
     User user = null;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_my_request_creation);
+        Spinner spinner = findViewById(R.id.category_spinner);
+
+
+        ArrayAdapter<CharSequence>  myAdapter = ArrayAdapter.createFromResource(this, R.array.cate, android.R.layout.simple_spinner_item);
+        myAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+        spinner.setAdapter(myAdapter);
 
         user = (User)getIntent().getSerializableExtra("user");
 

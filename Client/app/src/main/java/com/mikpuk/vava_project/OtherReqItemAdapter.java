@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
+import java.util.Random;
 
 /*
    This is custom adapter for list view.
@@ -40,15 +41,15 @@ public class OtherReqItemAdapter extends ArrayAdapter<Item> {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate(mResource, parent, false);
 
-        TextView textName = (TextView) convertView.findViewById(R.id.listNameX);
+        TextView textDistance = (TextView) convertView.findViewById(R.id.myReqDistance);
         TextView textItemName = (TextView) convertView.findViewById(R.id.listItemX);
         TextView textAdress = (TextView) convertView.findViewById(R.id.listAdress);
-        TextView textDes = (TextView) convertView.findViewById(R.id.listDesX);
+        BackGrounPicker bp = new BackGrounPicker();
+        bp.randomBackground(textDistance);
 
 
-        textName.setText(userName);
         textAdress.setText(adress);
-        textDes.setText(description);
+
         textItemName.setText(itemName);
 
         return convertView;

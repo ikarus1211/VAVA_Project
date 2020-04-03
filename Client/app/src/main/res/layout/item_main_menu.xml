@@ -7,72 +7,69 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="98dp"
+        android:layout_height="120dp"
         android:baselineAligned="false"
+        android:background="@color/popUpBackground"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.578"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.173">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="60dp"
-            android:layout_height="100dp"
+            android:layout_height="120dp"
             android:layout_weight="33.3"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/listNameX"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/user_name" />
 
-            <TextView
-                android:id="@+id/listAdress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/menu_adres" />
-
-            <TextView
-                android:id="@+id/listDistanceX"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/menu_dis" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="60dp"
-            android:layout_height="100dp"
-            android:layout_weight="33.3"
-            android:orientation="vertical">
-
-            <TextView
                 android:id="@+id/listItemX"
+                android:textColor="@color/orangePrimary"
+                android:textSize="18dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:text="@string/item_name" />
 
-            <TextView
-                android:id="@+id/listDesX"
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="81dp"
-                android:text="@string/menu_description" />
+                android:layout_height="95dp"
+                android:orientation="horizontal">
+
+
+                <TextView
+                    android:layout_marginLeft="20dp"
+                    android:id="@+id/myReqDistance"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/fullcircle2"
+                    android:gravity="center"
+                    android:text="0m"
+                    android:textColor="@color/pureWhite"
+                    android:textSize="15sp"
+                    android:textStyle="bold">
+                </TextView>
+
+                <ImageView
+                    android:layout_marginLeft="40dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/kategorie_gauc">
+
+                </ImageView>
+            </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="50dp"
-            android:layout_height="100dp"
-            android:orientation="vertical">
-
-            <ImageButton
-                android:id="@+id/imageButton"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:contentDescription="@string/button_accept"
-                app:srcCompat="?android:attr/textCheckMark" />
-        </LinearLayout>
+        <TextView
+            android:textColor="@color/orangePrimary"
+            android:id="@+id/listAdress"
+            android:layout_width="210dp"
+            android:layout_height="match_parent"
+            android:text="@string/menu_adres" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

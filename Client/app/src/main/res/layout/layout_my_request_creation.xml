@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
+    android:gravity=""
     tools:context=".activities.CreateMyRequestActivity">
 
 
     <EditText
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/orangePrimary"
         android:id="@+id/reqCreationItem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,28 +19,50 @@
         android:autofillHints=""
         android:ems="10"
         android:hint="@string/item_name"
+        android:textColorHint="@color/orangePrimary"
+        app:backgroundTint="@color/orangePrimary"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.51"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Spinner
+
+        android:id="@id/category_spinner"
+        android:background="@color/popUpBackground"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/reqCreationItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp">
+
+    </Spinner>
     <EditText
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/reqCreationItem"
         android:id="@+id/reqCreationDes"
         android:layout_width="218dp"
         android:layout_height="121dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="112dp"
+        android:autofillHints=""
         android:ems="10"
         android:gravity="start|top"
         android:hint="@string/menu_description"
         android:inputType="textMultiLine"
+        android:textColor="@color/orangePrimary"
+        android:textColorHint="@color/orangePrimary"
+        app:backgroundTint="@color/orangePrimary"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.523"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/reqCreationItem"
-        android:autofillHints="" />
+        app:layout_constraintTop_toBottomOf="@+id/reqCreationItem" />
 
     <Button
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/reqCreationDes"
+        android:background="@drawable/button_designe_2"
+        android:textColor="@color/pureWhite"
         android:id="@+id/createReqButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -46,4 +72,12 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/reqCreationDes" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Spinner
+        android:id="@+id/category_spinner"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+    </Spinner>
+
+</RelativeLayout>
