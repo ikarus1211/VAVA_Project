@@ -14,7 +14,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -23,12 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.AcceptedRequest">
-
-        </activity>
-        <activity android:name=".activities.PopUpMyRequest">
-
-        </activity>
+        <activity android:name=".activities.PopUpOtherRequest"></activity>
+        <activity android:name=".activities.AcceptedRequest"></activity>
+        <activity android:name=".activities.PopUpMyRequest"></activity>
         <activity android:name=".activities.MapViewActivity" />
         <activity android:name=".activities.CreateMyRequestActivity" />
         <activity android:name=".activities.MyRequestsActivity" />

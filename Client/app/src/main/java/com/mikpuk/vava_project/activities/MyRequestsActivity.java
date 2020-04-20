@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -81,6 +82,7 @@ public class MyRequestsActivity extends AppCompatActivity {
         TextView textItemName;
         TextView textDescription;
         TextView textAddress;
+
 
         txtclose = mDialog.findViewById(R.id.popTxtClose);
         textName = mDialog.findViewById(R.id.popMyName);

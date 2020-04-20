@@ -13,11 +13,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -108,13 +110,17 @@ public class MenuScreenActivity extends AppCompatActivity {
         TextView textItemName;
         TextView textDescription;
         TextView textAddress;
+        TextView accpetButton;
+
 
         txtclose = mDialog.findViewById(R.id.popTxtClose);
         textName = mDialog.findViewById(R.id.popMyName);
         textItemName = mDialog.findViewById(R.id.popItemName);
         textDescription = mDialog.findViewById(R.id.popMyDescription);
         textAddress = mDialog.findViewById(R.id.popAddress);
+        accpetButton = mDialog.findViewById(R.id.accept);
 
+        accpetButton.setVisibility(View.VISIBLE);
         textName.setText(user.getUsername());
         Item item = (Item)myLView.getItemAtPosition(pos);
         textItemName.setText(item.getName());
@@ -123,6 +129,15 @@ public class MenuScreenActivity extends AppCompatActivity {
 
 
         txtclose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDialog.dismiss();
+            }
+        });
+
+
+
+        accpetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mDialog.dismiss();

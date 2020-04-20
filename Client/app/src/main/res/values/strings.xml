@@ -1,7 +1,5 @@
-
 <resources>
-    <string-array
-        name="cate">
+    <string-array name="cate">
         <item>Zvierata</item>
         <item>Deti</item>
         <item>Domacnost</item>
