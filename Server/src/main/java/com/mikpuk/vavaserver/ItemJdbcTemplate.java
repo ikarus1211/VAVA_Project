@@ -10,6 +10,8 @@ public class ItemJdbcTemplate implements ItemDAO {
     private DataSource dataSource;
     private JdbcTemplate jdbcTemplate;
 
+    private int REPUTATION_INCREASE = 10;
+
     @Override
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -36,6 +38,12 @@ public class ItemJdbcTemplate implements ItemDAO {
     }
 
     @Override
+    public List<Item> getItemsByUserLimit(long id, long limit_start, long limit_end) {
+        String query = "SELECT * from vavaDB.items a INNER JOIN vavaDB.users i ON a.user_id = i.id where a.user_id = ? ORDER BY a.id ASC LIMIT ? , ?";
+        return jdbcTemplate.query(query, new Object[]{id,limit_start,limit_end}, new ItemMapper());
+    }
+
+    @Override
     public void updateItem(long id, String name, String description, double longitude, double latitude, boolean accepted) {
         //UPDATE table_name SET field1 = new-value1, field2 = new-value2
         String query = "update items set name = ?,description = ?,longitude = ?,latitude = ?, accepted = ? where id = ?;";
@@ -55,4 +63,22 @@ public class ItemJdbcTemplate implements ItemDAO {
         String query = "SELECT * from vavaDB.approved_items a INNER JOIN vavaDB.items i ON a.id = i.id WHERE a.user_id = ?;";
         return jdbcTemplate.query(query, new Object[]{id}, new ItemMapper());
     }
+
+    @Override
+    public void setAcceptedItem(long item_id, long user_id) {
+        String query = "insert into approved_items (user_id,item_id) values (?,?)";
+        jdbcTemplate.update(query, user_id,item_id);
+    }
+
+    @Override
+    public void removeAcceptedItem(long item_id, long user_id) {
+        String query = "DELETE FROM vavaDB.approved_items WHERE user_id = ? and item_id = ?";
+        String query2 = "DELETE FROM vavaDB.items WHERE user_id = ? and id = ?";
+        String query3 = "UPDATE vavaDB.users SET reputation = reputation + ? WHERE id = ?";
+        jdbcTemplate.update(query, user_id,item_id);
+        jdbcTemplate.update(query2, user_id,item_id);
+        jdbcTemplate.update(query3,REPUTATION_INCREASE,user_id);
+    }
+
+
 }
