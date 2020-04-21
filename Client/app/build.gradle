@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 
+
 android {
     compileSdkVersion 28
 
@@ -29,6 +30,10 @@ android {
         exclude "META-INF/NOTICE"
         exclude "META-INF/notice.txt"
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
 }
 
@@ -50,6 +55,13 @@ dependencies {
     //Potrebne pre GET REST
     implementation 'com.fasterxml.jackson.core:jackson-core:2.6.3'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.6.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'com.jakewharton:butterknife:10.2.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
 
 
 }

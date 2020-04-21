@@ -1,17 +1,21 @@
 package com.mikpuk.vava_project.activities;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+
 
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,7 +24,9 @@ import com.mikpuk.vava_project.AppLocationManager;
 import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.Item;
 import com.mikpuk.vava_project.MyReqItemAdapter;
+import com.mikpuk.vava_project.PaginationScrollListener;
 import com.mikpuk.vava_project.R;
+import com.mikpuk.vava_project.RecViewAdapter;
 import com.mikpuk.vava_project.User;
 
 import org.springframework.http.HttpEntity;
@@ -30,16 +36,22 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.w3c.dom.Text;
+
 
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import static com.mikpuk.vava_project.PaginationScrollListener.PAGE_START;
+
 /*
     Class for displaying request that user created
  */
-public class MyRequestsActivity extends AppCompatActivity {
+public class MyRequestsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, RecViewAdapter.OnItemListener {
 
     Button createReq = null;
     ListView myLView = null;
@@ -47,12 +59,26 @@ public class MyRequestsActivity extends AppCompatActivity {
     private Dialog mDialog;
     private AppLocationManager appLocationManager;
 
+
+    @BindView(R.id.recyclerView101)
+    RecyclerView mRecyclerView;
+
+    @BindView(R.id.swipeRefresh101)
+    SwipeRefreshLayout swipeRefresh;
+
+    private RecViewAdapter adapter;
+    private int currentPage = PAGE_START;
+    private boolean isLastPage = false;
+    private int totalPage = 10;
+    private boolean isLoading = false;
+
+    int itemCount = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_my_requests);
-        myLView = findViewById(R.id.reqListView);
-        createReq = findViewById(R.id.createButton);
+        setContentView(R.layout.rec_view_my_request);
+        createReq = findViewById(R.id.createButton101);
         createReq.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,15 +87,52 @@ public class MyRequestsActivity extends AppCompatActivity {
         });
         mDialog = new Dialog(this);
         user = (User)getIntent().getSerializableExtra("user");
-
         AsyncMyItemsGetter asyncItemGetter = new AsyncMyItemsGetter();
         asyncItemGetter.execute();
+       /* myLView = findViewById(R.id.reqListView);
+
         myLView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 runDialog(i);
             }
+        });*/
+
+        ButterKnife.bind(this);
+
+        swipeRefresh.setOnRefreshListener(this);
+        mRecyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(layoutManager);
+
+        adapter = new RecViewAdapter(new ArrayList<Item>(), this, this);
+        mRecyclerView.setAdapter(adapter);
+        doApiCall();
+
+        /**
+         * add scroll listener while user reach in bottom load more will call
+         */
+        mRecyclerView.addOnScrollListener(new PaginationScrollListener(layoutManager) {
+            @Override
+            protected void loadMoreItems() {
+                isLoading = true;
+                currentPage++;
+                doApiCall();
+            }
+
+            @Override
+            public boolean isLastPage() {
+                return isLastPage;
+            }
+
+            @Override
+            public boolean isLoading() {
+                return isLoading;
+            }
         });
+
 
         appLocationManager = new AppLocationManager(this);
     }
@@ -142,6 +205,55 @@ public class MyRequestsActivity extends AppCompatActivity {
     }
 
 
+
+
+    /**
+     * do api call here to fetch data from server
+     * In example i'm adding data manually
+     */
+
+    private void doApiCall() {
+        final ArrayList<Item> items = new ArrayList<>();
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                for (int i = 0; i < 10; i++) {
+                    itemCount++;
+                    Item postItem = new Item();
+                    postItem.setName(Integer.toString(itemCount));
+                    items.add(postItem);
+                }
+                /**
+                 * manage progress view
+                 */
+                if (currentPage != PAGE_START) adapter.removeLoading();
+                adapter.addItems(items);
+                swipeRefresh.setRefreshing(false);
+
+                // check weather is last page or not
+                if (currentPage < totalPage) {
+                    adapter.addLoading();
+                } else {
+                    isLastPage = true;
+                }
+                isLoading = false;
+            }
+        }, 1500);
+    }
+    @Override
+    public void onRefresh() {
+        itemCount = 0;
+        currentPage = PAGE_START;
+        isLastPage = false;
+        adapter.clear();
+        doApiCall();
+    }
+
+    @Override
+    public void onItemClick(int posistion) {
+        runDialog(posistion);
+    }
 
     class AsyncMyItemsGetter extends AsyncTask<Void,Void,Void>
     {
