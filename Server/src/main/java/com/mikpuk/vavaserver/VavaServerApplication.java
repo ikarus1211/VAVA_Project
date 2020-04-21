@@ -22,6 +22,90 @@ public class VavaServerApplication {
 		//testCase();
 		//testCase2();
 		//testCase3();
+		//testCase4();
+	}
+
+	public static void testCase4()
+	{
+		String AUTH_TOKEN = MD5Hashing.getSecurePassword(getAuthToken());
+
+		/*try {
+
+			String uri = "http://localhost:5000"+
+					"/setaccepteditem/{user_id}/{item_id}";
+			RestTemplate restTemplate = new RestTemplate();
+			restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.add("auth",AUTH_TOKEN);
+
+			restTemplate.exchange(uri, HttpMethod.POST,
+					new HttpEntity<String>(httpHeaders), Item.class,1,1);
+
+		} catch (HttpServerErrorException e)
+		{
+			//Error v pripade chyby servera
+			System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
+		} catch (HttpClientErrorException e2)
+		{
+			//Error v pripade ziadosti klienka
+			System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
+			e2.printStackTrace();
+		} catch (Exception e3)
+		{
+			e3.printStackTrace();
+		}*/
+
+		/*try {
+			String uri = "http://localhost:5000/getitems/limit/{id}/{limit_start}/{limit_end}";
+			RestTemplate restTemplate = new RestTemplate();
+
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.add("auth",AUTH_TOKEN);
+
+			ResponseEntity<Item[]> items = restTemplate.exchange(uri, HttpMethod.GET,
+					new HttpEntity<String>(httpHeaders), Item[].class,1,0,2);
+			for (Item item:items.getBody()) {
+				System.out.println(item.getName()+ " | "+item.getDescription());
+			}
+
+		} catch (HttpServerErrorException e)
+		{
+			System.out.println("SERVER EXCEPTION! "+e.getRawStatusCode());
+		} catch (HttpClientErrorException e2)
+		{
+			System.out.println("CLIENT EXCEPTION! "+e2.getRawStatusCode());
+			e2.printStackTrace();
+		} catch (Exception e3)
+		{
+			System.out.println("caught other exception");
+			e3.printStackTrace();
+		}*/
+
+		try {
+
+			String uri = "http://localhost:5000" +
+					"/removeaccepteditem/{user_id}/{item_id}";
+			RestTemplate restTemplate = new RestTemplate();
+			restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.add("auth", AUTH_TOKEN);
+
+			restTemplate.exchange(uri, HttpMethod.POST,
+					new HttpEntity<String>(httpHeaders), Item.class, 1, 1);
+
+		} catch (HttpServerErrorException e)
+		{
+			//Error v pripade chyby servera
+			System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
+		} catch (HttpClientErrorException e2)
+		{
+			//Error v pripade ziadosti klienka
+			System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
+			e2.printStackTrace();
+		} catch (Exception e3)
+		{
+			e3.printStackTrace();
+		}
 	}
 
 	public static void testCase3()
