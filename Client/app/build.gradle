@@ -50,6 +50,8 @@ dependencies {
     //Potrebne pre GET REST
     implementation 'com.fasterxml.jackson.core:jackson-core:2.6.3'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.6.0'
+    //Pre bocne menu
+    implementation 'com.android.support:design:28.0.0'
 
 
 }

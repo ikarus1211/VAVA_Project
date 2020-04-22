@@ -1,35 +1,41 @@
 package com.mikpuk.vava_project.activities;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
-import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.material.navigation.NavigationView;
 import com.mikpuk.vava_project.AppLocationManager;
 import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.Item;
 import com.mikpuk.vava_project.OtherReqItemAdapter;
 import com.mikpuk.vava_project.R;
+import com.mikpuk.vava_project.SceneManager;
 import com.mikpuk.vava_project.User;
 
 import org.springframework.http.HttpEntity;
@@ -45,11 +51,8 @@ import java.util.List;
 
 import static com.mikpuk.vava_project.Constants.LOCATION_PERM_CODE;
 
-public class MenuScreenActivity extends AppCompatActivity {
+public class MenuScreenActivity extends AppCompatActivity{
 
-    Button myReqButton = null;
-    Button acReqButton = null;
-    Button mapButton = null;
     private boolean permissionGranted = false;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Location mLocation;
@@ -57,8 +60,10 @@ public class MenuScreenActivity extends AppCompatActivity {
     ListView myLView=null;
     private AppLocationManager appLocationManager;
     private Dialog mDialog;
-
     private static final String TAG = "MainActivity";
+
+    //Navigation bar
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,9 +75,9 @@ public class MenuScreenActivity extends AppCompatActivity {
         mDialog = new Dialog(this);
         user = (User)getIntent().getSerializableExtra("user");
 
-        myReqButton = findViewById(R.id.myReqButton);
-        acReqButton = findViewById(R.id.acceptButton);
-        mapButton = findViewById(R.id.mapbutton);
+        //Set up navigation bar
+        SceneManager.initNavigationBar("Main Menu",R.id.menu_screen_dl,R.id.menu_navView,this,this,user);
+
         getGpsStatus();
         getLocationPermission();
 
@@ -80,20 +85,6 @@ public class MenuScreenActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 runDialog(i);
-            }
-        });
-
-        myReqButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadMyReqUi();
-            }
-        });
-
-        acReqButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadAccepted();
             }
         });
 
@@ -157,6 +148,17 @@ public class MenuScreenActivity extends AppCompatActivity {
         }
     }
 
+    private void initGps() {
+        System.out.println("Everything ok");
+        if (permissionGranted) {
+
+            appLocationManager = new AppLocationManager(MenuScreenActivity.this);
+            mLocation = appLocationManager.getmLocation();
+            System.out.println(appLocationManager.getmLocation());
+            System.out.println(appLocationManager.generateAddress());
+        }
+    }
+
     // TODO maybe rework
     private void showGPSDisabledAlertToUser()
     {
@@ -202,55 +204,6 @@ public class MenuScreenActivity extends AppCompatActivity {
 
 
 
-
-    /*
-     * Function checks permissions and then initialize the button form mapView
-     */
-    private void init()
-    {
-        System.out.println("Everything ok");
-        if (permissionGranted) {
-
-            appLocationManager = new AppLocationManager(MenuScreenActivity.this);
-            mLocation = appLocationManager.getmLocation();
-            System.out.println(appLocationManager.getmLocation());
-            System.out.println(appLocationManager.generateAddress());
-
-            mapButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mLocation = appLocationManager.getmLocation();
-                    System.out.println(appLocationManager.getmLocation());
-                    System.out.println(appLocationManager.generateAddress());
-
-                    if(mLocation == null) {
-                        showToast("Location not set");
-                        return;
-                    }
-                    Intent intent = new Intent(MenuScreenActivity.this, MapViewActivity.class);
-                    intent.putExtra("location", mLocation);
-                    startActivity(intent);
-                }
-            });
-        }
-    }
-
-
-    private void loadMyReqUi()
-    {
-        Intent intent = new Intent(this, MyRequestsActivity.class);
-        intent.putExtra("user",user);
-        startActivity(intent);
-    }
-
-    private void loadAccepted()
-    {
-        Intent intent = new Intent(this, AcceptedRequest.class);
-        intent.putExtra("user",user);
-        startActivity(intent);
-    }
-
-
     /*
      * Function which checks if the permissions were granted
      */
@@ -272,19 +225,11 @@ public class MenuScreenActivity extends AppCompatActivity {
                         }
                     }
                     permissionGranted = true;
-                    init();
+                    initGps();
                     System.out.print("GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
                 }
             }
         }
-
-    }
-
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
 
     }
 
@@ -309,7 +254,7 @@ public class MenuScreenActivity extends AppCompatActivity {
                     == PackageManager.PERMISSION_GRANTED)
             {
                 permissionGranted = true;
-                init();
+                initGps();
             }
             else
             {
@@ -369,6 +314,46 @@ public class MenuScreenActivity extends AppCompatActivity {
 
     }
 
+    //Nastavenie kliknutia na hornu listu
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                DrawerLayout drawerLayout = (DrawerLayout)findViewById(R.id.menu_screen_dl);
+                drawerLayout.openDrawer(Gravity.LEFT);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    //Skopirovane z https://stackoverflow.com/questions/7563725/android-how-can-i-detect-if-the-back-button-will-exit-the-app-i-e-this-is-the
+    //Aby sme zabranili nechcenemu vypnutiu
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //Handle the back button
+        if (keyCode == KeyEvent.KEYCODE_BACK && isTaskRoot()) {
+            //Ask the user if they want to quit
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle("Do you want to quit?")
+                    .setMessage("Do you really want to quit?")
+                    .setPositiveButton("Yes, quit", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            //Stop the activity
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("No, stay", null)
+                    .show();
+
+            return true;
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
+    }
+
+
     //Toto vyhodi bublinu s infom - len pre nas
     private void showToast(final String text)
     {
@@ -379,7 +364,5 @@ public class MenuScreenActivity extends AppCompatActivity {
             }
         });
     }
-
-
 
 }

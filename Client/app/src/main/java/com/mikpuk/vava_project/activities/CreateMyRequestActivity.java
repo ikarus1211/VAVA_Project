@@ -44,7 +44,6 @@ public class CreateMyRequestActivity extends AppCompatActivity {
         setContentView(R.layout.layout_my_request_creation);
         Spinner spinner = findViewById(R.id.category_spinner);
 
-
         ArrayAdapter<CharSequence>  myAdapter = ArrayAdapter.createFromResource(this, R.array.cate, android.R.layout.simple_spinner_item);
         myAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
         spinner.setAdapter(myAdapter);

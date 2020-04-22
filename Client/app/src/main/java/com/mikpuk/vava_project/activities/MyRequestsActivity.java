@@ -1,6 +1,7 @@
 package com.mikpuk.vava_project.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -8,6 +9,8 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -21,6 +24,7 @@ import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.Item;
 import com.mikpuk.vava_project.MyReqItemAdapter;
 import com.mikpuk.vava_project.R;
+import com.mikpuk.vava_project.SceneManager;
 import com.mikpuk.vava_project.User;
 
 import org.springframework.http.HttpEntity;
@@ -64,6 +68,10 @@ public class MyRequestsActivity extends AppCompatActivity {
 
         AsyncMyItemsGetter asyncItemGetter = new AsyncMyItemsGetter();
         asyncItemGetter.execute();
+
+        //Set up navigation bar
+        SceneManager.initNavigationBar("My requests",R.id.my_requests_dl,R.id.my_requests_navView,this,this,user);
+
         myLView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -184,6 +192,19 @@ public class MyRequestsActivity extends AppCompatActivity {
             return null;
         }
 
+    }
+
+    //Nastavenie kliknutia na hornu listu
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                DrawerLayout drawerLayout = (DrawerLayout)findViewById(R.id.my_requests_dl);
+                drawerLayout.openDrawer(Gravity.LEFT);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 }

@@ -22,7 +22,7 @@
 
     <EditText
         android:id="@+id/PasswText"
-        android:layout_width="180dp"
+        android:layout_width="250dp"
         android:layout_height="40dp"
         android:layout_marginTop="280dp"
         android:autofillHints="password"
@@ -52,7 +52,7 @@
 
     <EditText
         android:id="@+id/editText"
-        android:layout_width="180dp"
+        android:layout_width="250dp"
         android:layout_height="40dp"
         android:layout_marginTop="184dp"
         android:autofillHints="name"
