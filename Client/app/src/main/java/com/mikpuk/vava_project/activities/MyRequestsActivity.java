@@ -54,7 +54,6 @@ import static com.mikpuk.vava_project.PaginationScrollListener.PAGE_START;
 public class MyRequestsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, RecViewAdapter.OnItemListener {
 
     Button createReq = null;
-    ListView myLView = null;
     User user = null;
     private Dialog mDialog;
     private AppLocationManager appLocationManager;
@@ -66,11 +65,13 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
     @BindView(R.id.swipeRefresh101)
     SwipeRefreshLayout swipeRefresh;
 
+    private ArrayList<Item> items = new ArrayList<>();
     private RecViewAdapter adapter;
     private int currentPage = PAGE_START;
     private boolean isLastPage = false;
     private int totalPage = 10;
     private boolean isLoading = false;
+    private Item[] fetchedItems;
 
     int itemCount = 0;
 
@@ -154,7 +155,7 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
         textAddress = mDialog.findViewById(R.id.popAddress);
 
         textName.setText(user.getUsername());
-        Item item = (Item)myLView.getItemAtPosition(pos);
+        Item item = items.get(pos);
         textItemName.setText(item.getName());
         textDescription.setText(item.getDescription());
         textAddress.setText(appLocationManager.generateAddress(item.getLatitude(), item.getLongtitude()));
@@ -176,7 +177,7 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
         startActivity(intent);
     }
 
-    private void fillMyRequestsList(Item[] items)
+    /*private void fillMyRequestsList(Item[] items)
     {
         List<Item> itemList = new ArrayList<>();
         for (Item item:items)
@@ -191,7 +192,7 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
                 myLView.setAdapter(adapter);
             }
         });
-    }
+    }*/
 
     //Toto vyhodi bublinu s infom - len pre nas
     private void showToast(final String text)
@@ -213,17 +214,22 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
      */
 
     private void doApiCall() {
-        final ArrayList<Item> items = new ArrayList<>();
+        items.clear();
         new Handler().postDelayed(new Runnable() {
 
             @Override
             public void run() {
-                for (int i = 0; i < 10; i++) {
+                List<Item> itemList = new ArrayList<>();
+                for (Item item:fetchedItems)
+                {
+                    items.add(item);
+                }
+                /*for (int i = 0; i < 10; i++) {
                     itemCount++;
                     Item postItem = new Item();
                     postItem.setName(Integer.toString(itemCount));
                     items.add(postItem);
-                }
+                }/
                 /**
                  * manage progress view
                  */
@@ -270,11 +276,11 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
                 HttpHeaders httpHeaders = new HttpHeaders();
                 httpHeaders.add("auth",AUTH_TOKEN);
 
-                Item[] items = restTemplate.exchange(uri, HttpMethod.GET,
+                fetchedItems = restTemplate.exchange(uri, HttpMethod.GET,
                         new HttpEntity<String>(httpHeaders), Item[].class,user.getId()).getBody();
 
                 showToast("ITEMS LOADED!");
-                fillMyRequestsList(items);
+                doApiCall();
 
             } catch (HttpServerErrorException e)
             {
