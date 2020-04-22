@@ -132,20 +132,22 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
 
     private void runDialog(int pos)
     {
-        mDialog.setContentView(R.layout.activity_pop_up_my_request);
+        mDialog.setContentView(R.layout.activity_pop_up_other_request);
         TextView txtclose;
         TextView textName;
         TextView textItemName;
         TextView textDescription;
         TextView textAddress;
-
+        TextView accpetButton;
 
         txtclose = mDialog.findViewById(R.id.popTxtClose);
         textName = mDialog.findViewById(R.id.popMyName);
         textItemName = mDialog.findViewById(R.id.popItemName);
         textDescription = mDialog.findViewById(R.id.popMyDescription);
         textAddress = mDialog.findViewById(R.id.popAddress);
+        accpetButton = mDialog.findViewById(R.id.accept);
 
+        accpetButton.setVisibility(View.VISIBLE);
         textName.setText(user.getUsername());
         Item item = items.get(pos);
         textItemName.setText(item.getName());
@@ -154,6 +156,13 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
 
 
         txtclose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDialog.dismiss();
+            }
+        });
+
+        accpetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mDialog.dismiss();
