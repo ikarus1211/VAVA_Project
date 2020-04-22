@@ -90,14 +90,6 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
         user = (User)getIntent().getSerializableExtra("user");
         AsyncMyItemsGetter asyncItemGetter = new AsyncMyItemsGetter();
         asyncItemGetter.execute();
-       /* myLView = findViewById(R.id.reqListView);
-
-        myLView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                runDialog(i);
-            }
-        });*/
 
         ButterKnife.bind(this);
 
@@ -177,22 +169,7 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
         startActivity(intent);
     }
 
-    /*private void fillMyRequestsList(Item[] items)
-    {
-        List<Item> itemList = new ArrayList<>();
-        for (Item item:items)
-        {
-            itemList.add(item);
-        }
 
-        final MyReqItemAdapter adapter = new MyReqItemAdapter(this, R.layout.item_my_request, itemList);
-
-        runOnUiThread(new Runnable() {
-            public void run() {
-                myLView.setAdapter(adapter);
-            }
-        });
-    }*/
 
     //Toto vyhodi bublinu s infom - len pre nas
     private void showToast(final String text)
@@ -204,9 +181,6 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
             }
         });
     }
-
-
-
 
     /**
      * do api call here to fetch data from server

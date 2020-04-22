@@ -4,6 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -16,6 +19,7 @@ import android.location.LocationManager;
 import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -29,7 +33,9 @@ import com.mikpuk.vava_project.AppLocationManager;
 import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.Item;
 import com.mikpuk.vava_project.OtherReqItemAdapter;
+import com.mikpuk.vava_project.PaginationScrollListener;
 import com.mikpuk.vava_project.R;
+import com.mikpuk.vava_project.RecViewAdapter;
 import com.mikpuk.vava_project.User;
 
 import org.springframework.http.HttpEntity;
@@ -43,9 +49,13 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.mikpuk.vava_project.Constants.LOCATION_PERM_CODE;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
-public class MenuScreenActivity extends AppCompatActivity {
+import static com.mikpuk.vava_project.Constants.LOCATION_PERM_CODE;
+import static com.mikpuk.vava_project.PaginationScrollListener.PAGE_START;
+
+public class MenuScreenActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener,RecViewAdapter.OnItemListener {
 
     Button myReqButton = null;
     Button acReqButton = null;
@@ -54,9 +64,26 @@ public class MenuScreenActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Location mLocation;
     private User user = null;
-    ListView myLView=null;
+
     private AppLocationManager appLocationManager;
     private Dialog mDialog;
+
+    @BindView(R.id.recyclerView100)
+    RecyclerView mRecyclerView;
+
+    @BindView(R.id.swipeRefresh100)
+    SwipeRefreshLayout swipeRefresh;
+
+    private ArrayList<Item> items = new ArrayList<>();
+    private RecViewAdapter adapter;
+    private int currentPage = PAGE_START;
+    private boolean isLastPage = false;
+    private int totalPage = 10;
+    private boolean isLoading = false;
+    private Item[] fetchedItems;
+
+    int itemCount = 0;
+
 
     private static final String TAG = "MainActivity";
 
@@ -64,9 +91,7 @@ public class MenuScreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main_menu);
-        System.out.println("VYKONAM 4");
-        myLView = findViewById(R.id.lisView);
-        System.out.println("VYKONAM 5");
+
         mDialog = new Dialog(this);
         user = (User)getIntent().getSerializableExtra("user");
 
@@ -75,13 +100,6 @@ public class MenuScreenActivity extends AppCompatActivity {
         mapButton = findViewById(R.id.mapbutton);
         getGpsStatus();
         getLocationPermission();
-
-        myLView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                runDialog(i);
-            }
-        });
 
         myReqButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,9 +116,50 @@ public class MenuScreenActivity extends AppCompatActivity {
         });
 
         //Spusta nacitanie listView
-       AsyncOtherItemsGetter getter = new AsyncOtherItemsGetter();
+        AsyncOtherItemsGetter getter = new AsyncOtherItemsGetter();
         getter.execute();
 
+        /*myLView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                runDialog(i);
+            }
+        });*/
+
+        ButterKnife.bind(this);
+
+        swipeRefresh.setOnRefreshListener(this);
+        mRecyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(layoutManager);
+
+        adapter = new RecViewAdapter(new ArrayList<Item>(), this, this);
+        mRecyclerView.setAdapter(adapter);
+        doApiCall();
+
+        /**
+         * add scroll listener while user reach in bottom load more will call
+         */
+        mRecyclerView.addOnScrollListener(new PaginationScrollListener(layoutManager) {
+            @Override
+            protected void loadMoreItems() {
+                isLoading = true;
+                currentPage++;
+                doApiCall();
+            }
+
+            @Override
+            public boolean isLastPage() {
+                return isLastPage;
+            }
+
+            @Override
+            public boolean isLoading() {
+                return isLoading;
+            }
+        });
     }
     private void runDialog(int pos)
     {
@@ -122,7 +181,7 @@ public class MenuScreenActivity extends AppCompatActivity {
 
         accpetButton.setVisibility(View.VISIBLE);
         textName.setText(user.getUsername());
-        Item item = (Item)myLView.getItemAtPosition(pos);
+        Item item = items.get(pos);
         textItemName.setText(item.getName());
         textDescription.setText(item.getDescription());
         textAddress.setText(appLocationManager.generateAddress(item.getLatitude(), item.getLongtitude()));
@@ -145,6 +204,56 @@ public class MenuScreenActivity extends AppCompatActivity {
         });
         mDialog.show();
     }
+
+    /**
+     * do api call here to fetch data from server
+     * In example i'm adding data manually
+     */
+
+    private void doApiCall() {
+        items.clear();
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                List<Item> itemList = new ArrayList<>();
+                for (Item item:fetchedItems)
+                {
+                    items.add(item);
+                }
+                /*for (int i = 0; i < 10; i++) {
+                    itemCount++;
+                    Item postItem = new Item();
+                    postItem.setName(Integer.toString(itemCount));
+                    items.add(postItem);
+                }/
+                /**
+                 * manage progress view
+                 */
+                if (currentPage != PAGE_START) adapter.removeLoading();
+                adapter.addItems(items);
+                swipeRefresh.setRefreshing(false);
+
+                // check weather is last page or not
+                if (currentPage < totalPage) {
+                    adapter.addLoading();
+                } else {
+                    isLastPage = true;
+                }
+                isLoading = false;
+            }
+        }, 1500);
+    }
+
+    @Override
+    public void onRefresh() {
+        itemCount = 0;
+        currentPage = PAGE_START;
+        isLastPage = false;
+        adapter.clear();
+        doApiCall();
+    }
+
 
     private void getGpsStatus()
     {
@@ -180,27 +289,6 @@ public class MenuScreenActivity extends AppCompatActivity {
         AlertDialog alert = alertDialogBuilder.create();
         alert.show();
     }
-
-
-    private void fillMyRequestsList(Item[] items)
-    {
-        List<Item> itemList = new ArrayList<>();
-        for (Item item:items
-        ) {
-            itemList.add(item);
-        }
-
-        System.out.println("VYKONAM 6");
-        final  OtherReqItemAdapter adapter = new OtherReqItemAdapter(this, R.layout.item_main_menu, itemList);
-
-        runOnUiThread(new Runnable() {
-            public void run() {
-                myLView.setAdapter(adapter);
-            }
-        });
-    }
-
-
 
 
     /*
@@ -281,7 +369,6 @@ public class MenuScreenActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -325,6 +412,11 @@ public class MenuScreenActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onItemClick(int posistion) {
+        runDialog(posistion);
+    }
+
 
     class AsyncOtherItemsGetter extends AsyncTask<Void,Void,Void>
     {
@@ -341,11 +433,11 @@ public class MenuScreenActivity extends AppCompatActivity {
                 HttpHeaders httpHeaders = new HttpHeaders();
                 httpHeaders.add("auth",AUTH_TOKEN);
 
-                Item[] items = restTemplate.exchange(uri, HttpMethod.GET,
+                fetchedItems = restTemplate.exchange(uri, HttpMethod.GET,
                         new HttpEntity<String>(httpHeaders), Item[].class,user.getId()).getBody();
 
                 showToast("ITEMS LOADED!");
-                fillMyRequestsList(items);
+                doApiCall();
 
             } catch (HttpServerErrorException e)
             {
