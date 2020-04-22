@@ -36,4 +36,5 @@
     <string name="create_st">Create</string>
     <string name="info">Info</string>
     <string name="googleAPI">AIzaSyCitQoGdLxXW0z4zIy7bqwHSrSx0P1xKhU</string>
+    <string name="finish_req">Finish</string>
 </resources>

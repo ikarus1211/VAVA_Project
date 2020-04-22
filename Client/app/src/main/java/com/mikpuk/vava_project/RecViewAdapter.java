@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.gms.maps.model.LatLng;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -121,6 +124,8 @@ public class RecViewAdapter extends RecyclerView.Adapter<BaseViewHolder>  {
         textViewTitle.setText(item.getName());
         AppLocationManager appLocationManager = new AppLocationManager(context);
         textViewAddress.setText(appLocationManager.generateAddress(item.getLatitude(), item.getLongtitude()));
+        System.out.println(appLocationManager.calculationByDistance(new LatLng(item.getLatitude(),item.getLongtitude()),
+                new LatLng(appLocationManager.getLatitude(),appLocationManager.getLongitude())));
     }
 
         @Override

@@ -132,28 +132,34 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
 
     private void runDialog(int pos)
     {
-        mDialog.setContentView(R.layout.activity_pop_up_other_request);
+        mDialog.setContentView(R.layout.activity_pop_up_my_request);
         TextView txtclose;
         TextView textName;
         TextView textItemName;
         TextView textDescription;
         TextView textAddress;
-        TextView accpetButton;
+        Button finishButton;
 
         txtclose = mDialog.findViewById(R.id.popTxtClose);
         textName = mDialog.findViewById(R.id.popMyName);
         textItemName = mDialog.findViewById(R.id.popItemName);
         textDescription = mDialog.findViewById(R.id.popMyDescription);
         textAddress = mDialog.findViewById(R.id.popAddress);
-        accpetButton = mDialog.findViewById(R.id.accept);
+        finishButton = mDialog.findViewById(R.id.finish101);
 
-        accpetButton.setVisibility(View.VISIBLE);
+
         textName.setText(user.getUsername());
         Item item = items.get(pos);
         textItemName.setText(item.getName());
         textDescription.setText(item.getDescription());
         textAddress.setText(appLocationManager.generateAddress(item.getLatitude(), item.getLongtitude()));
 
+        finishButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
 
         txtclose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -162,12 +168,6 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
             }
         });
 
-        accpetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mDialog.dismiss();
-            }
-        });
         mDialog.show();
     }
 
@@ -203,16 +203,12 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
             @Override
             public void run() {
                 List<Item> itemList = new ArrayList<>();
-                for (Item item:fetchedItems)
-                {
-                    items.add(item);
-                }
-                /*for (int i = 0; i < 10; i++) {
-                    itemCount++;
-                    Item postItem = new Item();
-                    postItem.setName(Integer.toString(itemCount));
-                    items.add(postItem);
-                }/
+                if (fetchedItems != null)
+                    for (Item item:fetchedItems)
+                    {
+                        items.add(item);
+                    }
+
                 /**
                  * manage progress view
                  */
