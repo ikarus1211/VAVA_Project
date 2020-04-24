@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.hypertrack.hyperlog.HyperLog;
 import com.mikpuk.vava_project.Item;
 import com.mikpuk.vava_project.OtherReqItemAdapter;
 import com.mikpuk.vava_project.PaginationScrollListener;
@@ -54,8 +55,11 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
 
     private User user = null;
 
+    private static final String TAG = "Accepted Request";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        HyperLog.i(TAG,"Accepted request activity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accepted_request);
         user = (User)getIntent().getSerializableExtra("user");

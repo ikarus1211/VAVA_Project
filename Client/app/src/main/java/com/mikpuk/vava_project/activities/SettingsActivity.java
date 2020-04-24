@@ -20,6 +20,7 @@ import android.widget.Spinner;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.hypertrack.hyperlog.HyperLog;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.SceneManager;
 import com.mikpuk.vava_project.User;
@@ -31,9 +32,10 @@ public class SettingsActivity  extends AppCompatActivity {
     private User user = null;
     Spinner spinner;
     String language = "";
-
+    private static final String TAG = "Settings activity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        HyperLog.i(TAG, "Starting settings activity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_settings);
         user = (User)getIntent().getSerializableExtra("user");
@@ -57,6 +59,7 @@ public class SettingsActivity  extends AppCompatActivity {
 
     public void loadLanguageSpinner()
     {
+        HyperLog.i(TAG, "Loading language spinner");
         spinner = findViewById(R.id.language_spinner);
         String[] languages = getResources().getStringArray(R.array.languages);
         final String[] languagesShort = getResources().getStringArray(R.array.languages_short);
@@ -81,6 +84,7 @@ public class SettingsActivity  extends AppCompatActivity {
     }
 
     public void setLocale(String lang) {
+        HyperLog.i(TAG, "Setting location");
         Locale myLocale = new Locale(lang);
         Resources res = getResources();
         DisplayMetrics dm = res.getDisplayMetrics();

@@ -1,5 +1,6 @@
 package com.mikpuk.vava_project;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.nfc.NfcAdapter;
 import android.view.LayoutInflater;
@@ -10,10 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.hypertrack.hyperlog.HyperLog;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +29,8 @@ public class RecViewAdapter extends RecyclerView.Adapter<BaseViewHolder>  {
 
     private List<Item> mPostItems;
     private Context context;
+    private static final String TAG = "Recycle view adapter";
+
 
     public RecViewAdapter(ArrayList<Item> postItems, Context context, OnItemListener onItemListener) {
         this.mPostItems = postItems;
@@ -36,6 +41,7 @@ public class RecViewAdapter extends RecyclerView.Adapter<BaseViewHolder>  {
 
     @Override
     public BaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        HyperLog.i(TAG,"Creating hyper log");
         switch (viewType) {
             case VIEW_TYPE_NORMAL:
                 return new ViewHolder(
@@ -103,6 +109,9 @@ public class RecViewAdapter extends RecyclerView.Adapter<BaseViewHolder>  {
         TextView textViewTitle;
         @BindView(R.id.textDescriptionCard)
         TextView textViewAddress;
+        @BindView(R.id.myReqDistance)
+        TextView textDistance;
+
         OnItemListener onItemListener;
 
         ViewHolder(View itemView, OnItemListener onItemListener) {
@@ -117,6 +126,7 @@ public class RecViewAdapter extends RecyclerView.Adapter<BaseViewHolder>  {
 
         }
 
+    @SuppressLint("SetTextI18n")
     public void onBind(int position) {
         super.onBind(position);
         Item item = mPostItems.get(position);
@@ -124,8 +134,10 @@ public class RecViewAdapter extends RecyclerView.Adapter<BaseViewHolder>  {
         textViewTitle.setText(item.getName());
         AppLocationManager appLocationManager = new AppLocationManager(context);
         textViewAddress.setText(appLocationManager.generateAddress(item.getLatitude(), item.getLongtitude()));
-        System.out.println(appLocationManager.calculationByDistance(new LatLng(item.getLatitude(),item.getLongtitude()),
-                new LatLng(appLocationManager.getLatitude(),appLocationManager.getLongitude())));
+        String dist = appLocationManager.calculationByDistance(new LatLng(item.getLatitude(),item.getLongtitude()),
+                new LatLng(appLocationManager.getLatitude(),appLocationManager.getLongitude()));
+
+        textDistance.setText(dist+"km");
     }
 
         @Override

@@ -25,6 +25,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.hypertrack.hyperlog.HyperLog;
 import com.mikpuk.vava_project.AppLocationManager;
 import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.Item;
@@ -54,6 +55,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import static com.mikpuk.vava_project.PaginationScrollListener.PAGE_START;
 
+
 /*
     Class for displaying request that user created
  */
@@ -81,9 +83,11 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
 
     int itemCount = 0;
     boolean allItemsLoaded = false;
+    private static final String TAG = "User requests";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        HyperLog.i(TAG,"My request activity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_my_requests);
         createReq = findViewById(R.id.createButton101);
@@ -105,7 +109,7 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
         /*AsyncMyItemsGetter asyncItemGetter = new AsyncMyItemsGetter();
         asyncItemGetter.execute();*/
 
-
+        HyperLog.i(TAG,"Creating recycle view");
         ButterKnife.bind(this);
 
         swipeRefresh.setOnRefreshListener(this);
@@ -298,24 +302,27 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
                     allItemsLoaded = true;
                     return null;
                 }
-
+                HyperLog.i(TAG,"Loading new items");
                 showToast("LOADING NEW ITEMS");
 
                 itemCount+=10;
 
             } catch (HttpServerErrorException e)
             {
+                HyperLog.e(TAG,"Server exception",e);
                 //Error v pripade chyby servera
                 System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
                 showToast("SERVER ERROR "+e.getStatusCode());
             } catch (HttpClientErrorException e2)
             {
+                HyperLog.e(TAG,"Client exception",e2);
                 //Error v pripade ziadosti klienka
                 System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
                 e2.printStackTrace();
                 showToast("CLIENT ERROR "+e2.getStatusCode());
             } catch (Exception e3)
             {
+                HyperLog.e(TAG,"Unknown error",e3);
                 e3.printStackTrace();
                 showToast("SOMETHING WENT WRONG");
             }

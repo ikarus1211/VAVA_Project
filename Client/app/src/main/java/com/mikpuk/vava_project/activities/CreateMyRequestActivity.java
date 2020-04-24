@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.hypertrack.hyperlog.HyperLog;
 import com.mikpuk.vava_project.AppLocationManager;
 import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.Item;
@@ -35,11 +36,12 @@ public class CreateMyRequestActivity extends AppCompatActivity {
     EditText itemNameText = null;
     EditText descriptionText = null;
     User user = null;
-
+    private static final String TAG = "Create new request activity";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        HyperLog.i(TAG, "Create request activity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_my_request_creation);
         Spinner spinner = findViewById(R.id.category_spinner);
@@ -91,21 +93,25 @@ public class CreateMyRequestActivity extends AppCompatActivity {
                             longitude,latitude,user.getId(),7);
 
                     showToast("ITEM ADDED!");
+                    HyperLog.i(TAG, "Item created");
                     loadNewRequestScreen();
 
                 } catch (HttpServerErrorException e)
                 {
+                    HyperLog.e(TAG, "Server exception",e);
                     //Error v pripade chyby servera
                     System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
                     showToast("SERVER ERROR "+e.getStatusCode());
                 } catch (HttpClientErrorException e2)
                 {
+                    HyperLog.e(TAG, "Client exception",e2);
                     //Error v pripade ziadosti klienka
                     System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
                     e2.printStackTrace();
                     showToast("CLIENT ERROR "+e2.getStatusCode());
                 } catch (Exception e3)
                 {
+                    HyperLog.e(TAG, "Unknown error",e3);
                     e3.printStackTrace();
                     showToast("SOMETHING WENT WRONG");
                 }

@@ -19,6 +19,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.hypertrack.hyperlog.HyperLog;
 import com.mikpuk.vava_project.R;
 
 import static com.mikpuk.vava_project.Constants.MAPVIEW_BUNDLE_KEY;
@@ -32,10 +33,11 @@ https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/
         private GoogleMap mMap;
         private Location mLocation;
 
-
+        private static final String TAG = "Map Activity";
         @Override
 
         protected void onCreate(Bundle savedInstanceState) {
+            HyperLog.i(TAG, "Map view activity");
             super.onCreate(savedInstanceState);
             setContentView(R.layout.layout_map_view);
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapView);
@@ -49,6 +51,7 @@ https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+            HyperLog.i(TAG, "Map is ready");
             Toast.makeText(this, "Map is ready", Toast.LENGTH_SHORT).show();
             Intent intent = getIntent();
             mLocation = intent.getParcelableExtra("location");
