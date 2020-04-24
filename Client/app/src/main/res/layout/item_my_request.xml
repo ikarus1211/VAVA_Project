@@ -23,7 +23,6 @@
             android:orientation="vertical">
 
             <TextView
-
                 android:id="@+id/myListItem"
                 android:textColor="@color/orangePrimary"
                 android:textSize="18dp"

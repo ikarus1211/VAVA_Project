@@ -46,6 +46,7 @@
     <string name="create_st">Create</string>
     <string name="info">Info</string>
     <string name="googleAPI">AIzaSyCitQoGdLxXW0z4zIy7bqwHSrSx0P1xKhU</string>
+<<<<<<< HEAD
     <string name="Open">Opening?</string>
     <string name="Close">Closing?</string>
     <string name="finish_req">Finish</string>
@@ -68,3 +69,7 @@
     <string name="quit_no">No, stay</string>
     <string name="quit_yes">Yes, quit</string>
 </resources>
+=======
+    <string name="finish_req">Finish</string>
+</resources>
+>>>>>>> 244c67c91656da773483a3410f1fbba18f43bbaa
