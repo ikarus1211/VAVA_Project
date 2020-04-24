@@ -23,6 +23,7 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -88,6 +89,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
     private Item[] fetchedItems;
 
     int itemCount = 0;
+    boolean allItemsLoaded = false;
 
     private static final String TAG = "MainActivity";
 
@@ -110,8 +112,8 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
 
 
         //Spusta nacitanie listView
-        AsyncOtherItemsGetter getter = new AsyncOtherItemsGetter();
-        getter.execute();
+        /*AsyncOtherItemsGetter getter = new AsyncOtherItemsGetter();
+        getter.execute();*/
 
         ButterKnife.bind(this);
 
@@ -198,26 +200,50 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
      */
 
     private void doApiCall() {
+        System.out.println("Start xD");
+        if(allItemsLoaded){
+            System.out.println("ALL ITEMS ARE LOADED");
+            adapter.removeLoading();
+            swipeRefresh.setRefreshing(false);
+            isLastPage = true;
+            return;
+        }
+
         items.clear();
         new Handler().postDelayed(new Runnable() {
 
             @Override
             public void run() {
-                List<Item> itemList = new ArrayList<>();
+
+                fetchedItems = new Item[0];
+
+                new AsyncOtherItemsGetter().execute();
+
+                while(fetchedItems.length == 0)
+                {
+                    if(allItemsLoaded)  {
+                        adapter.removeLoading();
+                        swipeRefresh.setRefreshing(false);
+                        isLastPage = true;
+                        showToast("There are no more items left!");
+                        System.out.println("ALL ITEMS ARE LOADED2");
+                        return;
+                    }
+                    System.out.println("SLEEPING");
+                    SystemClock.sleep(500); //Aby sme nevytazili UI thread
+                }
+
                 for (Item item:fetchedItems)
                 {
                     items.add(item);
                 }
-                /*for (int i = 0; i < 10; i++) {
-                    itemCount++;
-                    Item postItem = new Item();
-                    postItem.setName(Integer.toString(itemCount));
-                    items.add(postItem);
-                }/
+
                 /**
                  * manage progress view
                  */
-                if (currentPage != PAGE_START) adapter.removeLoading();
+                if (currentPage != PAGE_START)
+                    adapter.removeLoading();
+
                 adapter.addItems(items);
                 swipeRefresh.setRefreshing(false);
 
@@ -228,12 +254,14 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
                     isLastPage = true;
                 }
                 isLoading = false;
+                System.out.println("DONE xD");
             }
         }, 1500);
     }
 
     @Override
     public void onRefresh() {
+        allItemsLoaded = false;
         itemCount = 0;
         currentPage = PAGE_START;
         isLastPage = false;
@@ -287,23 +315,6 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         AlertDialog alert = alertDialogBuilder.create();
         alert.show();
     }
-
-        /*
-     * Function checks permissions and then initialize the button form mapView
-     */
-    private void init()
-    {
-        System.out.println("Everything ok");
-        if (permissionGranted) {
-
-            appLocationManager = new AppLocationManager(MenuScreenActivity.this);
-            mLocation = appLocationManager.getmLocation();
-            System.out.println(appLocationManager.getmLocation());
-            System.out.println(appLocationManager.generateAddress());
-        }
-    }
-
-
     /*
      * Function which checks if the permissions were granted
      */
@@ -374,26 +385,33 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         runDialog(posistion);
     }
 
-
     class AsyncOtherItemsGetter extends AsyncTask<Void,Void,Void>
     {
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected Void doInBackground(Void... args) {
 
             try {
                 String AUTH_TOKEN = ConfigManager.getAuthToken(getApplicationContext());
 
                 String uri = ConfigManager.getApiUrl(getApplicationContext())+
-                        "/getotheritems/{id}";
+                        "/getotheritems/limit/{id}/{limit_start}/{limit_end}";
                 RestTemplate restTemplate = new RestTemplate();
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
                 HttpHeaders httpHeaders = new HttpHeaders();
                 httpHeaders.add("auth",AUTH_TOKEN);
 
                 fetchedItems = restTemplate.exchange(uri, HttpMethod.GET,
-                        new HttpEntity<String>(httpHeaders), Item[].class,user.getId()).getBody();
+                        new HttpEntity<String>(httpHeaders), Item[].class,user.getId(),itemCount,itemCount+10).getBody();
 
-                showToast("ITEMS LOADED!");
+
+                if(fetchedItems.length == 0) {
+                    allItemsLoaded = true;
+                    return null;
+                }
+
+                showToast("LOADING NEW ITEMS");
+
+                itemCount+=10;
 
             } catch (HttpServerErrorException e)
             {

@@ -187,6 +187,28 @@ public class MyRestController {
         }
     }
 
+    @RequestMapping(value = "/getotheritems/limit/{id}/{limit_start}/{limit_end}")
+    @ResponseBody
+    public ResponseEntity<List<Item>> getOtherItemsByUserLimit(@PathVariable Long id,@PathVariable Long limit_start,@PathVariable Long limit_end, @RequestHeader("auth") String authorization)
+    {
+        if(!isUserAuthorized(authorization))
+            return new ResponseEntity<List<Item>>(HttpStatus.UNAUTHORIZED);
+
+        //Nacitanie XML a bean
+        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+        ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
+
+        try {
+            List<Item> items = itemJdbcTemplate.getOtherItemsByUserLimit(id,limit_start,limit_end);
+            return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
+        }catch (Exception e)
+        {
+            //Toto nastava napr pri neexistujucom uzivatelovi
+            e.printStackTrace();
+            return new ResponseEntity<List<Item>>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @RequestMapping(value = "/getapproveditems/{id}")
     @ResponseBody
     public ResponseEntity<List<Item>> getApprovedItems(@PathVariable Long id, @RequestHeader("auth") String authorization)

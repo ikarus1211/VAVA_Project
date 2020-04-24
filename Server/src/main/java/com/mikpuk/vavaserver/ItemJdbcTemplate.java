@@ -59,6 +59,13 @@ public class ItemJdbcTemplate implements ItemDAO {
     }
 
     @Override
+    public List<Item> getOtherItemsByUserLimit(long id, long limit_start, long limit_end) {
+        String query = "SELECT * from vavaDB.items a INNER JOIN vavaDB.users i ON a.user_id = i.id" +
+                " where a.user_id != ? and a.accepted = false ORDER BY a.id DESC LIMIT ? , ?";
+        return jdbcTemplate.query(query, new Object[]{id,limit_start,limit_end}, new ItemMapper());
+    }
+
+    @Override
     public List<Item> getApprovedItems(long id) {
         String query = "SELECT * from vavaDB.approved_items a INNER JOIN vavaDB.items i ON a.id = i.id WHERE a.user_id = ?;";
         return jdbcTemplate.query(query, new Object[]{id}, new ItemMapper());
@@ -67,6 +74,8 @@ public class ItemJdbcTemplate implements ItemDAO {
     @Override
     public void setAcceptedItem(long item_id, long user_id) {
         String query = "insert into approved_items (user_id,item_id) values (?,?)";
+        String query2 = "update items set accepted = 1 where id = ?";
+        jdbcTemplate.update(query2, item_id);
         jdbcTemplate.update(query, user_id,item_id);
     }
 

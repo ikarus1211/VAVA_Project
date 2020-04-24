@@ -14,6 +14,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.os.Handler;
@@ -79,6 +80,7 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
     private Item[] fetchedItems;
 
     int itemCount = 0;
+    boolean allItemsLoaded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,8 +102,8 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
         });
         mDialog = new Dialog(this);
         user = (User)getIntent().getSerializableExtra("user");
-        AsyncMyItemsGetter asyncItemGetter = new AsyncMyItemsGetter();
-        asyncItemGetter.execute();
+        /*AsyncMyItemsGetter asyncItemGetter = new AsyncMyItemsGetter();
+        asyncItemGetter.execute();*/
 
 
         ButterKnife.bind(this);
@@ -210,17 +212,37 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
      */
 
     private void doApiCall() {
+        if(allItemsLoaded){
+            System.out.println("ALL ITEMS ARE LOADED");
+            return;
+        }
+
         items.clear();
         new Handler().postDelayed(new Runnable() {
 
             @Override
             public void run() {
-                List<Item> itemList = new ArrayList<>();
-                if (fetchedItems != null)
-                    for (Item item:fetchedItems)
-                    {
-                        items.add(item);
+
+                fetchedItems = new Item[0];
+
+                new AsyncMyItemsGetter().execute();
+
+                while(fetchedItems.length == 0)
+                {
+                    if(allItemsLoaded)  {
+                        swipeRefresh.setRefreshing(false);
+                        adapter.removeLoading();
+                        showToast("There are no more items left!");
+                        return;
                     }
+                    System.out.println("SLEEPING");
+                    SystemClock.sleep(500); //Aby sme nevytazili UI thread
+                }
+
+                for (Item item:fetchedItems)
+                {
+                    items.add(item);
+                }
 
                 /**
                  * manage progress view
@@ -262,16 +284,24 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
                 String AUTH_TOKEN = ConfigManager.getAuthToken(getApplicationContext());
 
                 String uri = ConfigManager.getApiUrl(getApplicationContext())+
-                        "/getitems/{id}";
+                        "/getitems/limit/{id}/{limit_start}/{limit_end}";
                 RestTemplate restTemplate = new RestTemplate();
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
                 HttpHeaders httpHeaders = new HttpHeaders();
                 httpHeaders.add("auth",AUTH_TOKEN);
 
                 fetchedItems = restTemplate.exchange(uri, HttpMethod.GET,
-                        new HttpEntity<String>(httpHeaders), Item[].class,user.getId()).getBody();
+                        new HttpEntity<String>(httpHeaders), Item[].class,user.getId(),itemCount,itemCount+10).getBody();
 
-                showToast("ITEMS LOADED!");
+
+                if(fetchedItems.length == 0) {
+                    allItemsLoaded = true;
+                    return null;
+                }
+
+                showToast("LOADING NEW ITEMS");
+
+                itemCount+=10;
 
             } catch (HttpServerErrorException e)
             {

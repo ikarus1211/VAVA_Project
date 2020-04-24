@@ -22,14 +22,14 @@ public class VavaServerApplication {
 		//testCase();
 		//testCase2();
 		//testCase3();
-		//testCase4();
+		testCase4();
 	}
 
 	public static void testCase4()
 	{
 		String AUTH_TOKEN = MD5Hashing.getSecurePassword(getAuthToken());
 
-		/*try {
+		try {
 
 			String uri = "http://localhost:5000"+
 					"/setaccepteditem/{user_id}/{item_id}";
@@ -39,7 +39,7 @@ public class VavaServerApplication {
 			httpHeaders.add("auth",AUTH_TOKEN);
 
 			restTemplate.exchange(uri, HttpMethod.POST,
-					new HttpEntity<String>(httpHeaders), Item.class,1,1);
+					new HttpEntity<String>(httpHeaders), Item.class,1,7);
 
 		} catch (HttpServerErrorException e)
 		{
@@ -53,17 +53,17 @@ public class VavaServerApplication {
 		} catch (Exception e3)
 		{
 			e3.printStackTrace();
-		}*/
+		}
 
 		/*try {
-			String uri = "http://localhost:5000/getitems/limit/{id}/{limit_start}/{limit_end}";
+			String uri = "http://localhost:5000/getotheritems/limit/{id}/{limit_start}/{limit_end}";
 			RestTemplate restTemplate = new RestTemplate();
 
 			HttpHeaders httpHeaders = new HttpHeaders();
 			httpHeaders.add("auth",AUTH_TOKEN);
 
 			ResponseEntity<Item[]> items = restTemplate.exchange(uri, HttpMethod.GET,
-					new HttpEntity<String>(httpHeaders), Item[].class,1,0,2);
+					new HttpEntity<String>(httpHeaders), Item[].class,1,0,3);
 			for (Item item:items.getBody()) {
 				System.out.println(item.getName()+ " | "+item.getDescription());
 			}
@@ -81,7 +81,7 @@ public class VavaServerApplication {
 			e3.printStackTrace();
 		}*/
 
-		try {
+		/*try {
 
 			String uri = "http://localhost:5000" +
 					"/removeaccepteditem/{user_id}/{item_id}";
@@ -105,7 +105,7 @@ public class VavaServerApplication {
 		} catch (Exception e3)
 		{
 			e3.printStackTrace();
-		}
+		}*/
 	}
 
 	public static void testCase3()
