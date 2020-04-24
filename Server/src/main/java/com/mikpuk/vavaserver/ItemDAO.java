@@ -14,6 +14,8 @@ public interface ItemDAO {
     public List<Item> getOtherItems(long id);
     public List<Item> getOtherItemsByUserLimit(long id,long limit_start,long limit_end);
     public List<Item> getApprovedItems(long id);
+    public List<Item> getApprovedItemsLimit(long id,long limit_start,long limit_end);
     public void setAcceptedItem(long item_id, long user_id);
-    public void removeAcceptedItem(long item_id, long user_id);
+    public void removeAcceptedItem(long item_id);
+    public void removeItem(long item_id);
 }

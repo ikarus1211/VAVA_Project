@@ -98,9 +98,9 @@ public class MyRestController {
         }
     }
 
-    @RequestMapping(value = "/removeaccepteditem/{user_id}/{item_id}")
+    @RequestMapping(value = "/removeaccepteditem/{item_id}")
     @ResponseBody
-    public ResponseEntity<Item> removeAcceptedItem(@PathVariable Long user_id,@PathVariable Long item_id,@RequestHeader("auth") String authorization)
+    public ResponseEntity<Item> removeAcceptedItem(@PathVariable Long item_id,@RequestHeader("auth") String authorization)
     {
         if(!isUserAuthorized(authorization))
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -110,7 +110,29 @@ public class MyRestController {
         ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
 
         try {
-            itemJdbcTemplate.removeAcceptedItem(item_id,user_id);
+            itemJdbcTemplate.removeAcceptedItem(item_id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch (Exception e)
+        {
+            //Toto nastava napr pri neexistujucom uzivatelovi
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/removeitem/{item_id}")
+    @ResponseBody
+    public ResponseEntity<Item> removeItem(@PathVariable Long item_id,@RequestHeader("auth") String authorization)
+    {
+        if(!isUserAuthorized(authorization))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
+        //Nacitanie XML a bean
+        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+        ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
+
+        try {
+            itemJdbcTemplate.removeItem(item_id);
             return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e)
         {
@@ -222,6 +244,28 @@ public class MyRestController {
 
         try {
             List<Item> items = itemJdbcTemplate.getApprovedItems(id);
+            return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
+        }catch (Exception e)
+        {
+            //Toto nastava napr pri neexistujucom uzivatelovi
+            e.printStackTrace();
+            return new ResponseEntity<List<Item>>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/getapproveditems/limit/{id}/{limit_start}/{limit_end}")
+    @ResponseBody
+    public ResponseEntity<List<Item>> getApprovedItemsLimit(@PathVariable Long id,@PathVariable Long limit_start,@PathVariable Long limit_end, @RequestHeader("auth") String authorization)
+    {
+        if(!isUserAuthorized(authorization))
+            return new ResponseEntity<List<Item>>(HttpStatus.UNAUTHORIZED);
+
+        //Nacitanie XML a bean
+        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+        ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
+
+        try {
+            List<Item> items = itemJdbcTemplate.getApprovedItemsLimit(id,limit_start,limit_end);
             return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
         }catch (Exception e)
         {

@@ -188,19 +188,33 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         accpetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mDialog.dismiss();
+                //mDialog.dismiss();
+                new AlertDialog.Builder(view.getContext())
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle(getString(R.string.request_accept_title))
+                        .setMessage(getString(R.string.request_accept_desc))
+                        .setPositiveButton(getString(R.string.request_accept_yes), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                new AsyncAcceptedItemsSetter().execute(user.getId(),item.getId());
+                                mDialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton(getString(R.string.request_accept_no), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mDialog.dismiss();
+                            }
+                        })
+                        .show();
             }
         });
         mDialog.show();
     }
 
-    /**
-     * do api call here to fetch data from server
-     * In example i'm adding data manually
-     */
 
     private void doApiCall() {
         System.out.println("Start xD");
+        items.clear();
         if(allItemsLoaded){
             System.out.println("ALL ITEMS ARE LOADED");
             adapter.removeLoading();
@@ -209,7 +223,6 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
             return;
         }
 
-        items.clear();
         new Handler().postDelayed(new Runnable() {
 
             @Override
@@ -261,6 +274,11 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
 
     @Override
     public void onRefresh() {
+        doRefresh();
+    }
+
+    private void doRefresh()
+    {
         allItemsLoaded = false;
         itemCount = 0;
         currentPage = PAGE_START;
@@ -404,14 +422,65 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
                         new HttpEntity<String>(httpHeaders), Item[].class,user.getId(),itemCount,itemCount+10).getBody();
 
 
-                if(fetchedItems.length == 0) {
+                if(fetchedItems.length == 10) {
                     allItemsLoaded = true;
                     return null;
                 }
 
+
                 showToast("LOADING NEW ITEMS");
 
                 itemCount+=10;
+
+            } catch (HttpServerErrorException e)
+            {
+                //Error v pripade chyby servera
+                System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
+                showToast("SERVER ERROR "+e.getStatusCode());
+            } catch (HttpClientErrorException e2)
+            {
+                //Error v pripade ziadosti klienka
+                System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
+                e2.printStackTrace();
+                showToast("CLIENT ERROR "+e2.getStatusCode());
+            } catch (Exception e3)
+            {
+                e3.printStackTrace();
+                showToast("SOMETHING WENT WRONG");
+            }
+
+            return null;
+        }
+
+    }
+
+    class AsyncAcceptedItemsSetter extends AsyncTask<Long,Void,Void>
+    {
+        @Override
+        protected Void doInBackground(Long... args) {
+            long user_id = args[0];
+            long item_id = args[1];
+
+            try {
+                String AUTH_TOKEN = ConfigManager.getAuthToken(getApplicationContext());
+
+                String uri = ConfigManager.getApiUrl(getApplicationContext())+
+                        "/setaccepteditem/{user_id}/{item_id}";
+                RestTemplate restTemplate = new RestTemplate();
+                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+                HttpHeaders httpHeaders = new HttpHeaders();
+                httpHeaders.add("auth",AUTH_TOKEN);
+
+                restTemplate.exchange(uri, HttpMethod.POST,
+                        new HttpEntity<String>(httpHeaders), Item[].class,user_id,item_id).getBody();
+                showToast("Item accepted!");
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        doRefresh();
+                    }
+                });
 
             } catch (HttpServerErrorException e)
             {

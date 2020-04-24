@@ -67,8 +67,14 @@ public class ItemJdbcTemplate implements ItemDAO {
 
     @Override
     public List<Item> getApprovedItems(long id) {
-        String query = "SELECT * from vavaDB.approved_items a INNER JOIN vavaDB.items i ON a.id = i.id WHERE a.user_id = ?;";
+        String query = "SELECT * from vavaDB.approved_items a INNER JOIN vavaDB.items i ON a.item_id = i.id INNER JOIN vavaDB.users u ON a.user_id = u.id WHERE a.user_id = ?;";
         return jdbcTemplate.query(query, new Object[]{id}, new ItemMapper());
+    }
+
+    @Override
+    public List<Item> getApprovedItemsLimit(long id, long limit_start, long limit_end) {
+        String query = "SELECT * from vavaDB.approved_items a INNER JOIN vavaDB.items i ON a.item_id = i.id INNER JOIN vavaDB.users u ON a.user_id = u.id WHERE a.user_id = ? LIMIT ? , ?;";
+        return jdbcTemplate.query(query, new Object[]{id,limit_start,limit_end}, new ItemMapper());
     }
 
     @Override
@@ -80,13 +86,21 @@ public class ItemJdbcTemplate implements ItemDAO {
     }
 
     @Override
-    public void removeAcceptedItem(long item_id, long user_id) {
-        String query = "DELETE FROM vavaDB.approved_items WHERE user_id = ? and item_id = ?";
-        String query2 = "DELETE FROM vavaDB.items WHERE user_id = ? and id = ?";
+    public void removeAcceptedItem(long item_id) {
+        String user_getter_query = "select user_id from vavaDB.approved_items WHERE item_id = ?";
+        String query = "DELETE FROM vavaDB.approved_items WHERE item_id = ?";
+        String query2 = "DELETE FROM vavaDB.items WHERE id = ?";
         String query3 = "UPDATE vavaDB.users SET reputation = reputation + ? WHERE id = ?";
-        jdbcTemplate.update(query, user_id,item_id);
-        jdbcTemplate.update(query2, user_id,item_id);
-        jdbcTemplate.update(query3,REPUTATION_INCREASE,user_id);
+        long userId = jdbcTemplate.queryForObject(user_getter_query,new Object[]{item_id},Long.class);
+        jdbcTemplate.update(query,item_id);
+        jdbcTemplate.update(query2,item_id);
+        jdbcTemplate.update(query3,REPUTATION_INCREASE,userId);
+    }
+
+    @Override
+    public void removeItem(long item_id) {
+        String query = "delete from items where id = ?";
+        jdbcTemplate.update(query, item_id);
     }
 
 

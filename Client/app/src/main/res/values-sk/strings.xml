@@ -39,7 +39,7 @@
     <string name="Open">Opening?</string>
     <string name="Close">Closing?</string>
     <string name="finish_req">Dokoncit</string>
-    <string name="navigation_main_menu">Hlavé menu</string>
+    <string name="navigation_main_menu">Hlavné menu</string>
     <string name="navigation_my_account">Môj účet</string>
     <string name="navigation_my_requests">Moje žiadosti</string>
     <string name="navigation_accepted_requests">Prijaté ponuky</string>
@@ -57,4 +57,14 @@
     <string name="quit_desc">Naozaj chcete zavrieť aplikáciu?</string>
     <string name="quit_no">Nie, zostať</string>
     <string name="quit_yes">Áno, zavrieť</string>
+    <string name="request_accept_title">Chcete prijat túto žiadosť?</string>
+    <string name="request_accept_desc">Naozaj chcete prijať túto žiadosť? Toto sa nedá zrušiť</string>
+    <string name="request_accept_yes">Prijať</string>
+    <string name="request_accept_no">Odmietnuť</string>
+    <string name="request_confirm_title">Chcete označiť žiadosť za vybavenú?</string>
+    <string name="request_confirm_desc">Toto označí žiadosť ako vybavenú. Chcete pokračovať?</string>
+    <string name="request_delete_title">Chcete zmaza vašu ponuku?</string>
+    <string name="request_delete_desc">Toto zmaže túto ponuku. Chcete pokračovať?</string>
+    <string name="answer_yes">Áno.</string>
+    <string name="answer_no">Nie.</string>
 </resources>

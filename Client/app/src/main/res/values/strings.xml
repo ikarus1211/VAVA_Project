@@ -67,4 +67,14 @@
     <string name="quit_desc">Do you really want to quit?</string>
     <string name="quit_no">No, stay</string>
     <string name="quit_yes">Yes, quit</string>
+    <string name="request_accept_title">Do you want to accept this request?</string>
+    <string name="request_accept_desc">Do you really want to accept this request? You can`t cancel this!</string>
+    <string name="request_accept_yes">Accept</string>
+    <string name="request_accept_no">Decline</string>
+    <string name="request_confirm_title">Do you want to set request as done?</string>
+    <string name="request_confirm_desc">This will set request as done. Do you want to continue?</string>
+    <string name="request_delete_title">Do you want to delete this request?</string>
+    <string name="request_delete_desc">This will delete the request. Do you wan to continue?</string>
+    <string name="answer_yes">Yes</string>
+    <string name="answer_no">No.</string>
 </resources>

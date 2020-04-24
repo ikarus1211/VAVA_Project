@@ -10,7 +10,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -171,8 +173,45 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
 
         finishButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
+            public void onClick(View view) {
+                //ak je prijaty tak potvrdit dorucenie ak nie tak potvrdit zrusenie
+                if(item.isAccepted()) {
+                    new AlertDialog.Builder(view.getContext())
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setTitle(getString(R.string.request_confirm_title))
+                            .setMessage(getString(R.string.request_confirm_desc))
+                            .setPositiveButton(getString(R.string.answer_yes), new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    new AsyncItemConfirm().execute(item.getId());
+                                    mDialog.dismiss();
+                                }
+                            })
+                            .setNegativeButton(getString(R.string.answer_no), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    mDialog.dismiss();
+                                }
+                            })
+                            .show();
+                }else {
+                    new AlertDialog.Builder(view.getContext())
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setTitle(getString(R.string.request_delete_title))
+                            .setMessage(getString(R.string.request_delete_desc))
+                            .setPositiveButton(getString(R.string.answer_yes), new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    new AsyncItemDelete().execute(item.getId());
+                                    mDialog.dismiss();
+                                }
+                            })
+                            .setNegativeButton(getString(R.string.answer_no), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    mDialog.dismiss();
+                                }
+                            })
+                            .show();
+                }
             }
         });
 
@@ -302,6 +341,104 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
                 showToast("LOADING NEW ITEMS");
 
                 itemCount+=10;
+
+            } catch (HttpServerErrorException e)
+            {
+                //Error v pripade chyby servera
+                System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
+                showToast("SERVER ERROR "+e.getStatusCode());
+            } catch (HttpClientErrorException e2)
+            {
+                //Error v pripade ziadosti klienka
+                System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
+                e2.printStackTrace();
+                showToast("CLIENT ERROR "+e2.getStatusCode());
+            } catch (Exception e3)
+            {
+                e3.printStackTrace();
+                showToast("SOMETHING WENT WRONG");
+            }
+
+            return null;
+        }
+
+    }
+
+    class AsyncItemConfirm extends AsyncTask<Long,Void,Void>
+    {
+        @Override
+        protected Void doInBackground(Long... args) {
+            Long itemId = args[0];
+
+            try {
+                String AUTH_TOKEN = ConfigManager.getAuthToken(getApplicationContext());
+
+                String uri = ConfigManager.getApiUrl(getApplicationContext())+
+                        "/removeaccepteditem/{item_id}";
+                RestTemplate restTemplate = new RestTemplate();
+                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+                HttpHeaders httpHeaders = new HttpHeaders();
+                httpHeaders.add("auth",AUTH_TOKEN);
+
+                restTemplate.exchange(uri, HttpMethod.POST,
+                        new HttpEntity<String>(httpHeaders), Item[].class,itemId).getBody();
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        onRefresh();
+                    }
+                });
+
+
+            } catch (HttpServerErrorException e)
+            {
+                //Error v pripade chyby servera
+                System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
+                showToast("SERVER ERROR "+e.getStatusCode());
+            } catch (HttpClientErrorException e2)
+            {
+                //Error v pripade ziadosti klienka
+                System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
+                e2.printStackTrace();
+                showToast("CLIENT ERROR "+e2.getStatusCode());
+            } catch (Exception e3)
+            {
+                e3.printStackTrace();
+                showToast("SOMETHING WENT WRONG");
+            }
+
+            return null;
+        }
+
+    }
+
+    class AsyncItemDelete extends AsyncTask<Long,Void,Void>
+    {
+        @Override
+        protected Void doInBackground(Long... args) {
+            Long itemId = args[0];
+
+            try {
+                String AUTH_TOKEN = ConfigManager.getAuthToken(getApplicationContext());
+
+                String uri = ConfigManager.getApiUrl(getApplicationContext())+
+                        "/removeitem/{item_id}";
+                RestTemplate restTemplate = new RestTemplate();
+                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+                HttpHeaders httpHeaders = new HttpHeaders();
+                httpHeaders.add("auth",AUTH_TOKEN);
+
+                restTemplate.exchange(uri, HttpMethod.POST,
+                        new HttpEntity<String>(httpHeaders), Item[].class,itemId).getBody();
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        onRefresh();
+                    }
+                });
+
 
             } catch (HttpServerErrorException e)
             {

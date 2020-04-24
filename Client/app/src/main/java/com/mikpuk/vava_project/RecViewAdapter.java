@@ -95,7 +95,10 @@ public class RecViewAdapter extends RecyclerView.Adapter<BaseViewHolder>  {
     }
 
     Item getItem(int position) {
-        return mPostItems.get(position);
+        if(mPostItems.size() < position-1 || position < 0)
+            return null;
+        else
+            return mPostItems.get(position);
     }
 
     public class ViewHolder extends BaseViewHolder implements View.OnClickListener {

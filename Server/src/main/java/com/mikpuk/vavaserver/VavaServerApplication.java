@@ -22,7 +22,7 @@ public class VavaServerApplication {
 		//testCase();
 		//testCase2();
 		//testCase3();
-		testCase4();
+		//testCase4();
 	}
 
 	public static void testCase4()
@@ -32,14 +32,14 @@ public class VavaServerApplication {
 		try {
 
 			String uri = "http://localhost:5000"+
-					"/setaccepteditem/{user_id}/{item_id}";
+					"/removeitem/{item_id}";
 			RestTemplate restTemplate = new RestTemplate();
 			restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 			HttpHeaders httpHeaders = new HttpHeaders();
 			httpHeaders.add("auth",AUTH_TOKEN);
 
 			restTemplate.exchange(uri, HttpMethod.POST,
-					new HttpEntity<String>(httpHeaders), Item.class,1,7);
+					new HttpEntity<String>(httpHeaders), Item.class,17);
 
 		} catch (HttpServerErrorException e)
 		{
@@ -56,7 +56,7 @@ public class VavaServerApplication {
 		}
 
 		/*try {
-			String uri = "http://localhost:5000/getotheritems/limit/{id}/{limit_start}/{limit_end}";
+			String uri = "http://localhost:5000/getapproveditems/limit/{id}/{limit_start}/{limit_end}";
 			RestTemplate restTemplate = new RestTemplate();
 
 			HttpHeaders httpHeaders = new HttpHeaders();
@@ -79,7 +79,7 @@ public class VavaServerApplication {
 		{
 			System.out.println("caught other exception");
 			e3.printStackTrace();
-		}*/
+		}
 
 		/*try {
 
