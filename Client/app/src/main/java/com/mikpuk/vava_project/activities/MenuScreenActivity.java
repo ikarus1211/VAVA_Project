@@ -6,13 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-<<<<<<< HEAD
 import androidx.drawerlayout.widget.DrawerLayout;
-=======
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
->>>>>>> 244c67c91656da773483a3410f1fbba18f43bbaa
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -25,13 +22,11 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-<<<<<<< HEAD
+import android.os.Looper;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
-=======
 import android.os.Handler;
->>>>>>> 244c67c91656da773483a3410f1fbba18f43bbaa
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -46,11 +41,8 @@ import com.mikpuk.vava_project.Item;
 import com.mikpuk.vava_project.OtherReqItemAdapter;
 import com.mikpuk.vava_project.PaginationScrollListener;
 import com.mikpuk.vava_project.R;
-<<<<<<< HEAD
 import com.mikpuk.vava_project.SceneManager;
-=======
 import com.mikpuk.vava_project.RecViewAdapter;
->>>>>>> 244c67c91656da773483a3410f1fbba18f43bbaa
 import com.mikpuk.vava_project.User;
 
 import org.springframework.http.HttpEntity;
@@ -70,11 +62,8 @@ import butterknife.ButterKnife;
 import static com.mikpuk.vava_project.Constants.LOCATION_PERM_CODE;
 import static com.mikpuk.vava_project.PaginationScrollListener.PAGE_START;
 
-<<<<<<< HEAD
-public class MenuScreenActivity extends AppCompatActivity{
-=======
+
 public class MenuScreenActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener,RecViewAdapter.OnItemListener {
->>>>>>> 244c67c91656da773483a3410f1fbba18f43bbaa
 
     private boolean permissionGranted = false;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -83,8 +72,6 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
 
     private AppLocationManager appLocationManager;
     private Dialog mDialog;
-<<<<<<< HEAD
-=======
 
     @BindView(R.id.recyclerView100)
     RecyclerView mRecyclerView;
@@ -102,8 +89,6 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
 
     int itemCount = 0;
 
-
->>>>>>> 244c67c91656da773483a3410f1fbba18f43bbaa
     private static final String TAG = "MainActivity";
 
     //Navigation bar
@@ -123,37 +108,10 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         getGpsStatus();
         getLocationPermission();
 
-<<<<<<< HEAD
-        myLView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                runDialog(i);
-=======
-        myReqButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadMyReqUi();
-            }
-        });
-
-        acReqButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadAccepted();
->>>>>>> 244c67c91656da773483a3410f1fbba18f43bbaa
-            }
-        });
 
         //Spusta nacitanie listView
         AsyncOtherItemsGetter getter = new AsyncOtherItemsGetter();
         getter.execute();
-
-        /*myLView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                runDialog(i);
-            }
-        });*/
 
         ButterKnife.bind(this);
 
@@ -330,28 +288,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         alert.show();
     }
 
-
-<<<<<<< HEAD
-    private void fillMyRequestsList(Item[] items)
-    {
-        List<Item> itemList = new ArrayList<>();
-        for (Item item:items
-        ) {
-            itemList.add(item);
-        }
-
-        System.out.println("VYKONAM 6");
-        final  OtherReqItemAdapter adapter = new OtherReqItemAdapter(this, R.layout.item_main_menu, itemList);
-
-        runOnUiThread(new Runnable() {
-            public void run() {
-                myLView.setAdapter(adapter);
-            }
-        });
-    }
-
-=======
-    /*
+        /*
      * Function checks permissions and then initialize the button form mapView
      */
     private void init()
@@ -363,41 +300,8 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
             mLocation = appLocationManager.getmLocation();
             System.out.println(appLocationManager.getmLocation());
             System.out.println(appLocationManager.generateAddress());
-
-            mapButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mLocation = appLocationManager.getmLocation();
-                    System.out.println(appLocationManager.getmLocation());
-                    System.out.println(appLocationManager.generateAddress());
-
-                    if(mLocation == null) {
-                        showToast("Location not set");
-                        return;
-                    }
-                    Intent intent = new Intent(MenuScreenActivity.this, MapViewActivity.class);
-                    intent.putExtra("location", mLocation);
-                    startActivity(intent);
-                }
-            });
         }
     }
-
-
-    private void loadMyReqUi()
-    {
-        Intent intent = new Intent(this, MyRequestsActivity.class);
-        intent.putExtra("user",user);
-        startActivity(intent);
-    }
-
-    private void loadAccepted()
-    {
-        Intent intent = new Intent(this, AcceptedRequest.class);
-        intent.putExtra("user",user);
-        startActivity(intent);
-    }
->>>>>>> 244c67c91656da773483a3410f1fbba18f43bbaa
 
 
     /*
@@ -429,17 +333,6 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
 
     }
 
-
-<<<<<<< HEAD
-=======
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-    }
-
-
->>>>>>> 244c67c91656da773483a3410f1fbba18f43bbaa
     /*
      * Request location permission, so that we can get the location of the
      * device.
@@ -501,7 +394,6 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
                         new HttpEntity<String>(httpHeaders), Item[].class,user.getId()).getBody();
 
                 showToast("ITEMS LOADED!");
-                doApiCall();
 
             } catch (HttpServerErrorException e)
             {

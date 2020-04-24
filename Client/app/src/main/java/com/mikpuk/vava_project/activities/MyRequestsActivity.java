@@ -3,27 +3,20 @@ package com.mikpuk.vava_project.activities;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-<<<<<<< HEAD
+import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
-=======
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-
->>>>>>> 244c67c91656da773483a3410f1fbba18f43bbaa
 
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-<<<<<<< HEAD
 import android.view.Gravity;
 import android.view.MenuItem;
-=======
 import android.os.Handler;
->>>>>>> 244c67c91656da773483a3410f1fbba18f43bbaa
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -37,11 +30,8 @@ import com.mikpuk.vava_project.Item;
 import com.mikpuk.vava_project.MyReqItemAdapter;
 import com.mikpuk.vava_project.PaginationScrollListener;
 import com.mikpuk.vava_project.R;
-<<<<<<< HEAD
 import com.mikpuk.vava_project.SceneManager;
-=======
 import com.mikpuk.vava_project.RecViewAdapter;
->>>>>>> 244c67c91656da773483a3410f1fbba18f43bbaa
 import com.mikpuk.vava_project.User;
 
 import org.springframework.http.HttpEntity;
@@ -93,8 +83,15 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.rec_view_my_request);
+        setContentView(R.layout.layout_my_requests);
         createReq = findViewById(R.id.createButton101);
+
+        user = (User)getIntent().getSerializableExtra("user");
+        //Set up navigation bar
+        Toolbar test = findViewById(R.id.toolbar);
+
+        SceneManager.initNavigationBar(getString(R.string.navigation_my_requests),R.id.my_requests_dl,R.id.my_requests_navView,this,this,user);
+
         createReq.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -106,12 +103,7 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
         AsyncMyItemsGetter asyncItemGetter = new AsyncMyItemsGetter();
         asyncItemGetter.execute();
 
-<<<<<<< HEAD
-        //Set up navigation bar
-        SceneManager.initNavigationBar(getString(R.string.navigation_my_requests),R.id.my_requests_dl,R.id.my_requests_navView,this,this,user);
 
-        myLView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-=======
         ButterKnife.bind(this);
 
         swipeRefresh.setOnRefreshListener(this);
@@ -141,7 +133,6 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
                 return isLastPage;
             }
 
->>>>>>> 244c67c91656da773483a3410f1fbba18f43bbaa
             @Override
             public boolean isLoading() {
                 return isLoading;
@@ -281,7 +272,6 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
                         new HttpEntity<String>(httpHeaders), Item[].class,user.getId()).getBody();
 
                 showToast("ITEMS LOADED!");
-                doApiCall();
 
             } catch (HttpServerErrorException e)
             {

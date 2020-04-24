@@ -31,7 +31,7 @@ public class SceneManager {
         NavigationView navigationView;
 
         //Nastavenie horneho panelu
-        Toolbar toolbar = (Toolbar) appCompatActivity.findViewById(R.id.toolbar);
+        Toolbar toolbar = appCompatActivity.findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_navigation);
         toolbar.setTitle(title);
         appCompatActivity.setSupportActionBar(toolbar);

@@ -1,14 +1,13 @@
 package com.mikpuk.vava_project.activities;
 
 import android.os.Bundle;
-<<<<<<< HEAD
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
-=======
 import android.os.Handler;
 import android.widget.ListView;
 
@@ -16,18 +15,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
->>>>>>> 244c67c91656da773483a3410f1fbba18f43bbaa
 
 import com.mikpuk.vava_project.Item;
 import com.mikpuk.vava_project.OtherReqItemAdapter;
 import com.mikpuk.vava_project.PaginationScrollListener;
 import com.mikpuk.vava_project.R;
-<<<<<<< HEAD
 import com.mikpuk.vava_project.SceneManager;
 import com.mikpuk.vava_project.User;
-=======
 import com.mikpuk.vava_project.RecViewAdapter;
->>>>>>> 244c67c91656da773483a3410f1fbba18f43bbaa
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,29 +48,24 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
     private boolean isLastPage = false;
     private int totalPage = 10;
     private boolean isLoading = false;
-    private Item[] fetchedItems;
+    private Item[] fetchedItems = new Item[0];
 
     int itemCount = 0;
 
-    private ListView mListView;
     private User user = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accepted_request);
-<<<<<<< HEAD
-        mListView = findViewById(R.id.acceptedlisView);
         user = (User)getIntent().getSerializableExtra("user");
 
         //Set up navigation bar
-        SceneManager.initNavigationBar(getString(R.string.navigation_accepted_requests),R.id.accepted_requests_dl,R.id.accepted_requests_navView,this,this,user);
-    }
-=======
+        SceneManager.initNavigationBar(getString(R.string.navigation_accepted_requests),R.id.accepted_requests_dl,R.id.accepted_requests_navView,getApplicationContext(),this,user);
+
 
 
         ButterKnife.bind(this);
->>>>>>> 244c67c91656da773483a3410f1fbba18f43bbaa
 
         swipeRefresh.setOnRefreshListener(this);
         mRecyclerView.setHasFixedSize(true);
