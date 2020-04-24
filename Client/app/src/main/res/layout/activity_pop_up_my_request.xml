@@ -26,7 +26,7 @@
         android:layout_height="30dp"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="Detail information"
+        android:text="@string/popup_detail_info"
         android:textColor="@color/orangePrimary"
         android:textSize="20sp"
         android:textStyle="bold" />

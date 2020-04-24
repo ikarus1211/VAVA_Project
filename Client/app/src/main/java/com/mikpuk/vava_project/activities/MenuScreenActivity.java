@@ -76,7 +76,7 @@ public class MenuScreenActivity extends AppCompatActivity{
         user = (User)getIntent().getSerializableExtra("user");
 
         //Set up navigation bar
-        SceneManager.initNavigationBar("Main Menu",R.id.menu_screen_dl,R.id.menu_navView,this,this,user);
+        SceneManager.initNavigationBar(getString(R.string.navigation_main_menu),R.id.menu_screen_dl,R.id.menu_navView,this,this,user);
 
         getGpsStatus();
         getLocationPermission();
@@ -336,15 +336,15 @@ public class MenuScreenActivity extends AppCompatActivity{
             //Ask the user if they want to quit
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setTitle("Do you want to quit?")
-                    .setMessage("Do you really want to quit?")
-                    .setPositiveButton("Yes, quit", new DialogInterface.OnClickListener() {
+                    .setTitle(getString(R.string.quit_title))
+                    .setMessage(getString(R.string.quit_desc))
+                    .setPositiveButton(getString(R.string.quit_yes), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             //Stop the activity
                             finish();
                         }
                     })
-                    .setNegativeButton("No, stay", null)
+                    .setNegativeButton(getString(R.string.quit_no), null)
                     .show();
 
             return true;

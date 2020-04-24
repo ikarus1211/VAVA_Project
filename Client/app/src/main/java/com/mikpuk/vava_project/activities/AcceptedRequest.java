@@ -30,7 +30,7 @@ public class AcceptedRequest extends AppCompatActivity {
         user = (User)getIntent().getSerializableExtra("user");
 
         //Set up navigation bar
-        SceneManager.initNavigationBar("Accepted requests",R.id.accepted_requests_dl,R.id.accepted_requests_navView,this,this,user);
+        SceneManager.initNavigationBar(getString(R.string.navigation_accepted_requests),R.id.accepted_requests_dl,R.id.accepted_requests_navView,this,this,user);
     }
 
 

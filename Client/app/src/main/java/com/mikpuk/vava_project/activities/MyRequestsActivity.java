@@ -70,7 +70,7 @@ public class MyRequestsActivity extends AppCompatActivity {
         asyncItemGetter.execute();
 
         //Set up navigation bar
-        SceneManager.initNavigationBar("My requests",R.id.my_requests_dl,R.id.my_requests_navView,this,this,user);
+        SceneManager.initNavigationBar(getString(R.string.navigation_my_requests),R.id.my_requests_dl,R.id.my_requests_navView,this,this,user);
 
         myLView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

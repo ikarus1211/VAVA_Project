@@ -5,27 +5,27 @@
     <group android:id="@+id/group1">
         <item android:id="@+id/main_menu"
             android:icon="@drawable/ic_main_menu"
-            android:title="Main menu"/>
+            android:title="@string/navigation_main_menu"/>
         <item android:id="@+id/account"
             android:icon="@drawable/ic_profile_pic"
-            android:title="My Account"/>
+            android:title="@string/navigation_my_account"/>
         <item android:id="@+id/my_requests"
             android:icon="@drawable/ic_my_requests"
-            android:title="My requests"/>
+            android:title="@string/navigation_my_requests"/>
         <item android:id="@+id/accepted_requests"
             android:icon="@drawable/ic_accepted_requests"
-            android:title="Accepted requests"/>
+            android:title="@string/navigation_accepted_requests"/>
         <item android:id="@+id/load_map"
             android:icon="@drawable/ic_map"
-            android:title="Open map"/>
+            android:title="@string/navigation_open_map"/>
     </group>
     <group android:id="@+id/group2">
         <item android:id="@+id/settings"
             android:icon="@drawable/ic_settings"
-            android:title="Settings"/>
+            android:title="@string/navigation_settings"/>
         <item android:id="@+id/log_out"
             android:icon="@drawable/ic_log_out"
-            android:title="Log out"/>
+            android:title="@string/navigation_log_out"/>
     </group>
 
 </menu>

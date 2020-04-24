@@ -1,23 +1,25 @@
 package com.mikpuk.vava_project.activities;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.google.android.material.navigation.NavigationView;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.SceneManager;
 import com.mikpuk.vava_project.User;
@@ -27,6 +29,8 @@ import java.util.Locale;
 public class SettingsActivity  extends AppCompatActivity {
 
     private User user = null;
+    Spinner spinner;
+    String language = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,13 +39,43 @@ public class SettingsActivity  extends AppCompatActivity {
         user = (User)getIntent().getSerializableExtra("user");
 
         //Set up navigation bar
-        SceneManager.initNavigationBar("Settings menu",R.id.settings_dl,R.id.settings_navView,this,this,user);
+        SceneManager.initNavigationBar(getString(R.string.navigation_settings),R.id.settings_dl,R.id.settings_navView,this,this,user);
 
         Button languageButton = findViewById(R.id.language_button);
         languageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setLocale("sk");
+                System.out.println(language);
+                setLocale(language);
+            }
+        });
+
+        //Load language dropdown menu
+        loadLanguageSpinner();
+
+    }
+
+    public void loadLanguageSpinner()
+    {
+        spinner = findViewById(R.id.language_spinner);
+        String[] languages = getResources().getStringArray(R.array.languages);
+        final String[] languagesShort = getResources().getStringArray(R.array.languages_short);
+
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item,languages);
+        spinnerAdapter.setDropDownViewResource(R.layout.spinner_dropdown);
+        spinner.setAdapter(spinnerAdapter);
+
+        spinner.getBackground().setColorFilter(Color.parseColor(getResources().getString(R.color.orangePrimary)), PorterDuff.Mode.SRC_ATOP); //Toto meni farbu tej sipocky
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                language = languagesShort[position];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
     }
@@ -53,10 +87,21 @@ public class SettingsActivity  extends AppCompatActivity {
         Configuration conf = res.getConfiguration();
         conf.locale = myLocale;
         res.updateConfiguration(conf, dm);
-        Intent refresh = new Intent(this, SettingsActivity.class);
-        refresh.putExtra("user",user);
-        startActivity(refresh);
+
+        saveLocale(lang);
+
+        Intent intent = new Intent(this, MenuScreenActivity.class);
+        intent.putExtra("user",user);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
         finish();
+    }
+
+    public void saveLocale(String language) {
+        SharedPreferences sharedPreferences = getSharedPreferences("com.mikpukvava_project.PREFERENCES", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("app_language", language);
+        editor.commit();
     }
 
     //Nastavenie kliknutia na hornu listu

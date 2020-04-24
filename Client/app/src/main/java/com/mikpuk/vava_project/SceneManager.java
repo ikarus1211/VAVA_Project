@@ -125,16 +125,16 @@ public class SceneManager {
     {
         new AlertDialog.Builder(context)
                 .setIcon(android.R.drawable.ic_dialog_alert)
-                .setTitle("Do you want to log out?")
-                .setMessage("Do you really want to log out?")
-                .setPositiveButton("Yes, log out", new DialogInterface.OnClickListener() {
+                .setTitle(context.getString(R.string.log_out_title))
+                .setMessage(context.getString(R.string.log_out_desc))
+                .setPositiveButton(context.getString(R.string.log_out_yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(context, LoginActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         context.startActivity(intent);
                     }
                 })
-                .setNegativeButton("No, go back", null)
+                .setNegativeButton(context.getString(R.string.log_out_no), null)
                 .show();
     }
 
