@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.MD5Hashing;
@@ -29,8 +30,10 @@ public class RegistrationActivity extends AppCompatActivity {
     EditText usernameText = null;
     EditText passwordText1 = null;
     EditText passwordText2 = null;
-    EditText emailText = null; //Na tomto sme sa dohodli? Ale tak da sa implementovat
-                                // To tam je zatial len pre efekt
+
+    TextInputLayout usernameLayout;
+    TextInputLayout password1Layout;
+    TextInputLayout password2Layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +42,13 @@ public class RegistrationActivity extends AppCompatActivity {
 
         //Nacitanie UI premennych
         registerButton = findViewById(R.id.button);
-        usernameText = findViewById(R.id.editText2);
-        passwordText1 = findViewById(R.id.editText3);
-        passwordText2 = findViewById(R.id.editText4);
+        usernameText = findViewById(R.id.usernameEditText);
+        passwordText1 = findViewById(R.id.passwEditTextReg);
+        passwordText2 = findViewById(R.id.passwEditTextReg2);
+
+        usernameLayout = findViewById(R.id.usernameInputLayout);
+        password1Layout = findViewById(R.id.passwEditTextLayoutReg);
+        password2Layout = findViewById(R.id.passwEditTextLayoutReg2);
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,21 +66,71 @@ public class RegistrationActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    //Skontrolovanie vstupov a registrovanie do DB
+    private boolean validateFields(String username, String password1, String password2)
+    {
+        boolean showError = false;
+
+        if(username.length() < 6)
+        {
+            usernameLayout.setErrorIconDrawable(R.drawable.ic_error);
+            usernameLayout.setError(getString(R.string.short_username_error));
+            showError = true;
+        }
+        else {
+            if(!isValidUserName(username)) {
+                usernameLayout.setErrorIconDrawable(R.drawable.ic_error);
+                usernameLayout.setError(getString(R.string.invalid_chars_error));
+                showError = true;
+            }
+        }
+
+        if(!password1.equals(password2)){
+            password1Layout.setErrorIconDrawable(R.drawable.ic_error);
+            password1Layout.setError(getString(R.string.password_equal_error));
+            password2Layout.setErrorIconDrawable(R.drawable.ic_error);
+            password2Layout.setError(getString(R.string.password_equal_error));
+            showError = true;
+        }
+
+        if(password1.length() < 8) {
+            password1Layout.setErrorIconDrawable(R.drawable.ic_error);
+            password1Layout.setError(getString(R.string.short_password_error));
+            showError = true;
+        }
+        if(password2.length() < 8) {
+            password2Layout.setErrorIconDrawable(R.drawable.ic_error);
+            password2Layout.setError(getString(R.string.short_password_error));
+            showError = true;
+        }
+
+        if(showError) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isValidUserName(String name) {
+        String control = "^[a-zA-Z0-9._-]+";
+        return name.matches(control);
+    }
+
+    //Registrovanie do DB
     public void registerUser()
     {
         final String username = usernameText.getText().toString();
         final String password1 = passwordText1.getText().toString();
         final String password2 = passwordText2.getText().toString();
 
-        if(!password1.equals(password2)){
-            showToast("Passwords do not match");
-            return;
-        }
+        //Reset errors
+        usernameLayout.setErrorIconDrawable(null);
+        usernameLayout.setError(null);
+        password1Layout.setError(null);
+        password1Layout.setErrorIconDrawable(null);
+        password2Layout.setErrorIconDrawable(null);
+        password2Layout.setError(null);
 
-        if(username.isEmpty() || password1.isEmpty())
-        {
-            showToast("All fields must be filled!");
+        if(!validateFields(username,password1,password2)) {
             return;
         }
 
@@ -108,7 +165,13 @@ public class RegistrationActivity extends AppCompatActivity {
                     System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
                     if(e2.getStatusCode() == HttpStatus.BAD_REQUEST)
                     {
-                        showToast("Username already used!");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                usernameLayout.setErrorIconDrawable(R.drawable.ic_error);
+                                usernameLayout.setError(getString(R.string.username_taken_error));
+                            }
+                        });
                         return;
                     }
                     e2.printStackTrace();

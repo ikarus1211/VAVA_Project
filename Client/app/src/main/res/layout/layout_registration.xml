@@ -8,115 +8,107 @@
     tools:context=".activities.RegistrationActivity">
 
     <Button
-        android:background="@drawable/button_designe_3"
-        android:textColor="@color/pureWhite"
         android:id="@+id/button"
         android:layout_width="145dp"
         android:layout_height="54dp"
-        android:layout_marginTop="532dp"
+        android:layout_marginTop="70dp"
+        android:background="@drawable/button_designe_3"
         android:text="@string/reg_button"
+        android:textColor="@color/pureWhite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/passwEditTextLayoutReg2"/>
 
-    <EditText
-        android:textColor="@color/orangePrimary"
-        android:id="@+id/editText2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:backgroundTint="@color/orangePrimary"
-        android:autofillHints="name"
-        tools:ignore="LabelFor" />
-
-    <EditText
-        android:textColor="@color/orangePrimary"
-        app:backgroundTint="@color/orangePrimary"
-        android:id="@+id/editText3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText2"
-        android:autofillHints="password"
-        tools:ignore="LabelFor" />
-
-    <EditText
-        app:backgroundTint="@color/orangePrimary"
-        android:textColor="@color/orangePrimary"
-        android:id="@+id/editText4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText3"
-        android:autofillHints="password"
-        tools:ignore="LabelFor" />
-
-    <TextView
-        android:textColor="@color/orangePrimary"
-        android:id="@+id/textView"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/usernameInputLayout"
         android:layout_width="250dp"
-        android:layout_height="25dp"
-        android:layout_marginStart="60dp"
-        android:text="@string/write_name"
-        app:layout_constraintBottom_toTopOf="@+id/editText2"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:textColor="@color/orangePrimary"
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:text="@string/write_pass"
-        app:layout_constraintBottom_toTopOf="@+id/editText3"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:textColor="@color/orangePrimary"
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:text="@string/write_reppassw"
-        app:layout_constraintBottom_toTopOf="@+id/editText4"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        app:backgroundTint="@color/orangePrimary"
-        android:textColor="@color/orangePrimary"
-        android:id="@+id/editText5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="80dp"
         android:ems="10"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText4"
-        android:autofillHints="email"
-        tools:ignore="LabelFor" />
-
-    <TextView
         android:textColor="@color/orangePrimary"
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
+        android:textColorHint="@color/orangePrimary"
+        app:backgroundTint="@color/orangePrimary"
+        app:errorEnabled="true"
+        app:hintTextAppearance="@style/textlabel_hint"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/usernameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:autofillHints="@string/write_name"
+            android:ems="10"
+            android:hint="@string/write_name"
+            android:inputType="textNoSuggestions"
+            android:textColor="@color/orangePrimary"
+            android:textColorHint="@color/orangePrimary"
+            app:backgroundTint="@color/orangePrimary" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/passwEditTextLayoutReg"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:text="@string/write_email"
-        app:layout_constraintBottom_toTopOf="@+id/editText5"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/usernameInputLayout"
+        android:textColor="@color/orangePrimary"
+        android:textColorHint="@color/orangePrimary"
+        app:backgroundTint="@color/orangePrimary"
+        app:hintTextAppearance="@style/textlabel_hint"
+        app:errorEnabled="true">
+
+        <EditText
+            android:id="@+id/passwEditTextReg"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:autofillHints="@string/write_pass"
+            android:ems="10"
+            android:hint="@string/write_pass"
+            android:inputType="textPassword"
+            android:textColor="@color/orangePrimary"
+            android:textColorHint="@color/orangePrimary"
+            app:backgroundTint="@color/orangePrimary" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/passwEditTextLayoutReg2"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passwEditTextLayoutReg"
+        android:textColor="@color/orangePrimary"
+        android:textColorHint="@color/orangePrimary"
+        app:backgroundTint="@color/orangePrimary"
+        app:hintTextAppearance="@style/textlabel_hint"
+        app:errorEnabled="true">
+
+        <EditText
+            android:id="@+id/passwEditTextReg2"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:autofillHints="@string/write_reppassw"
+            android:ems="10"
+            android:hint="@string/write_reppassw"
+            android:inputType="textPassword"
+            android:textColor="@color/orangePrimary"
+            android:textColorHint="@color/orangePrimary"
+            app:backgroundTint="@color/orangePrimary" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

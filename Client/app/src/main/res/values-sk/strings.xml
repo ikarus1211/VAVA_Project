@@ -20,9 +20,9 @@
     <string name="log_button">Prihlásiť sa</string>
     <string name="reg_button">Registrácia</string>
     <string name="pass_text">Heslo</string>
-    <string name="write_name">Zadaj svoje používateľské meno:</string>
-    <string name="write_pass">Zadaj svoje heslo:</string>
-    <string name="write_reppassw">Zopakuj svoje heslo:</string>
+    <string name="write_name">Zadajte používateľské meno:</string>
+    <string name="write_pass">Zadajte heslo:</string>
+    <string name="write_reppassw">Zopakujte heslo:</string>
     <string name="write_email">Zadaj svoj email:</string>
     <string name="register_button">Registrácia</string>
     <string name="acepted_req">Prijaté</string>
@@ -67,4 +67,11 @@
     <string name="request_delete_desc">Toto zmaže túto ponuku. Chcete pokračovať?</string>
     <string name="answer_yes">Áno.</string>
     <string name="answer_no">Nie.</string>
+    <string name="empty_string_error">Toto pole nesmie byť prázdne</string>
+    <string name="wrong_credentials_error">Zlé prihlasovacie údaje!</string>
+    <string name="password_equal_error">Heslá musia byť rovnaké!</string>
+    <string name="invalid_chars_error">Toto pole používa neplatné znaky</string>
+    <string name="short_username_error">Používateľské meno musí mať aspoň 6 znakov</string>
+    <string name="short_password_error">Heslo musí mať aspoň 8 znakov</string>
+    <string name="username_taken_error">Používateľské meno sa už používa</string>
 </resources>

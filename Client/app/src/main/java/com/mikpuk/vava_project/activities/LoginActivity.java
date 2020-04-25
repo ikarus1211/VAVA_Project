@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.material.textfield.TextInputLayout;
 import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.MD5Hashing;
@@ -45,6 +47,8 @@ public class LoginActivity extends AppCompatActivity {
     EditText loginText = null;
     EditText passwordText = null;
 
+    TextInputLayout loginInputLayout;
+    TextInputLayout passwordInputLayout;
 
 
     @Override
@@ -55,21 +59,11 @@ public class LoginActivity extends AppCompatActivity {
 
         //Nacitanie UI premennych
         registerButton = findViewById(R.id.RegisterButton);
-        loginText = findViewById(R.id.editText);
-        passwordText = findViewById(R.id.PasswText);
+        loginText = findViewById(R.id.loginEditText);
+        passwordText = findViewById(R.id.passwEditText);
 
-        //Nastavenie onClick spravani tlacidiel
-        if (services())
-        {
-            loginButton = findViewById(R.id.LoginButton);
-            loginButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    logInUser();
-                }
-            });
-        }
-
+        loginInputLayout = findViewById(R.id.loginEditTextLayout);
+        passwordInputLayout = findViewById(R.id.passwEditTextLayout);
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,6 +71,31 @@ public class LoginActivity extends AppCompatActivity {
                 loadRegistrationScreen();
             }
         });
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true) {
+                    if (services()) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                loginButton = findViewById(R.id.LoginButton);
+                                loginButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        logInUser();
+                                    }
+                                });
+                            }
+                        });
+                        break;
+                    }
+                    SystemClock.sleep(100);
+                }
+            }
+        }).start();
 
     }
 
@@ -149,9 +168,25 @@ public class LoginActivity extends AppCompatActivity {
     private void logInUser() {
         final String username = loginText.getText().toString();
         final String password = passwordText.getText().toString();
+        boolean showError = false;
 
-        if(username.isEmpty() || password.isEmpty()) {
-            showToast("Enter your username and password");
+        //Refresh errors
+        loginInputLayout.setError(null);
+        loginInputLayout.setErrorIconDrawable(null);
+        passwordInputLayout.setError(null);
+        passwordInputLayout.setErrorIconDrawable(null);
+
+        if(username.isEmpty()) {
+            loginInputLayout.setError(getString(R.string.empty_string_error));
+            loginInputLayout.setErrorIconDrawable(R.drawable.ic_error);
+            showError=true;
+        }
+        if(password.isEmpty()) {
+            passwordInputLayout.setError(getString(R.string.empty_string_error));
+            passwordInputLayout.setErrorIconDrawable(R.drawable.ic_error);
+            showError = true;
+        }
+        if(showError) {
             return;
         }
 
@@ -190,7 +225,15 @@ public class LoginActivity extends AppCompatActivity {
                     System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
                     if(e2.getStatusCode() == HttpStatus.BAD_REQUEST)
                     {
-                        showToast("Check your username or password");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                loginInputLayout.setError(getString(R.string.wrong_credentials_error));
+                                loginInputLayout.setErrorIconDrawable(R.drawable.ic_error);
+                                passwordInputLayout.setError(getString(R.string.wrong_credentials_error));
+                                passwordInputLayout.setErrorIconDrawable(R.drawable.ic_error);
+                            }
+                        });
                         return;
                     }
                     e2.printStackTrace();

@@ -30,8 +30,8 @@
     <string name="log_button">Login</string>
     <string name="reg_button">Register</string>
     <string name="pass_text">Password</string>
-    <string name="write_name">Write your username:</string>
-    <string name="write_pass">Write your password:</string>
+    <string name="write_name">Enter your username:</string>
+    <string name="write_pass">Enter your password:</string>
     <string name="write_reppassw">Repeat your password:</string>
     <string name="write_email">Write your email:</string>
     <string name="register_button">Register</string>
@@ -77,4 +77,11 @@
     <string name="request_delete_desc">This will delete the request. Do you wan to continue?</string>
     <string name="answer_yes">Yes</string>
     <string name="answer_no">No.</string>
+    <string name="empty_string_error">This field needs to be filled</string>
+    <string name="wrong_credentials_error">Wrong credentials!</string>
+    <string name="password_equal_error">Passwords are not equal!</string>
+    <string name="invalid_chars_error">This field uses invalid characters!</string>
+    <string name="short_username_error">Your username need to have at least 6 characters</string>
+    <string name="short_password_error">Your password needs to have at least 8 characters</string>
+    <string name="username_taken_error">Username already exists</string>
 </resources>

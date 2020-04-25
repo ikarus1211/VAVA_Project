@@ -11,59 +11,86 @@
         android:id="@+id/LoginButton"
         android:layout_width="140dp"
         android:layout_height="60dp"
-        android:layout_marginTop="444dp"
+        android:layout_marginTop="100dp"
         android:background="@drawable/button_designe_1"
         android:text="@string/log_button"
         android:textColor="@color/pureWhite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/PasswText"
-        android:layout_width="250dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="280dp"
-        android:autofillHints="password"
-        android:ems="10"
-        android:hint="@string/pass_text"
-        android:inputType="textPassword"
-        android:textColor="@color/orangePrimary"
-        android:textColorHint="@color/orangePrimary"
-        app:backgroundTint="@color/orangePrimary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/passwEditTextLayout" />
 
     <Button
         android:id="@+id/RegisterButton"
         android:layout_width="140dp"
         android:layout_height="60dp"
-        android:layout_marginTop="548dp"
+        android:layout_marginTop="44dp"
         android:background="@drawable/button_designe_2"
         android:text="@string/reg_button"
         android:textColor="@color/pureWhite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/LoginButton" />
 
-    <EditText
-        android:id="@+id/editText"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/loginEditTextLayout"
         android:layout_width="250dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="184dp"
-        android:autofillHints="name"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="170dp"
         android:ems="10"
-        android:hint="@string/user_name"
-        android:inputType="textPersonName"
-        android:textColor="@color/orangePrimary"
-        android:textColorHint="@color/orangePrimary"
-        app:backgroundTint="@color/orangePrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="@color/orangePrimary"
+        android:textColorHint="@color/orangePrimary"
+        app:backgroundTint="@color/orangePrimary"
+        app:hintTextColor="@color/orangePrimary"
+        app:boxBackgroundColor="@color/orangePrimary"
+        app:boxStrokeColor="@color/orangePrimary"
+        app:hintTextAppearance="@style/textlabel_hint"
+        app:errorEnabled="true">
+
+        <EditText
+            android:id="@+id/loginEditText"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:autofillHints="@string/user_name"
+            android:hint="@string/user_name"
+            android:inputType="textPersonName"
+            android:textColor="@color/orangePrimary"
+            android:textColorHint="@color/orangePrimary"
+            app:backgroundTint="@color/orangePrimary" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/passwEditTextLayout"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/loginEditTextLayout"
+        android:textColor="@color/orangePrimary"
+        android:textColorHint="@color/orangePrimary"
+        app:backgroundTint="@color/orangePrimary"
+        app:hintTextAppearance="@style/textlabel_hint"
+        app:errorEnabled="true">
+
+        <EditText
+            android:id="@+id/passwEditText"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:autofillHints="@string/pass_text"
+            android:ems="10"
+            android:hint="@string/pass_text"
+            android:inputType="textPassword"
+            android:textColor="@color/orangePrimary"
+            android:textColorHint="@color/orangePrimary"
+            app:backgroundTint="@color/orangePrimary" />
+    </com.google.android.material.textfield.TextInputLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

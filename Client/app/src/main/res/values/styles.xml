@@ -6,6 +6,22 @@
         <item name="colorPrimary">@color/pureWhite</item>
         <item name="colorPrimaryDark">@color/popUpBackground</item>
         <item name="colorAccent">@color/textGreen</item>
+
+        <!-- Nastavenie texfieldu-->
+        <item name="colorControlNormal">@color/orangePrimary</item>
+        <item name="colorControlActivated">@color/orangePrimary</item>
+        <item name="colorControlHighlight">@color/orangePrimary</item>
+        <!--Tu by za zislo pohrat s tou cervenou aby tam aj sedela-->
+        <item name="colorError">@color/design_default_color_error</item>
+    </style>
+
+    <style name="textlabel_hint" parent="TextAppearance.Design.Hint">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="textlabel_error" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/design_default_color_error</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
 </resources>
