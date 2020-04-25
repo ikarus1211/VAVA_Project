@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -80,14 +81,16 @@ public class CreateMyRequestActivity extends AppCompatActivity {
                     String AUTH_TOKEN = ConfigManager.getAuthToken(getApplicationContext());
 
                     String uri = ConfigManager.getApiUrl(getApplicationContext())+
-                            "/createitem/{name}/{description}/{longtitude}/{latitude}/{user_id}/{type_id}";
+                            "/createitem/{longtitude}/{latitude}/{user_id}/{type_id}";
                     RestTemplate restTemplate = new RestTemplate();
                     restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
                     HttpHeaders httpHeaders = new HttpHeaders();
                     httpHeaders.add("auth",AUTH_TOKEN);
+                    httpHeaders.add("name",itemNameText.getText().toString());
+                    httpHeaders.add("description", Base64.encodeToString(descriptionText.getText().toString().getBytes(),Base64.URL_SAFE));
 
                     restTemplate.exchange(uri, HttpMethod.POST,
-                            new HttpEntity<String>(httpHeaders), Item.class,itemNameText.getText(),descriptionText.getText(),
+                            new HttpEntity<String>(httpHeaders), Item.class,
                             longitude,latitude,user.getId(),7);
 
                     showToast("ITEM ADDED!");

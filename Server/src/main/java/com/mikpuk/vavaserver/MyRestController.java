@@ -1,6 +1,7 @@
 package com.mikpuk.vavaserver;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -367,12 +368,13 @@ public class MyRestController {
         }
     }
 
-    @RequestMapping(value = "/createitem/{name}/{description}/{longtitude}/{latitude}/{user_id}/{type_id}")
+    @RequestMapping(value = "/createitem/{longtitude}/{latitude}/{user_id}/{type_id}")
     @ResponseBody
-    public ResponseEntity<Void> createItem(@PathVariable String name, @PathVariable String description,@PathVariable double longtitude,
+    public ResponseEntity<Void> createItem(@RequestHeader("name") String name, @RequestHeader("description") String description,@PathVariable double longtitude,
                                            @PathVariable double latitude,@PathVariable long user_id, @PathVariable long type_id,
                                            @RequestHeader("auth") String authorization)
     {
+        description = new String(Base64.decodeBase64(description.getBytes()));
         if(!isUserAuthorized(authorization)) {
             logger.info("Unauthorized access!");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -396,12 +398,13 @@ public class MyRestController {
         }
     }
 
-    @RequestMapping(value = "/updateitem/{id}/{name}/{description}/{longtitude}/{latitude}/{accepted}")
+    @RequestMapping(value = "/updateitem/{id}/{longtitude}/{latitude}/{accepted}")
     @ResponseBody
-    public ResponseEntity<Void> updateItem(@PathVariable String name, @PathVariable String description,@PathVariable double longtitude,
+    public ResponseEntity<Void> updateItem(@RequestHeader("name") String name, @RequestHeader("description") String description,@PathVariable double longtitude,
                                            @PathVariable double latitude,@PathVariable long id, @PathVariable boolean accepted,
                                            @RequestHeader("auth") String authorization)
     {
+        description = new String(Base64.decodeBase64(description.getBytes()));
         if(!isUserAuthorized(authorization)) {
             logger.info("Unauthorized access!");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
