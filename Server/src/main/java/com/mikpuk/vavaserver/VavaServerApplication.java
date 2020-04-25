@@ -1,5 +1,7 @@
 package com.mikpuk.vavaserver;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpEntity;
@@ -11,14 +13,24 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
+import java.net.MalformedURLException;
+
 
 @SpringBootApplication
 public class VavaServerApplication {
 
 	public static void main(String[] args) {
+		try {
+			new File("my_logs.log").delete();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		SpringApplication.run(VavaServerApplication.class, args);
-
+		Logger logger = LoggerFactory.getLogger(VavaServerApplication.class);
+		logger.info("Application logging starting");
 		//testCase();
 		//testCase2();
 		//testCase3();
@@ -32,14 +44,14 @@ public class VavaServerApplication {
 		try {
 
 			String uri = "http://localhost:5000"+
-					"/removeitem/{item_id}";
+					"/register/{username}/{password}";
 			RestTemplate restTemplate = new RestTemplate();
 			restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 			HttpHeaders httpHeaders = new HttpHeaders();
 			httpHeaders.add("auth",AUTH_TOKEN);
 
 			restTemplate.exchange(uri, HttpMethod.POST,
-					new HttpEntity<String>(httpHeaders), Item.class,17);
+					new HttpEntity<String>(httpHeaders), Void.class,"testik1236","zle heslo RIP");
 
 		} catch (HttpServerErrorException e)
 		{
