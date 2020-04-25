@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,12 +38,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.security.KeyPairGeneratorSpi;
 import java.util.Locale;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static com.mikpuk.vava_project.Constants.ERROR_DIALOG_REQUEST;
 

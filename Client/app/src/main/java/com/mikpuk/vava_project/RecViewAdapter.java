@@ -88,6 +88,9 @@ public class RecViewAdapter extends RecyclerView.Adapter<BaseViewHolder>  {
     public void removeLoading() {
         isLoaderVisible = false;
         int position = mPostItems.size() - 1;
+        if(position < 0) {
+            return;
+        }
         Item item = getItem(position);
         if (item != null) {
             mPostItems.remove(position);
@@ -100,7 +103,7 @@ public class RecViewAdapter extends RecyclerView.Adapter<BaseViewHolder>  {
         notifyDataSetChanged();
     }
 
-    Item getItem(int position) {
+    public Item getItem(int position) {
         if(mPostItems.size() < position-1 || position < 0)
             return null;
         else

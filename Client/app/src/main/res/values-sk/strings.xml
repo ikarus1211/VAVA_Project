@@ -74,4 +74,5 @@
     <string name="short_username_error">Používateľské meno musí mať aspoň 6 znakov</string>
     <string name="short_password_error">Heslo musí mať aspoň 8 znakov</string>
     <string name="username_taken_error">Používateľské meno sa už používa</string>
+    <string name="no_more_items_error">Žiadne ďalšie dostupné ponuky</string>
 </resources>

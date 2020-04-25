@@ -108,8 +108,6 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
         });
         mDialog = new Dialog(this);
         user = (User)getIntent().getSerializableExtra("user");
-        /*AsyncMyItemsGetter asyncItemGetter = new AsyncMyItemsGetter();
-        asyncItemGetter.execute();*/
 
         HyperLog.i(TAG,"Creating recycle view");
         ButterKnife.bind(this);
@@ -170,7 +168,8 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
 
 
         textName.setText(user.getUsername());
-        Item item = items.get(pos);
+        //Item item = items.get(pos); TU BOLA CHYBA! ITEMS VYPRAZDNUJEME!
+        Item item = adapter.getItem(pos);
         textItemName.setText(item.getName());
         textDescription.setText(item.getDescription());
         textAddress.setText(appLocationManager.generateAddress(item.getLatitude(), item.getLongtitude()));
@@ -249,37 +248,13 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
         });
     }
 
-    /**
-     * do api call here to fetch data from server
-     * In example i'm adding data manually
-     */
-
-    private void doApiCall() {
-        if(allItemsLoaded){
-            System.out.println("ALL ITEMS ARE LOADED");
-            return;
-        }
-
-        items.clear();
+    private void doneApiCall() {
         new Handler().postDelayed(new Runnable() {
 
             @Override
             public void run() {
-
-                fetchedItems = new Item[0];
-
-                new AsyncMyItemsGetter().execute();
-
-                while(fetchedItems.length == 0)
-                {
-                    if(allItemsLoaded)  {
-                        swipeRefresh.setRefreshing(false);
-                        adapter.removeLoading();
-                        showToast("There are no more items left!");
-                        return;
-                    }
-                    System.out.println("SLEEPING");
-                    SystemClock.sleep(500); //Aby sme nevytazili UI thread
+                if(allItemsLoaded){
+                    showToast(getString(R.string.no_more_items_error));
                 }
 
                 for (Item item:fetchedItems)
@@ -290,20 +265,30 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
                 /**
                  * manage progress view
                  */
-                if (currentPage != PAGE_START) adapter.removeLoading();
+                if (currentPage != PAGE_START || allItemsLoaded)
+                    adapter.removeLoading();
+
                 adapter.addItems(items);
                 swipeRefresh.setRefreshing(false);
 
                 // check weather is last page or not
-                if (currentPage < totalPage) {
+                if (currentPage < totalPage && !allItemsLoaded) {
                     adapter.addLoading();
                 } else {
                     isLastPage = true;
                 }
                 isLoading = false;
             }
-        }, 1500);
+        }, 100);
     }
+
+    private void doApiCall() {
+        items.clear();
+        fetchedItems = new Item[0];
+        new AsyncMyItemsGetter().execute();
+    }
+
+
     @Override
     public void onRefresh() {
         itemCount = 0;
@@ -337,14 +322,12 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
                         new HttpEntity<String>(httpHeaders), Item[].class,user.getId(),itemCount,itemCount+10).getBody();
 
 
-                if(fetchedItems.length == 0) {
+                if(fetchedItems.length < 10) {
                     allItemsLoaded = true;
-                    return null;
                 }
                 HyperLog.i(TAG,"Loading new items");
-                showToast("LOADING NEW ITEMS");
 
-                itemCount+=10;
+                itemCount+=fetchedItems.length;
 
             } catch (HttpServerErrorException e)
             {
@@ -367,6 +350,12 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
             }
 
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            doneApiCall();
         }
 
     }

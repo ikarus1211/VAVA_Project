@@ -84,4 +84,5 @@
     <string name="short_username_error">Your username need to have at least 6 characters</string>
     <string name="short_password_error">Your password needs to have at least 8 characters</string>
     <string name="username_taken_error">Username already exists</string>
+    <string name="no_more_items_error">No more available items!</string>
 </resources>

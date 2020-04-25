@@ -1,9 +1,7 @@
 package com.mikpuk.vava_project.activities;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -22,25 +20,19 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Looper;
-import android.os.SystemClock;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.os.Handler;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.material.navigation.NavigationView;
 import com.hypertrack.hyperlog.HyperLog;
 import com.mikpuk.vava_project.AppLocationManager;
 import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.Item;
-import com.mikpuk.vava_project.OtherReqItemAdapter;
 import com.mikpuk.vava_project.PaginationScrollListener;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.SceneManager;
@@ -112,11 +104,6 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         getGpsStatus();
         getLocationPermission();
 
-
-        //Spusta nacitanie listView
-        /*AsyncOtherItemsGetter getter = new AsyncOtherItemsGetter();
-        getter.execute();*/
-
         ButterKnife.bind(this);
 
         swipeRefresh.setOnRefreshListener(this);
@@ -152,6 +139,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
             }
         });
     }
+
     private void runDialog(int pos)
     {
         mDialog.setContentView(R.layout.activity_pop_up_my_request);
@@ -162,7 +150,6 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         TextView textAddress;
         TextView accpetButton;
 
-
         txtclose = mDialog.findViewById(R.id.popTxtClose);
         textName = mDialog.findViewById(R.id.popMyName);
         textItemName = mDialog.findViewById(R.id.popItemName);
@@ -172,7 +159,8 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
 
         accpetButton.setVisibility(View.VISIBLE);
         textName.setText(user.getUsername());
-        Item item = items.get(pos);
+        //Item item = items.get(pos); TU BOLA CHYBA! ITEMS VYPRAZDNUJEME!
+        Item item = adapter.getItem(pos);
         textItemName.setText(item.getName());
         textDescription.setText(item.getDescription());
         textAddress.setText(appLocationManager.generateAddress(item.getLatitude(), item.getLongtitude()));
@@ -217,39 +205,18 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
 
 
     private void doApiCall() {
-        System.out.println("Start xD");
         items.clear();
-        if(allItemsLoaded){
-            HyperLog.i(TAG,"All items are loaded");
-            System.out.println("ALL ITEMS ARE LOADED");
-            adapter.removeLoading();
-            swipeRefresh.setRefreshing(false);
-            isLastPage = true;
-            return;
-        }
+        fetchedItems = new Item[0];
+        new AsyncOtherItemsGetter().execute();
+    }
 
+    private void doneApiCall() {
         new Handler().postDelayed(new Runnable() {
 
             @Override
             public void run() {
-
-                fetchedItems = new Item[0];
-
-                new AsyncOtherItemsGetter().execute();
-
-                while(fetchedItems.length == 0)
-                {
-                    if(allItemsLoaded)  {
-                        adapter.removeLoading();
-                        swipeRefresh.setRefreshing(false);
-                        isLastPage = true;
-                        HyperLog.i(TAG,"There are no more items left");
-                        showToast("There are no more items left!");
-                        System.out.println("ALL ITEMS ARE LOADED2");
-                        return;
-                    }
-                    System.out.println("SLEEPING");
-                    SystemClock.sleep(500); //Aby sme nevytazili UI thread
+                if(allItemsLoaded){
+                    showToast(getString(R.string.no_more_items_error));
                 }
 
                 for (Item item:fetchedItems)
@@ -260,22 +227,21 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
                 /**
                  * manage progress view
                  */
-                if (currentPage != PAGE_START)
+                if (currentPage != PAGE_START || allItemsLoaded)
                     adapter.removeLoading();
 
                 adapter.addItems(items);
                 swipeRefresh.setRefreshing(false);
 
                 // check weather is last page or not
-                if (currentPage < totalPage) {
+                if (currentPage < totalPage && !allItemsLoaded) {
                     adapter.addLoading();
                 } else {
                     isLastPage = true;
                 }
                 isLoading = false;
-                System.out.println("DONE xD");
             }
-        }, 1500);
+        }, 100);
     }
 
     @Override
@@ -432,14 +398,13 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
                 fetchedItems = restTemplate.exchange(uri, HttpMethod.GET,
                         new HttpEntity<String>(httpHeaders), Item[].class,user.getId(),itemCount,itemCount+10).getBody();
 
-
-                if(fetchedItems.length == 10) {
+                if(fetchedItems.length < 10) {
                     allItemsLoaded = true;
-                    return null;
                 }
+
                 HyperLog.i(TAG,"Loading new items");
 
-                itemCount+=10;
+                itemCount+=fetchedItems.length;
 
             } catch (HttpServerErrorException e)
             {
@@ -464,6 +429,11 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
             return null;
         }
 
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            doneApiCall();
+        }
     }
 
     class AsyncAcceptedItemsSetter extends AsyncTask<Long,Void,Void>
