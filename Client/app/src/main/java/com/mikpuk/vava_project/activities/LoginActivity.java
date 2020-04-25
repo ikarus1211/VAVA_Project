@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.material.textfield.TextInputLayout;
+import com.hypertrack.hyperlog.HyperLog;
 import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.MD5Hashing;
@@ -35,7 +37,12 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
+import java.security.KeyPairGeneratorSpi;
 import java.util.Locale;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.mikpuk.vava_project.Constants.ERROR_DIALOG_REQUEST;
 
@@ -50,9 +57,19 @@ public class LoginActivity extends AppCompatActivity {
     TextInputLayout loginInputLayout;
     TextInputLayout passwordInputLayout;
 
+    private static final String TAG = "Login Activity";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        HyperLog.initialize(this);
+        HyperLog.setLogLevel(Log.VERBOSE);
+
+
+        HyperLog.i(TAG, "Starting login activity");
+
+
+
         super.onCreate(savedInstanceState);
         loadSettings();
         setContentView(R.layout.layout_login);
@@ -101,6 +118,9 @@ public class LoginActivity extends AppCompatActivity {
 
     public void loadSettings()
     {
+
+        HyperLog.i(TAG, "Loading settings");
+
         SharedPreferences sharedPreferences = getSharedPreferences("com.mikpukvava_project.PREFERENCES", Activity.MODE_PRIVATE);
         String language = sharedPreferences.getString("app_language",Locale.getDefault().getLanguage());
 
@@ -116,6 +136,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void loadRegistrationScreen()
     {
+        HyperLog.i(TAG,"Switching to registration");
         Intent intent = new Intent(this, RegistrationActivity.class);
         startActivity(intent);
     }
@@ -132,6 +153,8 @@ public class LoginActivity extends AppCompatActivity {
     }
     private void loadMenuScreen (User user)
     {
+        System.out.println("*******************************************");
+        System.out.println(HyperLog.getDeviceLogsAsStringList());
         //Nacitanie hlavneho menu
         Intent intent = new Intent(this, MenuScreenActivity.class);
         showToast(user.getUsername());
@@ -144,11 +167,12 @@ public class LoginActivity extends AppCompatActivity {
      */
     private boolean services()
     {
+        HyperLog.i(TAG,"Checking services");
         int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(LoginActivity.this);
 
         if (available == ConnectionResult.SUCCESS)
         {
-            System.out.print("Service check is ok");
+            HyperLog.i(TAG,"Service check is ok");
             return true;
         }
         else if (GoogleApiAvailability.getInstance().isUserResolvableError(available))
@@ -158,9 +182,11 @@ public class LoginActivity extends AppCompatActivity {
         }
         else
             {
+                HyperLog.w(TAG,"Permissions were not granted");
             Toast.makeText(this, "You cant do anything", Toast.LENGTH_SHORT).show();
         }
         return false;
+
     }
 
 
@@ -217,12 +243,14 @@ public class LoginActivity extends AppCompatActivity {
                 } catch (HttpServerErrorException e)
                 {
                     //Error v pripade chyby servera
-                    System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
+                    HyperLog.e(TAG,"Server exception "+e.getStatusCode());
+
                     showToast("SERVER ERROR "+e.getStatusCode());
                 } catch (HttpClientErrorException e2)
                 {
+                    HyperLog.e(TAG,"Client Exception "+e2.getStatusCode());
                     //Error v pripade ziadosti klienka
-                    System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
+                    //System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
                     if(e2.getStatusCode() == HttpStatus.BAD_REQUEST)
                     {
                         runOnUiThread(new Runnable() {
@@ -240,7 +268,8 @@ public class LoginActivity extends AppCompatActivity {
                     showToast("CLIENT ERROR "+e2.getStatusCode());
                 } catch (Exception e3)
                 {
-                    System.out.println("caught other exception");
+                    HyperLog.e(TAG,"Unknown exception while signing in "+e3.getMessage());
+                    //System.out.println("caught other exception");
                     e3.printStackTrace();
                     showToast("SOMETHING WENT WRONG");
                 }

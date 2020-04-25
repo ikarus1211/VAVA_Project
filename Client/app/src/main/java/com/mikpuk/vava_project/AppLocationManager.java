@@ -20,6 +20,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.hypertrack.hyperlog.HyperLog;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -35,8 +36,10 @@ public class AppLocationManager implements LocationListener {
 
     private Location mLocation = null;
     private Context mContext;
+    private static final String TAG = "Location Manager";
 
     public AppLocationManager(Context context) {
+        HyperLog.i(TAG,"Initializing location manager");
         mContext = context;
         LocationManager locationManager = (LocationManager) context
                 .getSystemService(Context.LOCATION_SERVICE);
@@ -49,7 +52,9 @@ public class AppLocationManager implements LocationListener {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
                 System.out.println("You dont have permissions");
+                HyperLog.w(TAG,"Permission were not granted");
             }
+        HyperLog.i(TAG,"Permission check successful");
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1,
                 0, this);
         setMostRecentLocation(locationManager.getLastKnownLocation(provider));
@@ -59,6 +64,7 @@ public class AppLocationManager implements LocationListener {
 
     private void getDeviceLocation()
     {
+        HyperLog.i(TAG,"Getting device location");
         FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
         try {
                 Task location = fusedLocationProviderClient.getLastLocation();
@@ -67,11 +73,13 @@ public class AppLocationManager implements LocationListener {
                     public void onComplete(@NonNull Task task) {
                         if(task.isSuccessful())
                         {
+                            HyperLog.i(TAG,"Device location found");
                             System.out.println("Found it");
                             mLocation = (Location) task.getResult();
                         }
                         else
                         {
+                            HyperLog.i(TAG,"Device location not found");
                             System.out.println("Not found it");
                         }
                     }
@@ -79,17 +87,26 @@ public class AppLocationManager implements LocationListener {
 
         } catch (SecurityException e)
         {
+            HyperLog.e(TAG,"Exception in location getting",e);
             System.out.println("Exception in getDeviceLocation()");
         }
 
     }
 
-    public double calculationByDistance(LatLng StartP, LatLng EndP) {
+    public String calculationByDistance(LatLng StartP, LatLng EndP) {
+
+        HyperLog.i(TAG,"Calculating distance");
+
         int Radius = 6371;// radius of earth in Km
         double lat1 = StartP.latitude;
         double lat2 = EndP.latitude;
         double lon1 = StartP.longitude;
         double lon2 = EndP.longitude;
+
+        if (lat1 == 0 && lon1 == 0 || lat2 == 0 && lon2 == 0)
+        {
+            return "Not given ";
+        }
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
@@ -103,9 +120,8 @@ public class AppLocationManager implements LocationListener {
         int kmInDec = Integer.parseInt(newFormat.format(km));
         double meter = valueResult % 1000;
         int meterInDec = Integer.parseInt(newFormat.format(meter));
-
-
-        return Radius * c;
+        DecimalFormat df = new DecimalFormat("0.00");
+        return df.format(valueResult);
     }
 
     private void setMostRecentLocation(Location lastKnownLocation) {
@@ -116,6 +132,7 @@ public class AppLocationManager implements LocationListener {
 
     }
     public String generateAddress() {
+        HyperLog.i(TAG,"Generating address");
         Geocoder geocoder;
         List<Address> addresses;
         String finalAddress = null;
@@ -132,6 +149,7 @@ public class AppLocationManager implements LocationListener {
     }
 
     public String generateAddress(double lat, double lon) {
+        HyperLog.i(TAG,"Generating address");
         Geocoder geocoder;
         List<Address> addresses;
         String finalAddress = null;

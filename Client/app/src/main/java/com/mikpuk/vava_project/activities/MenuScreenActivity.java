@@ -36,6 +36,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.material.navigation.NavigationView;
+import com.hypertrack.hyperlog.HyperLog;
 import com.mikpuk.vava_project.AppLocationManager;
 import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.Item;
@@ -55,7 +56,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
-import java.util.List;
+
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -91,13 +92,14 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
     int itemCount = 0;
     boolean allItemsLoaded = false;
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "Menu Screen";
 
     //Navigation bar
     private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        HyperLog.i(TAG,"Menu screen");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main_menu);
 
@@ -188,6 +190,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         accpetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 //mDialog.dismiss();
                 new AlertDialog.Builder(view.getContext())
                         .setIcon(android.R.drawable.ic_dialog_alert)
@@ -196,6 +199,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
                         .setPositiveButton(getString(R.string.request_accept_yes), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 new AsyncAcceptedItemsSetter().execute(user.getId(),item.getId());
+                                HyperLog.i(TAG,"Request accepted");
                                 mDialog.dismiss();
                             }
                         })
@@ -216,6 +220,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         System.out.println("Start xD");
         items.clear();
         if(allItemsLoaded){
+            HyperLog.i(TAG,"All items are loaded");
             System.out.println("ALL ITEMS ARE LOADED");
             adapter.removeLoading();
             swipeRefresh.setRefreshing(false);
@@ -238,6 +243,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
                         adapter.removeLoading();
                         swipeRefresh.setRefreshing(false);
                         isLastPage = true;
+                        HyperLog.i(TAG,"There are no more items left");
                         showToast("There are no more items left!");
                         System.out.println("ALL ITEMS ARE LOADED2");
                         return;
@@ -314,6 +320,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
     private void showGPSDisabledAlertToUser()
     {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        HyperLog.w(TAG, "GPS is disabled");
         alertDialogBuilder.setMessage("GPS is disabled in your device. Would you like to enable it?")
                 .setCancelable(false)
                 .setPositiveButton("Goto Settings Page To Enable GPS",
@@ -350,12 +357,14 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
                     {
                         if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
                             permissionGranted = false;
+                            HyperLog.w(TAG,"Permissions not granted");
                             return;
                         }
                     }
                     permissionGranted = true;
+                    HyperLog.i(TAG,"Permissions set to true");
                     initGps();
-                    System.out.print("GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+
                 }
             }
         }
@@ -381,11 +390,13 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
                     Manifest.permission.ACCESS_COARSE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED)
             {
+                HyperLog.i(TAG,"Permissions set to true");
                 permissionGranted = true;
                 initGps();
             }
             else
             {
+
                 System.out.println("2");
                 ActivityCompat.requestPermissions(this, premissions, LOCATION_PERM_CODE );
             }
@@ -426,25 +437,26 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
                     allItemsLoaded = true;
                     return null;
                 }
-
-
-                showToast("LOADING NEW ITEMS");
+                HyperLog.i(TAG,"Loading new items");
 
                 itemCount+=10;
 
             } catch (HttpServerErrorException e)
             {
+                HyperLog.e(TAG,"Server exception",e);
                 //Error v pripade chyby servera
                 System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
                 showToast("SERVER ERROR "+e.getStatusCode());
             } catch (HttpClientErrorException e2)
             {
+                HyperLog.e(TAG,"Client exception",e2);
                 //Error v pripade ziadosti klienka
                 System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
                 e2.printStackTrace();
                 showToast("CLIENT ERROR "+e2.getStatusCode());
             } catch (Exception e3)
             {
+                HyperLog.e(TAG,"Unknown error",e3);
                 e3.printStackTrace();
                 showToast("SOMETHING WENT WRONG");
             }

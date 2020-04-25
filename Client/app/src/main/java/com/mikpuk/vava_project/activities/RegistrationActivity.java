@@ -2,9 +2,8 @@ package com.mikpuk.vava_project.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
+
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +11,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
+import com.hypertrack.hyperlog.HyperLog;
 import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.MD5Hashing;
@@ -23,6 +23,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import java.util.logging.*;
+
 
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -35,10 +37,15 @@ public class RegistrationActivity extends AppCompatActivity {
     TextInputLayout password1Layout;
     TextInputLayout password2Layout;
 
+    private static final String TAG = "Registration activity";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_registration);
+
+        HyperLog.i(TAG, "Starting registration");
 
         //Nacitanie UI premennych
         registerButton = findViewById(R.id.button);
@@ -153,15 +160,18 @@ public class RegistrationActivity extends AppCompatActivity {
                             Void.class, username,MD5Hashing.getSecurePassword(password1));
 
                     showToast("User registered");
+                    HyperLog.i(TAG, "User registered");
                     loadLoginScreen();
                 } catch (HttpServerErrorException e)
                 {
                     //Error v pripade chyby servera
+                    HyperLog.e(TAG, "Server error",e);
                     System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
                     showToast("SERVER ERROR "+e.getStatusCode());
                 } catch (HttpClientErrorException e2)
                 {
                     //Error v pripade ziadosti klienka
+                    HyperLog.e(TAG, "Client exception",e2);
                     System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
                     if(e2.getStatusCode() == HttpStatus.BAD_REQUEST)
                     {
