@@ -1,5 +1,6 @@
 package com.mikpuk.vava_project.activities;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -77,7 +78,7 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
         user = (User)getIntent().getSerializableExtra("user");
 
         //Set up navigation bar
-        SceneManager.initNavigationBar(getString(R.string.navigation_accepted_requests),R.id.accepted_requests_dl,R.id.accepted_requests_navView,getApplicationContext(),this,user);
+        SceneManager.initNavigationBar(getString(R.string.navigation_accepted_requests),R.id.accepted_requests_dl,R.id.accepted_requests_navView,this,this,user);
 
 
 
@@ -116,10 +117,14 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
         });
 
     }
-    /**
-     * do api call here to fetch data from server
-     * In example i'm adding data manually
-     */
+
+    @Override
+    public void onBackPressed() {
+        // TODO Auto-generated method stub
+        super.onBackPressed();
+        AcceptedRequest.this.overridePendingTransition(R.anim.in_from_left,
+                R.anim.out_from_right);
+    }
 
     private void doApiCall() {
         items.clear();

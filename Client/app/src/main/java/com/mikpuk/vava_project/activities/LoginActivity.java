@@ -8,12 +8,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.transition.Explode;
+import android.transition.Slide;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
+import android.view.Window;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -65,7 +71,6 @@ public class LoginActivity extends AppCompatActivity {
         HyperLog.i(TAG, "Starting login activity");
 
 
-
         super.onCreate(savedInstanceState);
         loadSettings();
         setContentView(R.layout.layout_login);
@@ -112,6 +117,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+
     public void loadSettings()
     {
 
@@ -133,9 +139,17 @@ public class LoginActivity extends AppCompatActivity {
     public void loadRegistrationScreen()
     {
         HyperLog.i(TAG,"Switching to registration");
-        Intent intent = new Intent(this, RegistrationActivity.class);
+        //Intent intent = new Intent(this, RegistrationActivity.class);
+        //startActivity(intent);
+        Intent intent = new Intent(this,RegistrationActivity.class);
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
+        overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
     }
+
+
+
 
     private void showToast(final String text)
     {
@@ -147,15 +161,20 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
     private void loadMenuScreen (User user)
     {
+
         System.out.println("*******************************************");
         System.out.println(HyperLog.getDeviceLogsAsStringList());
         //Nacitanie hlavneho menu
         Intent intent = new Intent(this, MenuScreenActivity.class);
         showToast(user.getUsername());
         intent.putExtra("user",user);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        //startActivity(intent);
         finish();
     }
     /*

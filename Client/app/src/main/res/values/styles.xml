@@ -13,6 +13,8 @@
         <item name="colorControlHighlight">@color/orangePrimary</item>
         <!--Tu by za zislo pohrat s tou cervenou aby tam aj sedela-->
         <item name="colorError">@color/design_default_color_error</item>
+        <!-- Skusanie animacii-->
+        <item name="android:windowContentTransitions">true</item>
     </style>
 
     <style name="textlabel_hint" parent="TextAppearance.Design.Hint">
@@ -22,6 +24,16 @@
     <style name="textlabel_error" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/design_default_color_error</item>
         <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="DialogTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:background">@color/popUpBackground</item>
+        <item name="android:windowEnterAnimation">@anim/show_up</item>
+        <item name="android:windowExitAnimation">@anim/show_down</item>
+    </style>
+
+    <style name="noAnimTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowAnimationStyle">@null</item>
     </style>
 
 </resources>

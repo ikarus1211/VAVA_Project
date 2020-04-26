@@ -1,5 +1,6 @@
 package com.mikpuk.vava_project.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -57,6 +58,7 @@ public class SettingsActivity  extends AppCompatActivity {
 
     }
 
+    @SuppressLint("ResourceType")
     public void loadLanguageSpinner()
     {
         HyperLog.i(TAG, "Loading language spinner");
@@ -119,6 +121,14 @@ public class SettingsActivity  extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        // TODO Auto-generated method stub
+        super.onBackPressed();
+        SettingsActivity.this.overridePendingTransition(R.anim.in_from_left,
+                R.anim.out_from_right);
     }
 
 }

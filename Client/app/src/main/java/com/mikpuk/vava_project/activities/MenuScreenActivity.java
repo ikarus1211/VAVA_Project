@@ -142,6 +142,8 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
 
     private void runDialog(int pos)
     {
+        mDialog = new Dialog(this);
+        mDialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
         mDialog.setContentView(R.layout.activity_pop_up_my_request);
         TextView txtclose;
         TextView textName;
@@ -203,6 +205,14 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         mDialog.show();
     }
 
+
+   @Override
+    public void onBackPressed() {
+        // TODO Auto-generated method stub
+        super.onBackPressed();
+        MenuScreenActivity.this.overridePendingTransition(R.anim.in_from_left,
+                R.anim.out_from_right);
+    }
 
     private void doApiCall() {
         items.clear();

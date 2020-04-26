@@ -1,5 +1,6 @@
 package com.mikpuk.vava_project;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -110,7 +111,9 @@ public class SceneManager {
         Intent intent = new Intent(context, MyRequestsActivity.class);
         intent.putExtra("user",user);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         context.startActivity(intent);
+        ((Activity)context).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private static void loadAcceptedRequests(Context context, User user)
@@ -118,7 +121,9 @@ public class SceneManager {
         Intent intent = new Intent(context, AcceptedRequest.class);
         intent.putExtra("user",user);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         context.startActivity(intent);
+        ((Activity)context).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private static void logOut(final Context context)
@@ -143,7 +148,9 @@ public class SceneManager {
         Intent intent = new Intent(context, MenuScreenActivity.class);
         intent.putExtra("user",user);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         context.startActivity(intent);
+        ((Activity)context).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private static void loadSettingsMenu(Context context, User user)
@@ -151,7 +158,9 @@ public class SceneManager {
         Intent intent = new Intent(context, SettingsActivity.class);
         intent.putExtra("user",user);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         context.startActivity(intent);
+        ((Activity)context).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private static void loadMap(Context context, User user)

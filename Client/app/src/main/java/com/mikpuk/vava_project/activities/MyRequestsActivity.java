@@ -1,12 +1,8 @@
 package com.mikpuk.vava_project.activities;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,14 +12,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.os.Handler;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +24,6 @@ import com.hypertrack.hyperlog.HyperLog;
 import com.mikpuk.vava_project.AppLocationManager;
 import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.Item;
-import com.mikpuk.vava_project.MyReqItemAdapter;
 import com.mikpuk.vava_project.PaginationScrollListener;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.SceneManager;
@@ -49,7 +41,6 @@ import org.springframework.web.client.RestTemplate;
 
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -151,6 +142,8 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
 
     private void runDialog(int pos)
     {
+        mDialog = new Dialog(this);
+        mDialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
         mDialog.setContentView(R.layout.activity_pop_up_my_request);
         TextView txtclose;
         TextView textName;
@@ -232,7 +225,9 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
     {
         Intent intent = new Intent(this, CreateMyRequestActivity.class);
         intent.putExtra("user",user);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
+        overridePendingTransition(R.anim.in_from_bottom, R.anim.out_from_top);
     }
 
 
@@ -246,6 +241,14 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
                 Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        // TODO Auto-generated method stub
+        super.onBackPressed();
+        MyRequestsActivity.this.overridePendingTransition(R.anim.in_from_left,
+                R.anim.out_from_right);
     }
 
     private void doneApiCall() {

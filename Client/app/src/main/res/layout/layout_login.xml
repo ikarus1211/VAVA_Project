@@ -4,8 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/borrow_it"
+    android:background="@color/background"
     tools:context=".activities.LoginActivity">
+
+    <ImageView
+        android:id="@+id/splashImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/borrow_it"
+        android:scaleY="0.5"
+        android:scaleX="0.5"
+        android:translationY="@dimen/distance" />
 
     <Button
         android:id="@+id/LoginButton"

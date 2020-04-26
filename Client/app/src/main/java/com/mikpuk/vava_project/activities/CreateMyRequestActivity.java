@@ -122,6 +122,15 @@ public class CreateMyRequestActivity extends AppCompatActivity {
         }.start();
     }
 
+    @Override
+    public void onBackPressed() {
+        // TODO Auto-generated method stub
+        super.onBackPressed();
+        CreateMyRequestActivity.this.overridePendingTransition(R.anim.in_from_top,
+                R.anim.out_from_bottom);
+    }
+
+
     //Toto vyhodi bublinu s infom - len pre nas
     private void showToast(final String text)
     {
