@@ -80,8 +80,6 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
         //Set up navigation bar
         SceneManager.initNavigationBar(getString(R.string.navigation_accepted_requests),R.id.accepted_requests_dl,R.id.accepted_requests_navView,this,this,user);
 
-
-
         ButterKnife.bind(this);
 
         swipeRefresh.setOnRefreshListener(this);
@@ -128,35 +126,17 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
 
     private void doApiCall() {
         items.clear();
+        fetchedItems = new Item[0];
+        new AsyncAcceptedItemsGetter().execute();
+    }
 
-        if(allItemsLoaded){
-            System.out.println("ALL ITEMS ARE LOADED");
-            adapter.removeLoading();
-            swipeRefresh.setRefreshing(false);
-            isLastPage = true;
-            return;
-        }
+    private void doneApiCall() {
         new Handler().postDelayed(new Runnable() {
 
             @Override
             public void run() {
-
-                fetchedItems = new Item[0];
-
-                new AsyncAcceptedItemsGetter().execute();
-
-                while(fetchedItems.length == 0)
-                {
-                    if(allItemsLoaded)  {
-                        adapter.removeLoading();
-                        swipeRefresh.setRefreshing(false);
-                        isLastPage = true;
-                        showToast("There are no more items left!");
-                        System.out.println("ALL ITEMS ARE LOADED2");
-                        return;
-                    }
-                    System.out.println("SLEEPING");
-                    SystemClock.sleep(500); //Aby sme nevytazili UI thread
+                if(allItemsLoaded){
+                    showToast(getString(R.string.no_more_items_error));
                 }
 
                 for (Item item:fetchedItems)
@@ -167,21 +147,22 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
                 /**
                  * manage progress view
                  */
-                if (currentPage != PAGE_START) adapter.removeLoading();
+                if (currentPage != PAGE_START || allItemsLoaded)
+                    adapter.removeLoading();
+
                 adapter.addItems(items);
                 swipeRefresh.setRefreshing(false);
 
                 // check weather is last page or not
-                if (currentPage < totalPage) {
+                if (currentPage < totalPage && !allItemsLoaded) {
                     adapter.addLoading();
                 } else {
                     isLastPage = true;
                 }
                 isLoading = false;
             }
-        }, 1500);
+        }, 100);
     }
-
     @Override
     public void onRefresh() {
         itemCount = 0;
@@ -218,14 +199,12 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
                         new HttpEntity<String>(httpHeaders), Item[].class,user.getId(),itemCount,itemCount+10).getBody();
 
 
-                if(fetchedItems.length == 0) {
+                if(fetchedItems.length < 10) {
                     allItemsLoaded = true;
-                    return null;
                 }
+                HyperLog.i(TAG,"Loading new items");
 
-                showToast("LOADING NEW ITEMS");
-
-                itemCount+=10;
+                itemCount+=fetchedItems.length;
 
             } catch (HttpServerErrorException e)
             {
@@ -245,6 +224,12 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
             }
 
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            doneApiCall();
         }
 
     }
