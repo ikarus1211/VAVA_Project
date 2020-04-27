@@ -110,7 +110,6 @@ public class LoginActivity extends AppCompatActivity {
                         });
                         break;
                     }
-                    SystemClock.sleep(100);
                 }
             }
         }).start();

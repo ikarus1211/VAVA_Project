@@ -18,4 +18,5 @@ public interface ItemDAO {
     public void setAcceptedItem(long item_id, long user_id);
     public void removeAcceptedItem(long item_id);
     public void removeItem(long item_id);
+    public int checkUsername(String username);
 }

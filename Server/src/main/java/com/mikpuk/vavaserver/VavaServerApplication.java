@@ -44,14 +44,16 @@ public class VavaServerApplication {
 		try {
 
 			String uri = "http://localhost:5000"+
-					"/register/{username}/{password}";
+					"/checkusername/{username}";
 			RestTemplate restTemplate = new RestTemplate();
 			restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 			HttpHeaders httpHeaders = new HttpHeaders();
 			httpHeaders.add("auth",AUTH_TOKEN);
 
-			restTemplate.exchange(uri, HttpMethod.POST,
-					new HttpEntity<String>(httpHeaders), Void.class,"testik1236","zle heslo RIP");
+			ResponseEntity<Integer> count = restTemplate.exchange(uri, HttpMethod.POST,
+					new HttpEntity<String>(httpHeaders), Integer.class,"test");
+
+			System.out.println("Count = "+count.getBody());
 
 		} catch (HttpServerErrorException e)
 		{

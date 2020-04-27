@@ -68,4 +68,8 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
     implementation 'com.hypertrack:hyperlog:0.0.10'
 
+    //reCaptcha
+    implementation 'com.google.android.gms:play-services-safetynet:15.0.1'
+    implementation 'com.android.volley:volley:1.1.0'
+
 }

@@ -122,4 +122,12 @@ public class ItemJdbcTemplate implements ItemDAO {
         jdbcTemplate.update(query, item_id);
     }
 
+    @Override
+    public int checkUsername(String username) {
+        String query = "SELECT COUNT(*) FROM vavaDB.users where username = ?";
+        logger.info("Executing query - {} with variables {} ",query,username);
+        return jdbcTemplate.queryForObject(query,new Object[]{username},Integer.class);
+    }
+
+
 }

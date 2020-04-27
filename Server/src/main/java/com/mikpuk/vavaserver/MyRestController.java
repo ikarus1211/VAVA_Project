@@ -368,6 +368,32 @@ public class MyRestController {
         }
     }
 
+    @RequestMapping(value = "/checkusername/{username}")
+    @ResponseBody
+    public ResponseEntity<Integer> checkUsername(@PathVariable String username, @RequestHeader("auth") String authorization)
+    {
+        if(!isUserAuthorized(authorization)) {
+            logger.info("Unauthorized access!");
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        logger.info("CALLED /checkusername/{username} with variables: username {}",username);
+
+        //Nacitanie XML a bean
+        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+        ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
+
+        try {
+            Integer count = itemJdbcTemplate.checkUsername(username);
+            logger.info("Returning result with {}",HttpStatus.OK);
+            return new ResponseEntity<Integer>(count, HttpStatus.OK);
+        }catch (Exception e)
+        {
+            logger.error("Caught expection",e);
+            return new ResponseEntity<Integer>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @RequestMapping(value = "/createitem/{longtitude}/{latitude}/{user_id}/{type_id}")
     @ResponseBody
     public ResponseEntity<Void> createItem(@RequestHeader("name") String name, @RequestHeader("description") String description,@PathVariable double longtitude,
