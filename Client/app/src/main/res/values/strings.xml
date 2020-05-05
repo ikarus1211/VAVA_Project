@@ -86,4 +86,5 @@
     <string name="username_taken_error">Username already exists</string>
     <string name="no_more_items_error">No more available items!</string>
     <string name="recaptcha_error">Recaptcha error!</string>
+    <string name="navigation_profile">Profile</string>
 </resources>

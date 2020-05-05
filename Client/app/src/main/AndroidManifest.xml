@@ -22,17 +22,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.PopUpOtherRequest"></activity>
-        <activity android:name=".activities.AcceptedRequest"></activity>
-        <activity android:name=".activities.PopUpMyRequest"></activity>
+        <activity android:name=".activities.PopUpOtherRequest" />
+        <activity android:name=".activities.AcceptedRequest" />
+        <activity android:name=".activities.PopUpMyRequest" />
         <activity android:name=".activities.MapViewActivity" />
         <activity android:name=".activities.CreateMyRequestActivity" />
         <activity android:name=".activities.MyRequestsActivity" />
         <activity android:name=".activities.MenuScreenActivity" />
         <activity android:name=".activities.RegistrationActivity" />
         <activity android:name=".activities.SettingsActivity" />
-        <activity android:name=".activities.LoginActivity">
-        </activity>
+        <activity android:name=".activities.LoginActivity"/>
+        <activity android:name=".activities.ProfileActivity" />
         <activity android:name=".activities.StartSplashActivity" android:theme="@style/noAnimTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

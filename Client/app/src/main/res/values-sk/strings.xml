@@ -76,4 +76,5 @@
     <string name="username_taken_error">Používateľské meno sa už používa</string>
     <string name="no_more_items_error">Žiadne ďalšie dostupné ponuky</string>
     <string name="recaptcha_error">Recaptcha problém!</string>
+    <string name="navigation_profile">Profil</string>
 </resources>

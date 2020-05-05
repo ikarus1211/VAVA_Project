@@ -13,7 +13,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -495,6 +497,25 @@ public class MyRestController {
         try {
             logger.info("CALLED /show_logs/string");
             return new ResponseEntity<String>(readLineByLineJava8("my_logs.log"),HttpStatus.OK);
+        }catch (Exception e)
+        {
+            logger.error("Caught expection",e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/delete_logs")
+    @ResponseBody
+    public ResponseEntity<Void> deleteLogs()
+    {
+        try {
+            logger.info("CALLED /delete_logs");
+
+            //Pokus o zmazanie logov
+            new PrintWriter("my_logs.log").close();
+
+            logger.info("SUCCESS deleting logs");
+            return new ResponseEntity<Void>(HttpStatus.OK);
         }catch (Exception e)
         {
             logger.error("Caught expection",e);

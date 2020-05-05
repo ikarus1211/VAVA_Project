@@ -22,6 +22,7 @@ import com.mikpuk.vava_project.activities.LoginActivity;
 import com.mikpuk.vava_project.activities.MapViewActivity;
 import com.mikpuk.vava_project.activities.MenuScreenActivity;
 import com.mikpuk.vava_project.activities.MyRequestsActivity;
+import com.mikpuk.vava_project.activities.ProfileActivity;
 import com.mikpuk.vava_project.activities.SettingsActivity;
 
 public class SceneManager {
@@ -54,7 +55,11 @@ public class SceneManager {
                 switch(id)
                 {
                     case R.id.account:
-                        //TODO
+                        loadMyProfile(context,user);
+                        if(context instanceof ProfileActivity){
+                            appCompatActivity.finish();
+                        }
+                        drawerLayout.closeDrawer(Gravity.LEFT);
                         break;
                     case R.id.settings:
                         loadSettingsMenu(context,user);
@@ -109,6 +114,15 @@ public class SceneManager {
     private static void loadMyRequests(Context context, User user)
     {
         Intent intent = new Intent(context, MyRequestsActivity.class);
+        intent.putExtra("user",user);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        context.startActivity(intent);
+        ((Activity)context).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+    }
+
+    private static void loadMyProfile(Context context, User user) {
+        Intent intent = new Intent(context, ProfileActivity.class);
         intent.putExtra("user",user);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

@@ -93,9 +93,9 @@ public class ItemJdbcTemplate implements ItemDAO {
     public void setAcceptedItem(long item_id, long user_id) {
         String query = "insert into approved_items (user_id,item_id) values (?,?)";
         String query2 = "update items set accepted = 1 where id = ?";
-        logger.info("Executing query - {} with variable {}",query,item_id);
+        logger.info("Executing query - {} with variable {}",query2,item_id);
         jdbcTemplate.update(query2, item_id);
-        logger.info("Executing query - {} with variables {} {}",query2,user_id,item_id);
+        logger.info("Executing query - {} with variables {} {}",query,user_id,item_id);
         jdbcTemplate.update(query, user_id,item_id);
     }
 
