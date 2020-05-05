@@ -14,6 +14,7 @@ public class ItemJdbcTemplate implements ItemDAO {
 
     private Logger logger = LoggerFactory.getLogger(ItemJdbcTemplate.class);
 
+    //Hodnota o kolko zvysujeme reputaciu pri prijati ponuky
     private int REPUTATION_INCREASE = 10;
 
     @Override
@@ -22,6 +23,7 @@ public class ItemJdbcTemplate implements ItemDAO {
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    //Tato funkcia vytvori novy item v DB na zaklade parametrov
     @Override
     public void createItem(String name, String description, double  longitude, double latitude, long user_id, long type_id) {
         String query = "insert into items (name,description,longitude,latitude,user_id,accepted,type_id) values (?,?,?,?,?,?,?)";
@@ -30,20 +32,7 @@ public class ItemJdbcTemplate implements ItemDAO {
         jdbcTemplate.update(query, name,description,longitude,latitude,user_id,false,type_id);
     }
 
-    @Override
-    public Item getItem(long id) {
-        String query = "SELECT * from vavaDB.items a INNER JOIN vavaDB.users i ON a.user_id = i.id WHERE a.id = ?;";
-        logger.info("Executing query - {} with variable {}",query,id);
-        return jdbcTemplate.queryForObject(query, new Object[]{id}, new ItemMapper());
-    }
-
-    @Override
-    public List<Item> getItemsByUser(long id) {
-        String query = "SELECT * from vavaDB.items a INNER JOIN vavaDB.users i ON a.user_id = i.id where a.user_id = ?";
-        logger.info("Executing query - {} with variable {}",query,id);
-        return jdbcTemplate.query(query, new Object[]{id}, new ItemMapper());
-    }
-
+    //Vrati vsetky itemy, ktore vlastni dany pouzivatel
     @Override
     public List<Item> getItemsByUserLimit(long id, long limit_start, long limit_end) {
         String query = "SELECT * from vavaDB.items a INNER JOIN vavaDB.users i ON a.user_id = i.id where a.user_id = ? ORDER BY a.id ASC LIMIT ? , ?";
@@ -51,6 +40,7 @@ public class ItemJdbcTemplate implements ItemDAO {
         return jdbcTemplate.query(query, new Object[]{id,limit_start,limit_end}, new ItemMapper());
     }
 
+    //Toto zatial nepouzivame ale planujeme implementovat
     @Override
     public void updateItem(long id, String name, String description, double longitude, double latitude, boolean accepted) {
         String query = "update items set name = ?,description = ?,longitude = ?,latitude = ?, accepted = ? where id = ?;";
@@ -59,14 +49,7 @@ public class ItemJdbcTemplate implements ItemDAO {
         jdbcTemplate.update(query, name,description,longitude,latitude,true,id);
     }
 
-    @Override
-    public List<Item> getOtherItems(long id) {
-        String query = "SELECT * from vavaDB.items a INNER JOIN vavaDB.users i ON a.user_id = i.id" +
-                " where a.user_id != ? and a.accepted = false ORDER BY a.id DESC";
-        logger.info("Executing query - {} with variable {}",query,id);
-        return jdbcTemplate.query(query, new Object[]{id}, new ItemMapper());
-    }
-
+    //Tato funkcia vracia vsetky objekty, ktore nepatria pouzivatelovi a nie su potvrdene
     @Override
     public List<Item> getOtherItemsByUserLimit(long id, long limit_start, long limit_end) {
         String query = "SELECT * from vavaDB.items a INNER JOIN vavaDB.users i ON a.user_id = i.id" +
@@ -75,13 +58,8 @@ public class ItemJdbcTemplate implements ItemDAO {
         return jdbcTemplate.query(query, new Object[]{id,limit_start,limit_end}, new ItemMapper());
     }
 
-    @Override
-    public List<Item> getApprovedItems(long id) {
-        String query = "SELECT * from vavaDB.approved_items a INNER JOIN vavaDB.items i ON a.item_id = i.id INNER JOIN vavaDB.users u ON a.user_id = u.id WHERE a.user_id = ?;";
-        logger.info("Executing query - {} with variable {}",query,id);
-        return jdbcTemplate.query(query, new Object[]{id}, new ItemMapper());
-    }
 
+    //Toto vrati vsetky itemy z DB, ktore pouzivatel prijal
     @Override
     public List<Item> getApprovedItemsLimit(long id, long limit_start, long limit_end) {
         String query = "SELECT * from vavaDB.approved_items a INNER JOIN vavaDB.items i ON a.item_id = i.id INNER JOIN vavaDB.users u ON a.user_id = u.id WHERE a.user_id = ? LIMIT ? , ?;";
@@ -89,6 +67,7 @@ public class ItemJdbcTemplate implements ItemDAO {
         return jdbcTemplate.query(query, new Object[]{id,limit_start,limit_end}, new ItemMapper());
     }
 
+    //Tato funkcia nastavi item ako prijaty
     @Override
     public void setAcceptedItem(long item_id, long user_id) {
         String query = "insert into approved_items (user_id,item_id) values (?,?)";
@@ -99,13 +78,14 @@ public class ItemJdbcTemplate implements ItemDAO {
         jdbcTemplate.update(query, user_id,item_id);
     }
 
+    //Tato funkcia sa vola, ak pouzivatel potvrdil vykonanie ponuky a teda zmaze itemy a pripise reputaciu
     @Override
     public void removeAcceptedItem(long item_id) {
         String user_getter_query = "select user_id from vavaDB.approved_items WHERE item_id = ?";
         String query = "DELETE FROM vavaDB.approved_items WHERE item_id = ?";
         String query2 = "DELETE FROM vavaDB.items WHERE id = ?";
         String query3 = "UPDATE vavaDB.users SET reputation = reputation + ? WHERE id = ?";
-        logger.info("Executing query - {} with variable",user_getter_query,item_id);
+        logger.info("Executing query - {} with variable {}",user_getter_query,item_id);
         long userId = jdbcTemplate.queryForObject(user_getter_query,new Object[]{item_id},Long.class);
         logger.info("Executing query - {} with variable {}",query,item_id);
         jdbcTemplate.update(query,item_id);
@@ -115,19 +95,12 @@ public class ItemJdbcTemplate implements ItemDAO {
         jdbcTemplate.update(query3,REPUTATION_INCREASE,userId);
     }
 
+    //Tato funkcia vymaze item z databazy
     @Override
     public void removeItem(long item_id) {
         String query = "delete from items where id = ?";
         logger.info("Executing query - {} with variable {}",query,item_id);
         jdbcTemplate.update(query, item_id);
     }
-
-    @Override
-    public int checkUsername(String username) {
-        String query = "SELECT COUNT(*) FROM vavaDB.users where username = ?";
-        logger.info("Executing query - {} with variables {} ",query,username);
-        return jdbcTemplate.queryForObject(query,new Object[]{username},Integer.class);
-    }
-
 
 }
