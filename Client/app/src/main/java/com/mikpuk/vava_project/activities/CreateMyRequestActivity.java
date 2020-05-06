@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,25 +32,29 @@ import org.springframework.web.client.RestTemplate;
 /*
     Class for working wotch request creating
  */
-public class CreateMyRequestActivity extends AppCompatActivity {
+public class CreateMyRequestActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     Button createReq = null;
     EditText itemNameText = null;
     EditText descriptionText = null;
     User user = null;
+    Spinner spinner = null;
     private static final String TAG = "Create new request activity";
+    private int selectedType = R.drawable.tools;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         HyperLog.i(TAG, "Create request activity");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_my_request_creation);
-        Spinner spinner = findViewById(R.id.category_spinner);
+        spinner = findViewById(R.id.category_spinner);
 
         ArrayAdapter<CharSequence>  myAdapter = ArrayAdapter.createFromResource(this, R.array.cate, android.R.layout.simple_spinner_item);
         myAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
         spinner.setAdapter(myAdapter);
+        spinner.setOnItemSelectedListener(this);
 
         user = (User)getIntent().getSerializableExtra("user");
 
@@ -64,6 +69,8 @@ public class CreateMyRequestActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     private void createRequest()
     {
@@ -93,7 +100,7 @@ public class CreateMyRequestActivity extends AppCompatActivity {
 
                     restTemplate.exchange(uri, HttpMethod.POST,
                             new HttpEntity<String>(httpHeaders), Item.class,
-                            longitude,latitude,user.getId(),7);
+                            longitude,latitude,user.getId(),selectedType);
 
                     showToast("ITEM ADDED!");
                     HyperLog.i(TAG, "Item created");
@@ -148,5 +155,57 @@ public class CreateMyRequestActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //Aby sa pouzivatel nevratil back tlacidlom do vytvorenia requestu
         intent.putExtra("user",user);
         startActivity(intent);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        switch (position)
+        {
+            case 0:
+                selectedType = R.drawable.animals;
+                break;
+            case 1:
+                selectedType = R.drawable.kids;
+                break;
+            case 2:
+                selectedType = R.drawable.home;
+                break;
+            case 3:
+                selectedType = R.drawable.kategorie_gauc;
+                break;
+            case 4:
+                selectedType = R.drawable.garden;
+                break;
+            case 5:
+                selectedType = R.drawable.sport;
+                break;
+            case 6:
+                selectedType = R.drawable.food;
+                break;
+            case 7:
+                selectedType = R.drawable.clothes;
+                break;
+            case 8:
+                selectedType = R.drawable.technology;
+                break;
+            case 9:
+                selectedType = R.drawable.tools;
+                break;
+            case 10:
+                selectedType = R.drawable.animals;
+                break;
+            case 11:
+                selectedType = R.drawable.animals;
+                break;
+            case 12:
+                selectedType = R.drawable.animals;
+                break;
+        }
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        selectedType = R.drawable.animals;
     }
 }

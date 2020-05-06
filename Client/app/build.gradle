@@ -67,6 +67,7 @@ dependencies {
     implementation 'com.jakewharton:butterknife:10.2.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
     implementation 'com.hypertrack:hyperlog:0.0.10'
+    implementation 'com.google.maps.android:android-maps-utils:1.0.2'
 
     //reCaptcha
     implementation 'com.google.android.gms:play-services-safetynet:15.0.1'

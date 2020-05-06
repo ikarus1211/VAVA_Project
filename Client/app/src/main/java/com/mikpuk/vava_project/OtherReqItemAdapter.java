@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,9 +45,11 @@ public class OtherReqItemAdapter extends ArrayAdapter<Item> {
         TextView textDistance = (TextView) convertView.findViewById(R.id.myReqDistance);
         TextView textItemName = (TextView) convertView.findViewById(R.id.listItemX);
         TextView textAdress = (TextView) convertView.findViewById(R.id.listAdress);
+        ImageView imageView = convertView.findViewById(R.id.imageView);
+
         BackGrounPicker bp = new BackGrounPicker();
         bp.randomBackground(textDistance);
-
+        imageView.setImageResource((int)getItem(position).getType_id());
 
         textAdress.setText(adress);
 

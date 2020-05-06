@@ -181,9 +181,9 @@ public class SceneManager {
     {
         System.out.println("LOAD MAP START");
         Intent intent = new Intent(context, MapViewActivity.class);
-        Location mLocation = new AppLocationManager(context).getmLocation();
+        AppLocationManager appLocationManager = new AppLocationManager(context);
         intent.putExtra("user",user);
-        intent.putExtra("location", mLocation);
+        intent.putExtra("location", appLocationManager.getmLocation());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
         System.out.println("LOAD MAP STOP");

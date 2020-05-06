@@ -54,7 +54,7 @@ public class AppLocationManager implements LocationListener {
                 System.out.println("You dont have permissions");
                 HyperLog.w(TAG,"Permission were not granted");
             }
-        HyperLog.i(TAG,"Permission check successful");
+        // TODO Oprav HyperLog.i(TAG,"Permission check successful");
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1,
                 0, this);
         setMostRecentLocation(locationManager.getLastKnownLocation(provider));
@@ -73,9 +73,10 @@ public class AppLocationManager implements LocationListener {
                     public void onComplete(@NonNull Task task) {
                         if(task.isSuccessful())
                         {
-                            HyperLog.i(TAG,"Device location found");
+
                             System.out.println("Found it");
                             mLocation = (Location) task.getResult();
+                            HyperLog.i(TAG,"Device location found"+mLocation);
                         }
                         else
                         {

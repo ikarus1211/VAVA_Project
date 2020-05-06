@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -151,7 +152,9 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
         TextView textDescription;
         TextView textAddress;
         Button finishButton;
+        ImageView imageView;
 
+        imageView = mDialog.findViewById(R.id.dialog_image);
         txtclose = mDialog.findViewById(R.id.popTxtClose);
         textName = mDialog.findViewById(R.id.popMyName);
         textItemName = mDialog.findViewById(R.id.popItemName);
@@ -163,6 +166,7 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
         textName.setText(user.getUsername());
         //Item item = items.get(pos); TU BOLA CHYBA! ITEMS VYPRAZDNUJEME!
         Item item = adapter.getItem(pos);
+        imageView.setImageResource((int)item.getType_id());
         textItemName.setText(item.getName());
         textDescription.setText(item.getDescription());
         textAddress.setText(appLocationManager.generateAddress(item.getLatitude(), item.getLongtitude()));

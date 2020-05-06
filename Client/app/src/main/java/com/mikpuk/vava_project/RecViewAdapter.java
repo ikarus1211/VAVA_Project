@@ -6,6 +6,7 @@ import android.nfc.NfcAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -117,6 +118,8 @@ public class RecViewAdapter extends RecyclerView.Adapter<BaseViewHolder>  {
         TextView textViewAddress;
         @BindView(R.id.myReqDistance)
         TextView textDistance;
+        @BindView(R.id.imageView)
+        ImageView imageView;
 
         OnItemListener onItemListener;
 
@@ -138,6 +141,7 @@ public class RecViewAdapter extends RecyclerView.Adapter<BaseViewHolder>  {
         Item item = mPostItems.get(position);
 
         textViewTitle.setText(item.getName());
+        imageView.setImageResource((int)item.getType_id());
         AppLocationManager appLocationManager = new AppLocationManager(context);
         textViewAddress.setText(appLocationManager.generateAddress(item.getLatitude(), item.getLongtitude()));
         String dist = appLocationManager.calculationByDistance(new LatLng(item.getLatitude(),item.getLongtitude()),
