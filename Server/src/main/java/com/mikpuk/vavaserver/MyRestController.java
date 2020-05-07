@@ -1,33 +1,35 @@
 package com.mikpuk.vavaserver;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Stream;
 
 //Tato classa sluzi na spristupnenie REST sluzieb
 @RestController
 public class MyRestController {
     Logger logger = LoggerFactory.getLogger(MyRestController.class);
-    boolean isGettingLogs = false;
 
+    //Nacitanie XML a bean
+    ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+    UserJdbcTemplate userJdbcTemplate = (UserJdbcTemplate) context.getBean("userJdbcTemplate");
+    ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
+
+
+    //Tato funkcia registruje pouzivatela do nasho systemu
     @RequestMapping(value = "/register/{username}/{password}")
     @ResponseBody
     public ResponseEntity<Void> registerUser(@PathVariable String username, @PathVariable String password, @RequestHeader("auth") String authorization)
@@ -37,11 +39,7 @@ public class MyRestController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        logger.info("CALLED /register/{username}/{password} with variables: username {} and password {}",username,password);
-
-        //Nacitanie XML a bean
-        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
-        UserJdbcTemplate userJdbcTemplate = (UserJdbcTemplate) context.getBean("userJdbcTemplate");
+        logger.info("CALLED /register/{username}/{password} with variables: username {} and password {}",username,"***");
 
         try {
             userJdbcTemplate.createUser(username, password);
@@ -66,22 +64,18 @@ public class MyRestController {
 
         logger.info("CALLED /getuserbyid/{id} with variables: id {}",id);
 
-        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
-        UserJdbcTemplate userJdbcTemplate = (UserJdbcTemplate) context.getBean("userJdbcTemplate");
-
         try {
-            //Nacitanie XML a bean
             User user = userJdbcTemplate.getUserById(id);
             logger.info("Returning result with {}",HttpStatus.OK);
             return new ResponseEntity<User>(user, HttpStatus.OK);
         }catch (Exception e)
         {
-            //Toto nastava napr pri neexistujucom ID
             logger.error("Caught expection",e);
             return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
         }
     }
 
+    //Tato funkcia sa vola pri prihlasovani a vracia uzivatela, ktory sa prihlasuje
     @RequestMapping(value = "/getuserbydata/{username}/{password}")
     @ResponseBody
     public ResponseEntity<User> getUserByData(@PathVariable String username, @PathVariable String password, @RequestHeader("auth") String authorization)
@@ -91,11 +85,7 @@ public class MyRestController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        logger.info("CALLED /getuserbydata/{username}/{password} with variables: username {} password {}",username,password);
-
-        //Nacitanie XML a bean
-        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
-        UserJdbcTemplate userJdbcTemplate = (UserJdbcTemplate) context.getBean("userJdbcTemplate");
+        logger.info("CALLED /getuserbydata/{username}/{password} with variables: username {} password {}",username,"***");
 
         try {
             User user = userJdbcTemplate.getUserByData(username,password);
@@ -103,12 +93,12 @@ public class MyRestController {
             return new ResponseEntity<User>(user, HttpStatus.OK);
         }catch (Exception e)
         {
-            //Toto nastava napr pri neexistujucom uzivatelovi
             logger.error("Caught expection",e);
             return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
         }
     }
 
+    //Tato funkcia nastavi item ako prijaty
     @RequestMapping(value = "/setaccepteditem/{user_id}/{item_id}")
     @ResponseBody
     public ResponseEntity<Item> setAcceptedItem(@PathVariable Long user_id,@PathVariable Long item_id,@RequestHeader("auth") String authorization)
@@ -119,10 +109,6 @@ public class MyRestController {
         }
 
         logger.info("CALLED /setaccepteditem/{user_id}/{item_id} with variables: user_id {} item_id {}",user_id,item_id);
-
-        //Nacitanie XML a bean
-        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
-        ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
 
         try {
             itemJdbcTemplate.setAcceptedItem(item_id,user_id);
@@ -135,6 +121,7 @@ public class MyRestController {
         }
     }
 
+    //Tato funkcia zmaze item, co znamena, ze ponuka bola vybavena
     @RequestMapping(value = "/removeaccepteditem/{item_id}")
     @ResponseBody
     public ResponseEntity<Item> removeAcceptedItem(@PathVariable Long item_id,@RequestHeader("auth") String authorization)
@@ -145,10 +132,6 @@ public class MyRestController {
         }
 
         logger.info("CALLED /removeaccepteditem/{item_id} with variables: item_id {}",item_id);
-
-        //Nacitanie XML a bean
-        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
-        ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
 
         try {
             itemJdbcTemplate.removeAcceptedItem(item_id);
@@ -161,6 +144,7 @@ public class MyRestController {
         }
     }
 
+    //Tato funkcia sa vola ak sa pouzivatel rozhodne sitahnut ponuku
     @RequestMapping(value = "/removeitem/{item_id}")
     @ResponseBody
     public ResponseEntity<Item> removeItem(@PathVariable Long item_id,@RequestHeader("auth") String authorization)
@@ -171,10 +155,6 @@ public class MyRestController {
         }
 
         logger.info("CALLED /removeitem/{item_id} with variables: item_id {}",item_id);
-
-        //Nacitanie XML a bean
-        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
-        ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
 
         try {
             itemJdbcTemplate.removeItem(item_id);
@@ -187,59 +167,8 @@ public class MyRestController {
         }
     }
 
-    @RequestMapping(value = "/getitem/{id}")
-    @ResponseBody
-    public ResponseEntity<Item> getItem(@PathVariable Long id,@RequestHeader("auth") String authorization)
-    {
-        if(!isUserAuthorized(authorization)) {
-            logger.info("Unauthorized access!");
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
 
-        logger.info("CALLED /getitem/{id} with variables: id {}",id);
-
-        //Nacitanie XML a bean
-        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
-        ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
-
-        try {
-            Item item = itemJdbcTemplate.getItem(id);
-            logger.info("Returning result with {}",HttpStatus.OK);
-            return new ResponseEntity<Item>(item, HttpStatus.OK);
-        }catch (Exception e)
-        {
-            logger.error("Caught expection",e);
-            return new ResponseEntity<Item>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
-
-    @RequestMapping(value = "/getitems/{id}")
-    @ResponseBody
-    public ResponseEntity<List<Item>> getItemsByUser(@PathVariable Long id, @RequestHeader("auth") String authorization)
-    {
-        if(!isUserAuthorized(authorization)) {
-            logger.info("Unauthorized access!");
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
-        logger.info("CALLED /getitems/{id} with variables: id {}",id);
-
-        //Nacitanie XML a bean
-        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
-        ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
-
-        try {
-            List<Item> items = itemJdbcTemplate.getItemsByUser(id);
-            logger.info("Returning result with {}",HttpStatus.OK);
-            return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
-        }catch (Exception e)
-        {
-            logger.error("Caught expection",e);
-            return new ResponseEntity<List<Item>>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
+    //Tato funkcia vrati vsetky itemy, ktore pouzivatel vytvoril
     @RequestMapping(value = "/getitems/limit/{id}/{limit_start}/{limit_end}")
     @ResponseBody
     public ResponseEntity<List<Item>> getItemsByUserLimit(@PathVariable Long id,@PathVariable Long limit_start,@PathVariable Long limit_end, @RequestHeader("auth") String authorization)
@@ -250,10 +179,6 @@ public class MyRestController {
         }
 
         logger.info("CALLED /getitems/limit/{id}/{limit_start}/{limit_end} with variables: id {} limit_start {} limit_end {}",id,limit_start,limit_end);
-
-        //Nacitanie XML a bean
-        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
-        ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
 
         try {
             List<Item> items = itemJdbcTemplate.getItemsByUserLimit(id,limit_start,limit_end);
@@ -266,6 +191,7 @@ public class MyRestController {
         }
     }
 
+    //Tato funkcia vracia vsetky itemy, ktore moze pouzivatel potvrdit, cize nie su jeho a nie su potvrdene.
     @RequestMapping(value = "/getotheritems/limit/{id}/{limit_start}/{limit_end}")
     @ResponseBody
     public ResponseEntity<List<Item>> getOtherItemsByUserLimit(@PathVariable Long id,@PathVariable Long limit_start,@PathVariable Long limit_end, @RequestHeader("auth") String authorization)
@@ -276,10 +202,6 @@ public class MyRestController {
         }
 
         logger.info("CALLED /getotheritems/limit/{id}/{limit_start}/{limit_end} with variables: id {} limit_start {} limit_end {}",id,limit_start,limit_end);
-
-        //Nacitanie XML a bean
-        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
-        ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
 
         try {
             List<Item> items = itemJdbcTemplate.getOtherItemsByUserLimit(id,limit_start,limit_end);
@@ -292,32 +214,7 @@ public class MyRestController {
         }
     }
 
-    @RequestMapping(value = "/getapproveditems/{id}")
-    @ResponseBody
-    public ResponseEntity<List<Item>> getApprovedItems(@PathVariable Long id, @RequestHeader("auth") String authorization)
-    {
-        if(!isUserAuthorized(authorization)) {
-            logger.info("Unauthorized access!");
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
-        logger.info("CALLED /getapproveditems/{id} with variables: id {}",id);
-
-        //Nacitanie XML a bean
-        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
-        ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
-
-        try {
-            List<Item> items = itemJdbcTemplate.getApprovedItems(id);
-            logger.info("Returning result with {}",HttpStatus.OK);
-            return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
-        }catch (Exception e)
-        {
-            logger.error("Caught expection",e);
-            return new ResponseEntity<List<Item>>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
+    //Tato funkcia vrati zoznam vsetkych itemov, ktore pouzivatel volal
     @RequestMapping(value = "/getapproveditems/limit/{id}/{limit_start}/{limit_end}")
     @ResponseBody
     public ResponseEntity<List<Item>> getApprovedItemsLimit(@PathVariable Long id,@PathVariable Long limit_start,@PathVariable Long limit_end, @RequestHeader("auth") String authorization)
@@ -328,10 +225,6 @@ public class MyRestController {
         }
 
         logger.info("CALLED /getapproveditems/limit/{id}/{limit_start}/{limit_end} with variables: id {} limit_start {} limit_end{}",id,limit_start,limit_end);
-
-        //Nacitanie XML a bean
-        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
-        ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
 
         try {
             List<Item> items = itemJdbcTemplate.getApprovedItemsLimit(id,limit_start,limit_end);
@@ -344,32 +237,7 @@ public class MyRestController {
         }
     }
 
-    @RequestMapping(value = "/getotheritems/{id}")
-    @ResponseBody
-    public ResponseEntity<List<Item>> getOtherItems(@PathVariable Long id, @RequestHeader("auth") String authorization)
-    {
-        if(!isUserAuthorized(authorization)) {
-            logger.info("Unauthorized access!");
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
-        logger.info("CALLED /getotheritems/{id} with variables: id {}",id);
-
-        //Nacitanie XML a bean
-        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
-        ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
-
-        try {
-            List<Item> items = itemJdbcTemplate.getOtherItems(id);
-            logger.info("Returning result with {}",HttpStatus.OK);
-            return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
-        }catch (Exception e)
-        {
-            logger.error("Caught expection",e);
-            return new ResponseEntity<List<Item>>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
+    //Tato funkcia overi, ci sa pouzivatelske meno nachadza v tabulke. Vrati 0 ak nie alebo >0 ak ano
     @RequestMapping(value = "/checkusername/{username}")
     @ResponseBody
     public ResponseEntity<Integer> checkUsername(@PathVariable String username, @RequestHeader("auth") String authorization)
@@ -381,12 +249,8 @@ public class MyRestController {
 
         logger.info("CALLED /checkusername/{username} with variables: username {}",username);
 
-        //Nacitanie XML a bean
-        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
-        ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
-
         try {
-            Integer count = itemJdbcTemplate.checkUsername(username);
+            Integer count = userJdbcTemplate.checkUsername(username);
             logger.info("Returning result with {}",HttpStatus.OK);
             return new ResponseEntity<Integer>(count, HttpStatus.OK);
         }catch (Exception e)
@@ -396,6 +260,7 @@ public class MyRestController {
         }
     }
 
+    //Tato funkcia vlozi do databazy novy item
     @RequestMapping(value = "/createitem/{longtitude}/{latitude}/{user_id}/{type_id}")
     @ResponseBody
     public ResponseEntity<Void> createItem(@RequestHeader("name") String name, @RequestHeader("description") String description,@PathVariable double longtitude,
@@ -411,10 +276,6 @@ public class MyRestController {
         logger.info("CALLED /createitem/{name}/{description}/{longtitude}/{latitude}/{user_id}/{type_id} with variables: name {} | description {} | longtitude {} latitude {} user_id {} type_id {}",
                 name,description,longtitude,latitude,user_id,type_id);
 
-        //Nacitanie XML a bean
-        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
-        ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
-
         try {
             itemJdbcTemplate.createItem(name,description,longtitude,latitude,user_id,type_id);
             logger.info("Returning result with {}",HttpStatus.OK);
@@ -426,6 +287,7 @@ public class MyRestController {
         }
     }
 
+    //Toto zatial nepouzivame ale planujeme implementovat
     @RequestMapping(value = "/updateitem/{id}/{longtitude}/{latitude}/{accepted}")
     @ResponseBody
     public ResponseEntity<Void> updateItem(@RequestHeader("name") String name, @RequestHeader("description") String description,@PathVariable double longtitude,
@@ -441,10 +303,6 @@ public class MyRestController {
         logger.info("CALLED /updateitem/{id}/{name}/{description}/{longtitude}/{latitude}/{accepted} with variables: id {} name {} | description {} | longtitude {} latitude {}",
                 id,name,description,longtitude,latitude);
 
-        //Nacitanie XML a bean
-        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
-        ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
-
         try {
             itemJdbcTemplate.updateItem(id,name,description,longtitude,latitude,accepted);
             logger.info("Returning result with {}",HttpStatus.OK);
@@ -456,47 +314,14 @@ public class MyRestController {
         }
     }
 
-    @RequestMapping(value = "/show_logs")
-    @ResponseBody
-    public ResponseEntity<byte[]> getLog()
-    {
-        if(!isGettingLogs) {
-            logger.info("Getting log file");
-            isGettingLogs = true;
-        }
-        else {
-            logger.error("Busy preparing log file");
-            return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
-        }
-
-        try {
-            FileSystemResource file = new FileSystemResource("my_logs.log");
-
-            byte [] content = new byte[(int)file.contentLength()];
-            IOUtils.read(file.getInputStream(), content);
-
-            isGettingLogs = false;
-
-            logger.info("Returning result with {}",HttpStatus.OK);
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType("application/octet-stream"))
-                    .lastModified(file.lastModified())
-                    .contentLength(file.contentLength())
-                    .body(content);
-        }catch (Exception e)
-        {
-            logger.error("Caught expection",e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
+    //Tato funkcia vypise vsetky logy na serveri
     @RequestMapping(value = "/show_logs/string")
     @ResponseBody
     public ResponseEntity<String> getLogString()
     {
         try {
             logger.info("CALLED /show_logs/string");
-            return new ResponseEntity<String>(readLineByLineJava8("my_logs.log"),HttpStatus.OK);
+            return new ResponseEntity<String>(readLineByLine("my_logs.log"),HttpStatus.OK);
         }catch (Exception e)
         {
             logger.error("Caught expection",e);
@@ -504,6 +329,7 @@ public class MyRestController {
         }
     }
 
+    //Tato funkcia vymaze subor s logmi na serveri
     @RequestMapping(value = "/delete_logs")
     @ResponseBody
     public ResponseEntity<Void> deleteLogs()
@@ -523,7 +349,8 @@ public class MyRestController {
         }
     }
 
-    private String readLineByLineJava8(String filePath)
+    //Pouziva sa pri citani logov. Vraci cely obsah logu
+    private String readLineByLine(String filePath)
     {
         StringBuilder contentBuilder = new StringBuilder();
 
@@ -539,37 +366,23 @@ public class MyRestController {
         return contentBuilder.toString();
     }
 
+    //Vrati true ak sa zhoduje prichadzajuci autorizacny token so serverovym
     public boolean isUserAuthorized(String string)
     {
         return string.equals(MD5Hashing.getSecurePassword(getAuthToken()));
     }
 
-    private static String getAuthToken()
+    //Vyberie token z configu
+    private String getAuthToken()
     {
-        return "MyToken123Haha.!@";
-        //Zatial neviem, preco dolne sposoby nefunguju
-
-        /*Properties properties = new Properties();
+        Properties properties = new Properties();
         try {
-            properties.load(new FileInputStream("config.properties"));
+            properties.load(getClass().getClassLoader().getResourceAsStream("config.properties"));
             return (String)properties.get("token");
         } catch (IOException e) {
-            System.out.println("NOT FOUND! :(");
-        }
-        try {
-            properties.load(new FileInputStream("com.mikpuk.config.properties"));
-            return (String)properties.get("token");
-        } catch (IOException e) {
-            System.out.println("NOT FOUND! :(");
-        }
-        try {
-            properties.load(new FileInputStream("src/main/resources/config.properties"));
-            return (String)properties.get("token");
-        } catch (IOException e) {
-            System.out.println("NOT FOUND! :(");
+            logger.error("getAuthTokenError!",e);
             return "";
-        }*/
+        }
     }
-
 
 }

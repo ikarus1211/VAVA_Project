@@ -8,4 +8,5 @@ public interface UserDAO {
     public void createUser(String name,String password);
     public User getUserById(long id);
     public User getUserByData(String username,String password);
+    public int checkUsername(String username);
 }

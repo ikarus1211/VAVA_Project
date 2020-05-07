@@ -19,6 +19,7 @@ public class UserJdbcTemplate implements UserDAO {
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    //Tato funkcia zapisu pouzivatela do databazy
     @Override
     public void createUser(String name,String password) {
         String query = "insert into users (username,password,reputation) values (?,?,?)";
@@ -26,6 +27,7 @@ public class UserJdbcTemplate implements UserDAO {
         jdbcTemplate.update(query, name,password,0);
     }
 
+    //Toto sa mozno bude hodit v buducnosti
     @Override
     public User getUserById(long id) {
         String query = "select * from users where id = ?";
@@ -33,6 +35,7 @@ public class UserJdbcTemplate implements UserDAO {
         return jdbcTemplate.queryForObject(query, new Object[]{id}, new UserMapper());
     }
 
+    //Tato funkcia vracia pouzivatela, ktory sa chce prihlasit
     @Override
     public User getUserByData(String username,String password) {
         String query = "select * from users where username = ? and password = ?";
@@ -40,5 +43,12 @@ public class UserJdbcTemplate implements UserDAO {
         return jdbcTemplate.queryForObject(query, new Object[]{username,password}, new UserMapper());
     }
 
+    //Tato funkcia vrati pocet danych pouzivatelskych mien z databazy
+    @Override
+    public int checkUsername(String username) {
+        String query = "SELECT COUNT(*) FROM vavaDB.users where username = ?";
+        logger.info("Executing query - {} with variables {} ",query,username);
+        return jdbcTemplate.queryForObject(query,new Object[]{username},Integer.class);
+    }
 
 }
