@@ -296,6 +296,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         if (permissionGranted) {
 
             appLocationManager = new AppLocationManager(MenuScreenActivity.this);
+            //TODO zmazat?
             mLocation = appLocationManager.getmLocation();
             System.out.println(appLocationManager.getmLocation());
             System.out.println(appLocationManager.generateAddress());
@@ -409,14 +410,29 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
                 String AUTH_TOKEN = ConfigManager.getAuthToken(getApplicationContext());
 
                 String uri = ConfigManager.getApiUrl(getApplicationContext())+
-                        "/getotheritems/limit/{id}/{limit_start}/{limit_end}";
+                        "/getotheritems/limit/{id}/{limit_start}/{limit_end}/{user_long}/{user_lat}";
                 RestTemplate restTemplate = new RestTemplate();
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
                 HttpHeaders httpHeaders = new HttpHeaders();
                 httpHeaders.add("auth",AUTH_TOKEN);
 
+                if(appLocationManager == null){
+                    initGps();
+                }
+
+                double lon,lat;
+                if(appLocationManager == null){
+                    //In case we can`t get location
+                    lon = 0;
+                    lat = 0;
+                }
+                else {
+                    lon = appLocationManager.getLongitude();
+                    lat = appLocationManager.getLatitude();
+                }
+
                 fetchedItems = restTemplate.exchange(uri, HttpMethod.GET,
-                        new HttpEntity<String>(httpHeaders), Item[].class,user.getId(),itemCount,itemCount+10).getBody();
+                        new HttpEntity<String>(httpHeaders), Item[].class,user.getId(),itemCount,itemCount+10,lon,lat).getBody();
 
                 if(fetchedItems.length < 10) {
                     allItemsLoaded = true;

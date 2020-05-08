@@ -77,4 +77,6 @@
     <string name="no_more_items_error">Žiadne ďalšie dostupné ponuky</string>
     <string name="recaptcha_error">Recaptcha problém!</string>
     <string name="navigation_profile">Profil</string>
+    <string name="create_title_too_long">Titulok môže mať maximálne 30 znakov</string>
+    <string name="create_desc_too_long">Popisok môže mať maximálne 120 znakov</string>
 </resources>

@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.hypertrack.hyperlog.HyperLog;
 import com.mikpuk.vava_project.AppLocationManager;
 import com.mikpuk.vava_project.ConfigManager;
@@ -37,6 +38,9 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
     Button createReq = null;
     EditText itemNameText = null;
     EditText descriptionText = null;
+
+    TextInputLayout titleLayout;
+    TextInputLayout descLayout;
     User user = null;
     Spinner spinner = null;
     private static final String TAG = "Create new request activity";
@@ -59,8 +63,10 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
         user = (User)getIntent().getSerializableExtra("user");
 
         createReq = findViewById(R.id.createReqButton);
-        itemNameText = findViewById(R.id.reqCreationItem);
-        descriptionText = findViewById(R.id.reqCreationDes);
+        itemNameText = findViewById(R.id.createTitle);
+        descriptionText = findViewById(R.id.createDesc);
+        titleLayout = findViewById(R.id.createTitleLayout);
+        descLayout = findViewById(R.id.createDescLayout);
 
         createReq.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,10 +76,48 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
         });
     }
 
+    private boolean checkFields() {
+        boolean showError = false;
 
+        titleLayout.setError(null);
+        titleLayout.setErrorIconDrawable(null);
+        descLayout.setError(null);
+        descLayout.setErrorIconDrawable(null);
+
+        if(itemNameText.getText().toString().isEmpty()) {
+            titleLayout.setError(getString(R.string.empty_string_error));
+            titleLayout.setErrorIconDrawable(R.drawable.ic_error);
+            showError=true;
+        }
+        else {
+            if(itemNameText.getText().length() > 30){
+                titleLayout.setError(getString(R.string.create_title_too_long));
+                titleLayout.setErrorIconDrawable(R.drawable.ic_error);
+                showError=true;
+            }
+        }
+
+        if(descriptionText.getText().toString().isEmpty()) {
+            descLayout.setError(getString(R.string.empty_string_error));
+            descLayout.setErrorIconDrawable(R.drawable.ic_error);
+            showError=true;
+        } else {
+            if(descriptionText.getText().length() > 120) {
+                descLayout.setError(getString(R.string.create_desc_too_long));
+                descLayout.setErrorIconDrawable(R.drawable.ic_error);
+                showError=true;
+            }
+        }
+
+        return !showError;
+    }
 
     private void createRequest()
     {
+        if(!checkFields()) {
+            return;
+        }
+
         AppLocationManager appLocationManager = new AppLocationManager(this);
 
 
@@ -96,11 +140,11 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
                     HttpHeaders httpHeaders = new HttpHeaders();
                     httpHeaders.add("auth",AUTH_TOKEN);
                     httpHeaders.add("name",itemNameText.getText().toString());
-                    httpHeaders.add("description", Base64.encodeToString(descriptionText.getText().toString().getBytes(),Base64.URL_SAFE));
+                    //Base64 creates new line so I replace them with some string here and then I replace them back to new lines at server
+                    httpHeaders.add("description", Base64.encodeToString(descriptionText.getText().toString().getBytes(),Base64.URL_SAFE).replaceAll("\\R", "MySpaceLUL"));
 
                     restTemplate.exchange(uri, HttpMethod.POST,
-                            new HttpEntity<String>(httpHeaders), Item.class,
-                            longitude,latitude,user.getId(),selectedType);
+                            new HttpEntity<String>(httpHeaders), Item.class,longitude,latitude,user.getId(),selectedType);//,
 
                     showToast("ITEM ADDED!");
                     HyperLog.i(TAG, "Item created");

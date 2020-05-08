@@ -19,6 +19,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.mikpuk.vava_project.AppLocationManager;
 import com.mikpuk.vava_project.ConfigManager;
 import com.hypertrack.hyperlog.HyperLog;
 import com.mikpuk.vava_project.Item;
@@ -47,8 +49,6 @@ import static com.mikpuk.vava_project.PaginationScrollListener.PAGE_START;
 
 public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, RecViewAdapter.OnItemListener {
 
-
-
     @BindView(R.id.recyclerView102)
     RecyclerView mRecyclerView;
 
@@ -67,6 +67,7 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
     boolean allItemsLoaded = false;
 
     private User user = null;
+    private AppLocationManager appLocationManager;
 
     private static final String TAG = "Accepted Request";
 
@@ -81,6 +82,7 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
         SceneManager.initNavigationBar(getString(R.string.navigation_accepted_requests),R.id.accepted_requests_dl,R.id.accepted_requests_navView,this,this,user);
 
         ButterKnife.bind(this);
+        appLocationManager = new AppLocationManager(this);
 
         swipeRefresh.setOnRefreshListener(this);
         mRecyclerView.setHasFixedSize(true);
@@ -178,8 +180,6 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
     }
 
 
-
-
     class AsyncAcceptedItemsGetter extends AsyncTask<Void,Void,Void>
     {
         @Override
@@ -189,14 +189,25 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
                 String AUTH_TOKEN = ConfigManager.getAuthToken(getApplicationContext());
 
                 String uri = ConfigManager.getApiUrl(getApplicationContext())+
-                        "/getapproveditems/limit/{id}/{limit_start}/{limit_end}";
+                        "/getapproveditems/limit/{id}/{limit_start}/{limit_end}/{user_long}/{user_lat}";
                 RestTemplate restTemplate = new RestTemplate();
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
                 HttpHeaders httpHeaders = new HttpHeaders();
                 httpHeaders.add("auth",AUTH_TOKEN);
 
+                double lon,lat;
+                if(appLocationManager == null){
+                    //In case we can`t get location
+                    lon = 0;
+                    lat = 0;
+                }
+                else {
+                    lon = appLocationManager.getLongitude();
+                    lat = appLocationManager.getLatitude();
+                }
+
                 fetchedItems = restTemplate.exchange(uri, HttpMethod.GET,
-                        new HttpEntity<String>(httpHeaders), Item[].class,user.getId(),itemCount,itemCount+10).getBody();
+                        new HttpEntity<String>(httpHeaders), Item[].class,user.getId(),itemCount,itemCount+10,lon,lat).getBody();
 
 
                 if(fetchedItems.length < 10) {
