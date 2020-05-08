@@ -6,5 +6,6 @@
     <color name="pureWhite">#ffffff</color>
     <color name="textGreen">#45bc62</color>
     <color name="textBlue">#007cf9</color>
-
+    <color name="textDarkgreen">#1E7F19</color>
+    <color name="orange2Primary">#E75A1A</color>
 </resources>

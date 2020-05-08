@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="300dp"
@@ -7,6 +8,11 @@
     android:background="@drawable/borrow_it_light"
     android:padding="5dp"
     android:layout_gravity="center">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
     <TextView
     android:id="@+id/popTxtClose"
     android:layout_width="30dp"
@@ -18,6 +24,19 @@
     android:layout_gravity="end"
     android:gravity="center"
     android:background="@drawable/circle"/>
+
+    <TextView
+        android:id="@+id/popTxtInfo"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="start"
+        android:layout_marginTop="-30dp"
+        android:background="@drawable/circle"
+        android:gravity="center"
+        android:text="i"
+        android:textColor="@color/pureWhite"
+        android:textSize="20dp"
+        android:textStyle="bold" />
 
     <TextView
         android:layout_marginTop="-20dp"
@@ -92,19 +111,40 @@
                 android:text="Potreboval som vyskusat starsne vela textu aby som videl co to spravy"
                 android:layout_gravity="center_horizontal">
             </TextView>
-            <TextView
-                android:layout_marginTop="10dp"
-                android:id="@+id/popDistance"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:background="@drawable/fullcircle"
-                android:textColor="@color/pureWhite"
-                android:textSize="15sp"
-                android:gravity="center"
-                android:textStyle="bold"
-                android:text="Distance: \n 0m"
-                android:layout_gravity="center_horizontal">
-            </TextView>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp">
+                <TextView
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/popDistance"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:background="@drawable/fullcircle"
+                    android:textColor="@color/pureWhite"
+                    android:textSize="15sp"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:text="Distance: \n 0m"
+                    android:layout_gravity="start">
+                </TextView>
+                <TextView
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/popStatus"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:background="@drawable/fullcircle3"
+                    android:textColor="@color/pureWhite"
+                    android:textSize="15sp"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:text="Order\n is free"
+                    android:layout_gravity="end">
+                </TextView>
+            </LinearLayout>
+
 
         <TextView
             android:visibility="gone"
@@ -127,5 +167,5 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/swipeRefresh101" />
     </LinearLayout>
-
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

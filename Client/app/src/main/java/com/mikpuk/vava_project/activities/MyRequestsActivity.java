@@ -153,7 +153,9 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
         TextView textAddress;
         Button finishButton;
         ImageView imageView;
+        TextView status;
 
+        status = mDialog.findViewById(R.id.popStatus);
         imageView = mDialog.findViewById(R.id.dialog_image);
         txtclose = mDialog.findViewById(R.id.popTxtClose);
         textName = mDialog.findViewById(R.id.popMyName);
@@ -166,6 +168,10 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
         textName.setText(user.getUsername());
         //Item item = items.get(pos); TU BOLA CHYBA! ITEMS VYPRAZDNUJEME!
         Item item = adapter.getItem(pos);
+
+        if (item.isAccepted())
+            status.setText("Offer\nwas taken");
+
         imageView.setImageResource((int)item.getType_id());
         textItemName.setText(item.getName());
         textDescription.setText(item.getDescription());

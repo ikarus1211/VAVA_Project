@@ -18,6 +18,18 @@
         android:layout_gravity="end"
         android:gravity="center"
         android:background="@drawable/circle"/>
+    <TextView
+        android:id="@+id/popTxtInfo"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="start"
+        android:layout_marginTop="-30dp"
+        android:background="@drawable/circle"
+        android:gravity="center"
+        android:text="i"
+        android:textColor="@color/pureWhite"
+        android:textSize="20dp"
+        android:textStyle="bold" />
 
     <TextView
         android:layout_marginTop="-20dp"

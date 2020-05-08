@@ -25,6 +25,7 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.os.Handler;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -153,7 +154,9 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         TextView textAddress;
         TextView accpetButton;
         ImageView imageView;
+        Button finish;
 
+        finish = mDialog.findViewById(R.id.finish101);
         imageView = mDialog.findViewById(R.id.dialog_image);
         txtclose = mDialog.findViewById(R.id.popTxtClose);
         textName = mDialog.findViewById(R.id.popMyName);
@@ -162,11 +165,13 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         textAddress = mDialog.findViewById(R.id.popAddress);
         accpetButton = mDialog.findViewById(R.id.accept);
 
-
+        finish.setVisibility(View.INVISIBLE);
         accpetButton.setVisibility(View.VISIBLE);
         textName.setText(user.getUsername());
         //Item item = items.get(pos); TU BOLA CHYBA! ITEMS VYPRAZDNUJEME!
         Item item = adapter.getItem(pos);
+        if (item.isAccepted())
+
         imageView.setImageResource((int)item.getType_id());
         textItemName.setText(item.getName());
         textDescription.setText(item.getDescription());
