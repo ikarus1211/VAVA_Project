@@ -83,4 +83,8 @@
     <string name="create_desc_too_long">Popisok môže mať maximálne 120 znakov</string>
     <string name="request_taken">Prijatá</string>
     <string name="request_free">Neprijatá</string>
+    <string name="gps_not_available">Poloha nie je dostupná!</string>
+    <string name="gps_not_available_desc">Nemôžeme zistiť vašu polohu. Pred pridávaním žiadosti sa uistite, že ste na mieste s dobrým signálom</string>
+    <string name="try_again">Skúsiť znova</string>
+    <string name="cancel">Zrušiť</string>
 </resources>

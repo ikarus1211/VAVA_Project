@@ -39,6 +39,10 @@ public class AppLocationManager implements LocationListener {
     private static final String TAG = "Location Manager";
 
     public AppLocationManager(Context context) {
+        loadLocationManager(context);
+    }
+
+    private void loadLocationManager(Context context) {
         HyperLog.i(TAG,"Initializing location manager");
         mContext = context;
         LocationManager locationManager = (LocationManager) context
@@ -59,7 +63,6 @@ public class AppLocationManager implements LocationListener {
                 0, this);
         setMostRecentLocation(locationManager.getLastKnownLocation(provider));
         getDeviceLocation();
-
     }
 
     private void getDeviceLocation()

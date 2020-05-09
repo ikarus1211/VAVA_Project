@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Base64;
 import android.view.View;
 import android.widget.AdapterView;
@@ -50,6 +51,7 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
     Spinner spinner = null;
     private static final String TAG = "Create new request activity";
     private int selectedType = R.drawable.tools;
+    private AppLocationManager appLocationManager;
 
 
     @Override
@@ -59,6 +61,7 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_my_request_creation);
         spinner = findViewById(R.id.category_spinner);
+        appLocationManager = new AppLocationManager(this);
 
         ArrayAdapter<CharSequence>  myAdapter = ArrayAdapter.createFromResource(this, R.array.cate, R.layout.create_request_spinner_layout);
         myAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
@@ -117,14 +120,41 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
         return !showError;
     }
 
+    private void showGPSErrorDialog(){
+        new AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle(getString(R.string.gps_not_available))
+                .setMessage(getString(R.string.gps_not_available_desc))
+                .setPositiveButton(getString(R.string.try_again), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Handler handler = new Handler();
+
+                        final Runnable r = new Runnable() {
+                            public void run() {
+                                createRequest();
+                            }
+                        };
+
+                        handler.postDelayed(r, 1000);
+
+                    }
+                })
+                .setNegativeButton(getString(R.string.cancel), null)
+                .show();
+    }
+
     private void createRequest()
     {
         if(!checkFields()) {
             return;
         }
 
-        AppLocationManager appLocationManager = new AppLocationManager(this);
-
+        if(appLocationManager.getLongitude() == 0 && appLocationManager.getLatitude() ==0){
+            //Pokus o znova dostanie GPS
+            appLocationManager = new AppLocationManager(this);
+            showGPSErrorDialog();
+            return;
+        }
 
         final double latitude = appLocationManager.getLatitude();
         final double longitude = appLocationManager.getLongitude();
