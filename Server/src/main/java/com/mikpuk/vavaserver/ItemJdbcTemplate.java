@@ -12,9 +12,9 @@ public class ItemJdbcTemplate implements ItemDAO {
     private DataSource dataSource;
     private JdbcTemplate jdbcTemplate;
 
-    private Logger logger = LoggerFactory.getLogger(ItemJdbcTemplate.class);
+    private final Logger logger = LoggerFactory.getLogger(ItemJdbcTemplate.class);
 
-    //Hodnota o kolko zvysujeme reputaciu pri prijati ponuky
+    //When user completes request we increase his reputation by this value
     private int REPUTATION_INCREASE = 10;
 
     @Override
@@ -23,7 +23,7 @@ public class ItemJdbcTemplate implements ItemDAO {
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    //Tato funkcia vytvori novy item v DB na zaklade parametrov
+    //Creates new item in DB
     @Override
     public void createItem(String name, String description, double  longitude, double latitude, long user_id, long type_id) {
         String query = "insert into items (name,description,longitude,latitude,user_id,accepted,type_id) values (?,?,?,?,?,?,?)";
@@ -32,7 +32,7 @@ public class ItemJdbcTemplate implements ItemDAO {
         jdbcTemplate.update(query, name,description,longitude,latitude,user_id,false,type_id);
     }
 
-    //Vrati vsetky itemy, ktore vlastni dany pouzivatel
+    //Returns all items created by user
     @Override
     public List<Item> getItemsByUserLimit(long id, long limit_start, long limit_end) {
         String query = "SELECT * from vavaDB.items a INNER JOIN vavaDB.users i ON a.user_id = i.id where a.user_id = ? ORDER BY a.id ASC LIMIT ? , ?";
@@ -40,7 +40,7 @@ public class ItemJdbcTemplate implements ItemDAO {
         return jdbcTemplate.query(query, new Object[]{id,limit_start,limit_end}, new ItemMapper());
     }
 
-    //Toto zatial nepouzivame ale planujeme implementovat
+    //TODO
     @Override
     public void updateItem(long id, String name, String description, double longitude, double latitude, boolean accepted) {
         String query = "update items set name = ?,description = ?,longitude = ?,latitude = ?, accepted = ? where id = ?;";
@@ -49,7 +49,7 @@ public class ItemJdbcTemplate implements ItemDAO {
         jdbcTemplate.update(query, name,description,longitude,latitude,true,id);
     }
 
-    //Tato funkcia vracia vsetky objekty, ktore nepatria pouzivatelovi a nie su potvrdene
+    //Return all items which are not taken and are from other users
     @Override
     public List<Item> getOtherItemsByUserLimit(long id, long limit_start, long limit_end) {
         String query = "SELECT * from vavaDB.items a INNER JOIN vavaDB.users i ON a.user_id = i.id" +
@@ -58,8 +58,7 @@ public class ItemJdbcTemplate implements ItemDAO {
         return jdbcTemplate.query(query, new Object[]{id,limit_start,limit_end}, new ItemMapper());
     }
 
-
-    //Toto vrati vsetky itemy z DB, ktore pouzivatel prijal
+    //Returns all accepted requests of user
     @Override
     public List<Item> getApprovedItemsLimit(long id, long limit_start, long limit_end) {
         String query = "SELECT * from vavaDB.approved_items a INNER JOIN vavaDB.items i ON a.item_id = i.id INNER JOIN vavaDB.users u ON a.user_id = u.id WHERE a.user_id = ? LIMIT ? , ?;";
@@ -67,7 +66,7 @@ public class ItemJdbcTemplate implements ItemDAO {
         return jdbcTemplate.query(query, new Object[]{id,limit_start,limit_end}, new ItemMapper());
     }
 
-    //Tato funkcia nastavi item ako prijaty
+    //Sets item as accepted
     @Override
     public void setAcceptedItem(long item_id, long user_id) {
         String query = "insert into approved_items (user_id,item_id) values (?,?)";
@@ -78,7 +77,7 @@ public class ItemJdbcTemplate implements ItemDAO {
         jdbcTemplate.update(query, user_id,item_id);
     }
 
-    //Tato funkcia sa vola, ak pouzivatel potvrdil vykonanie ponuky a teda zmaze itemy a pripise reputaciu
+    //This removes item when request is succesfully done. Also inreases the reputation of user which borrowed the item
     @Override
     public void removeAcceptedItem(long item_id) {
         String user_getter_query = "select user_id from vavaDB.approved_items WHERE item_id = ?";
@@ -95,7 +94,7 @@ public class ItemJdbcTemplate implements ItemDAO {
         jdbcTemplate.update(query3,REPUTATION_INCREASE,userId);
     }
 
-    //Tato funkcia vymaze item z databazy
+    //Removes items
     @Override
     public void removeItem(long item_id) {
         String query = "delete from items where id = ?";
