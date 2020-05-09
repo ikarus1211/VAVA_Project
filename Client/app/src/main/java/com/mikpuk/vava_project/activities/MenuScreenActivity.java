@@ -102,8 +102,10 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
 
         //Set up navigation bar
         SceneManager.initNavigationBar(getString(R.string.navigation_main_menu),R.id.menu_screen_dl,R.id.menu_navView,this,this,user);
-
-        getGpsStatus();
+        
+    }
+    private void initialize()
+    {
         getLocationPermission();
 
         ButterKnife.bind(this);
@@ -140,6 +142,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
                 return isLoading;
             }
         });
+
     }
 
     private void runDialog(int pos)
@@ -155,7 +158,9 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         TextView accpetButton;
         ImageView imageView;
         Button finish;
+        TextView status;
 
+        status = mDialog.findViewById(R.id.popStatus);
         finish = mDialog.findViewById(R.id.finish101);
         imageView = mDialog.findViewById(R.id.dialog_image);
         txtclose = mDialog.findViewById(R.id.popTxtClose);
@@ -168,9 +173,10 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         finish.setVisibility(View.INVISIBLE);
         accpetButton.setVisibility(View.VISIBLE);
         textName.setText(user.getUsername());
-        //Item item = items.get(pos); TU BOLA CHYBA! ITEMS VYPRAZDNUJEME!
+
         Item item = adapter.getItem(pos);
         if (item.isAccepted())
+            status.setText(R.string.request_taken);
 
         imageView.setImageResource((int)item.getType_id());
         textItemName.setText(item.getName());
@@ -215,8 +221,20 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         mDialog.show();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-   @Override
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Toast.makeText(this, "GPS Enabled", Toast.LENGTH_SHORT).show();
+            initialize();
+        } else {
+            showGPSDisabledAlertToUser();
+        }
+    }
+
+    @Override
     public void onBackPressed() {
         // TODO Auto-generated method stub
         super.onBackPressed();
@@ -280,14 +298,16 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
     }
 
 
-    private void getGpsStatus()
+    private boolean getGpsStatus()
     {
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
             Toast.makeText(this, "GPS Enabled", Toast.LENGTH_SHORT).show();
+            return true;
         }else{
             showGPSDisabledAlertToUser();
+            return false;
         }
     }
 
@@ -310,9 +330,9 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         HyperLog.w(TAG, "GPS is disabled");
         alertDialogBuilder.setMessage("GPS is disabled in your device. Would you like to enable it?")
                 .setCancelable(false)
-                .setPositiveButton("Goto Settings Page To Enable GPS",
-                        new DialogInterface.OnClickListener(){
+                .setPositiveButton("Goto Settings Page To Enable GPS", new DialogInterface.OnClickListener(){
                             public void onClick(DialogInterface dialog, int id){
+                                dialog.cancel();
                                 Intent callGPSSettingIntent = new Intent(
                                         android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                                 startActivity(callGPSSettingIntent);

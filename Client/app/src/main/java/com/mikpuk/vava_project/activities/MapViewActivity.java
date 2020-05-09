@@ -23,6 +23,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.hypertrack.hyperlog.HyperLog;
+import com.mikpuk.vava_project.AppLocationManager;
 import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.Item;
 import com.mikpuk.vava_project.MyClusterRender;
@@ -55,6 +56,7 @@ https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/
         private ArrayList<MyMarker> mClusterMarkers = new ArrayList<>();
         private User user;
         private static final String TAG = "Map Activity";
+        private AppLocationManager appLocationManager;
         @Override
 
         protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +66,7 @@ https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/
             super.onCreate(savedInstanceState);
             setContentView(R.layout.layout_map_view);
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapView);
-
+            appLocationManager = new AppLocationManager(this);
             mapFragment.getMapAsync(MapViewActivity.this);
 
 
@@ -79,7 +81,11 @@ https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/
             Intent intent = getIntent();
             mLocation = intent.getParcelableExtra("location");
             mMap = googleMap;
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()),15f));
+            if (mLocation == null)
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(0,0), 15f));
+            else
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()),15f));
+
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setZoomGesturesEnabled(true);
             new AsyncOtherItemsMapGetter().execute(user.getId(),(long) 0,(long) 100);
@@ -145,7 +151,7 @@ https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/
                 R.anim.out_from_right);
     }
 
-    class AsyncOtherItemsMapGetter extends AsyncTask<Long,Void,Void>
+   /* class AsyncOtherItemsMapGetter extends AsyncTask<Long,Void,Void>
     {
         Item[] items;
 
@@ -193,6 +199,62 @@ https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/
             addMapMarkers(items);
         }
 
+    }*/
+    class AsyncOtherItemsMapGetter extends AsyncTask<Long,Void,Void>
+    {
+        Item[] items;
+
+        @Override
+        protected Void doInBackground(Long... args) {
+
+            Long limit_start = args[1];
+            Long limit_end = args[2];
+
+            try {
+                String AUTH_TOKEN = ConfigManager.getAuthToken(getApplicationContext());
+
+                String uri = ConfigManager.getApiUrl(getApplicationContext())+
+                        "/getotheritems/limit/{id}/{limit_start}/{limit_end}/{user_long}/{user_lat}";
+                RestTemplate restTemplate = new RestTemplate();
+                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+                HttpHeaders httpHeaders = new HttpHeaders();
+                httpHeaders.add("auth",AUTH_TOKEN);
+
+
+                items = restTemplate.exchange(uri, HttpMethod.GET,
+                        new HttpEntity<String>(httpHeaders), Item[].class,user.getId(),limit_start,limit_end,
+                        appLocationManager.getLongitude(),appLocationManager.getLatitude()).getBody();
+
+
+
+            } catch (HttpServerErrorException e)
+            {
+                HyperLog.e(TAG,"Server exception",e);
+                //Error v pripade chyby servera
+                System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
+
+            } catch (HttpClientErrorException e2)
+            {
+                HyperLog.e(TAG,"Client exception",e2);
+                //Error v pripade ziadosti klienka
+                System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
+                e2.printStackTrace();
+
+            } catch (Exception e3)
+            {
+                HyperLog.e(TAG,"Unknown error",e3);
+                e3.printStackTrace();
+
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            addMapMarkers(items);
+        }
     }
 
 }

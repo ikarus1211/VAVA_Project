@@ -91,4 +91,6 @@
     <string name="delete_finish">Delete</string>
     <string name="create_title_too_long">Title can only have up to 30 characters!</string>
     <string name="create_desc_too_long">Description can only have up to 120 characters!</string>
+    <string name="request_taken">Request\nwas taken</string>
+    <string name="request_free">Request\nis free</string>
 </resources>

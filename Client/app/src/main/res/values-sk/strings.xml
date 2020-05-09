@@ -81,4 +81,6 @@
     <string name="delete_finish">Zmazať</string>
     <string name="create_title_too_long">Titulok môže mať maximálne 30 znakov</string>
     <string name="create_desc_too_long">Popisok môže mať maximálne 120 znakov</string>
+    <string name="request_taken">Prijatá</string>
+    <string name="request_free">Neprijatá</string>
 </resources>

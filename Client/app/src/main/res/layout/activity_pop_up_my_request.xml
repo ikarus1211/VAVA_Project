@@ -140,7 +140,7 @@
                     android:textSize="15sp"
                     android:gravity="center"
                     android:textStyle="bold"
-                    android:text="Order\n is free"
+                    android:text="@string/request_free"
                     android:layout_gravity="end">
                 </TextView>
             </LinearLayout>
