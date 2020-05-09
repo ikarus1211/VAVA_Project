@@ -168,9 +168,11 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
         textName.setText(user.getUsername());
         //Item item = items.get(pos); TU BOLA CHYBA! ITEMS VYPRAZDNUJEME!
         Item item = adapter.getItem(pos);
-
+        finishButton.setText(R.string.finish_delete);
         if (item.isAccepted())
             status.setText("Offer\nwas taken");
+        else
+            finishButton.setText(R.string.delete_finish);
 
         imageView.setImageResource((int)item.getType_id());
         textItemName.setText(item.getName());

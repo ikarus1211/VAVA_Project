@@ -126,7 +126,6 @@ public class AppLocationManager implements LocationListener {
     }
 
     private void setMostRecentLocation(Location lastKnownLocation) {
-        System.out.println("Heeeeeeeereeeeeeeee");
         System.out.println(lastKnownLocation);
         mLocation = lastKnownLocation;
 

@@ -431,7 +431,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
                 HyperLog.e(TAG,"Server exception",e);
                 //Error v pripade chyby servera
                 System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
-                showToast("SERVER ERROR "+e.getStatusCode());
+                showToast(""+e.getStatusCode());
             } catch (HttpClientErrorException e2)
             {
                 HyperLog.e(TAG,"Client exception",e2);

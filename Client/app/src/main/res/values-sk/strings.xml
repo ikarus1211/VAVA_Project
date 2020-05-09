@@ -77,4 +77,6 @@
     <string name="no_more_items_error">Žiadne ďalšie dostupné ponuky</string>
     <string name="recaptcha_error">Recaptcha problém!</string>
     <string name="navigation_profile">Profil</string>
+    <string name="finish_delete">Dokončiť</string>
+    <string name="delete_finish">Zmazať</string>
 </resources>

@@ -87,4 +87,6 @@
     <string name="no_more_items_error">No more available items!</string>
     <string name="recaptcha_error">Recaptcha error!</string>
     <string name="navigation_profile">Profile</string>
+    <string name="finish_delete">Finish</string>
+    <string name="delete_finish">Delete</string>
 </resources>
