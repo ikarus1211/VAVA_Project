@@ -16,7 +16,7 @@ public class ItemMapper implements RowMapper<Item> {
         item.setLongtitude(rs.getDouble("longitude"));
         item.setName(rs.getString("name"));
         item.setType_id(rs.getLong("type_id"));
-        item.setUser_name(rs.getString("username"));
+        item.setUser_id(rs.getLong("user_id"));
 
         return item;
     }

@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.mikpuk.vava_project.R;
+import com.mikpuk.vava_project.SceneManager;
 
 public class PopUpMyRequest extends AppCompatActivity
 {
@@ -30,6 +31,7 @@ public class PopUpMyRequest extends AppCompatActivity
         setContentView(R.layout.activity_pop_up_my_request);
         closeButton.findViewById(R.id.popTxtClose);
         accpetButton.findViewById(R.id.accept);
+
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

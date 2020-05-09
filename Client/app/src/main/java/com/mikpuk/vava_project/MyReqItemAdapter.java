@@ -44,7 +44,7 @@ public class MyReqItemAdapter extends ArrayAdapter<Item> {
         String adress = appLocationManager.generateAddress(getItem(position).getLatitude(), getItem(position).getLongtitude());
         String itemName = getItem(position).getName();
         String description = getItem(position).getDescription();
-        String userName = getItem(position).getUser_name();
+        String userName = getItem(position).getUser().getUsername();
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate(mResource, parent, false);

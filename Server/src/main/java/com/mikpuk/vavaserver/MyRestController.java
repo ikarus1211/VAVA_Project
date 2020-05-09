@@ -206,7 +206,7 @@ public class MyRestController {
         }
 
         logger.info("CALLED /getotheritems/limit/{id}/{limit_start}/{limit_end}/{user_long}/{user_lat} with variables: id {} limit_start {} " +
-                "limit_end {} user_long {} user_lat {}",id,limit_start,limit_end,user_long,user_lat);
+                "limit_end {} user_long {} user_lat v{}",id,limit_start,limit_end,user_long,user_lat);
 
         try {
             List<Item> items = itemJdbcTemplate.getOtherItemsByUserLimit(id,limit_start,limit_end);
@@ -214,6 +214,7 @@ public class MyRestController {
 
             for(Item item:items){
                 item.setDistance(getDistance(item.getLatitude(),item.getLongtitude(),user_lat,user_long));
+                item.setUser(userJdbcTemplate.getUserById(item.getUser_id()));
             }
 
             return new ResponseEntity<List<Item>>(items, HttpStatus.OK);

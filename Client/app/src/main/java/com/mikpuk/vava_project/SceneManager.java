@@ -124,6 +124,17 @@ public class SceneManager {
     private static void loadMyProfile(Context context, User user) {
         Intent intent = new Intent(context, ProfileActivity.class);
         intent.putExtra("user",user);
+        intent.putExtra("show_user",user);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        context.startActivity(intent);
+        ((Activity)context).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+    }
+
+    public static void loadOtherProfile(Context context, User user, User showUserProfile) {
+        Intent intent = new Intent(context, ProfileActivity.class);
+        intent.putExtra("user",user);
+        intent.putExtra("show_user",showUserProfile);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         context.startActivity(intent);

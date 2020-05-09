@@ -20,6 +20,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.transition.Scene;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -48,6 +49,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -103,6 +105,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
 
         //Set up navigation bar
         SceneManager.initNavigationBar(getString(R.string.navigation_main_menu),R.id.menu_screen_dl,R.id.menu_navView,this,this,user);
+        context = this;
         
     }
     private void initialize()
@@ -161,6 +164,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         ImageView imageView;
         Button finish;
         TextView status;
+        TextView openProfile;
 
         status = mDialog.findViewById(R.id.popStatus);
         finish = mDialog.findViewById(R.id.finish101);
@@ -171,20 +175,28 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         textDescription = mDialog.findViewById(R.id.popMyDescription);
         textAddress = mDialog.findViewById(R.id.popAddress);
         accpetButton = mDialog.findViewById(R.id.accept);
+        openProfile = mDialog.findViewById(R.id.popTxtInfo);
 
         finish.setVisibility(View.INVISIBLE);
         accpetButton.setVisibility(View.VISIBLE);
-        textName.setText(user.getUsername());
 
         Item item = adapter.getItem(pos);
         if (item.isAccepted())
             status.setText(R.string.request_taken);
 
+        textName.setText(item.getUser().getUsername());
         imageView.setImageResource((int)item.getType_id());
         textItemName.setText(item.getName());
         textDescription.setText(item.getDescription());
         textAddress.setText(appLocationManager.generateAddress(item.getLatitude(), item.getLongtitude()));
 
+
+        openProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SceneManager.loadOtherProfile(context,user,item.getUser());
+            }
+        });
 
         txtclose.setOnClickListener(new View.OnClickListener() {
             @Override

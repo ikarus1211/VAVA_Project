@@ -37,7 +37,7 @@ public class OtherReqItemAdapter extends ArrayAdapter<Item> {
         System.out.println("VYKONAVAM 2");
         String itemName = getItem(position).getName();
         String description = getItem(position).getDescription();
-        String userName = getItem(position).getUser_name();
+        //String userName = getItem(position).getUser_name();
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate(mResource, parent, false);
@@ -45,7 +45,10 @@ public class OtherReqItemAdapter extends ArrayAdapter<Item> {
         TextView textDistance = (TextView) convertView.findViewById(R.id.myReqDistance);
         TextView textItemName = (TextView) convertView.findViewById(R.id.listItemX);
         TextView textAdress = (TextView) convertView.findViewById(R.id.listAdress);
+        TextView openProfile = (TextView) convertView.findViewById(R.id.popTxtInfo);
         ImageView imageView = convertView.findViewById(R.id.imageView);
+
+
 
         BackGrounPicker bp = new BackGrounPicker();
         bp.randomBackground(textDistance);

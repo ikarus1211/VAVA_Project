@@ -23,7 +23,8 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_profile);
 
-        user = (User)getIntent().getSerializableExtra("user");
+        User userTmp = (User)getIntent().getSerializableExtra("user");
+        user = (User)getIntent().getSerializableExtra("show_user");
 
         profileNameText=findViewById(R.id.profileNameText);
         profileNameText.setText(user.getUsername());
@@ -31,13 +32,11 @@ public class ProfileActivity extends AppCompatActivity {
         loadProgressBar();
 
         //Set up navigation bar
-        SceneManager.initNavigationBar(getString(R.string.navigation_profile),R.id.profile_dl,R.id.profile_navView,this,this,user);
+        SceneManager.initNavigationBar(getString(R.string.navigation_profile),R.id.profile_dl,R.id.profile_navView,this,this,userTmp);
     }
 
     private void loadProgressBar()
     {
-
-        System.out.println("!!! REPUTATION "+user.getReputation());
         ProgressBar levelBar;
         TextView levelText;
         TextView experienceText;

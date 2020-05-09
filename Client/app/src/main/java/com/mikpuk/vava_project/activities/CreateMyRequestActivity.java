@@ -2,6 +2,9 @@ package com.mikpuk.vava_project.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Base64;
@@ -10,7 +13,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -252,4 +257,82 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
     public void onNothingSelected(AdapterView<?> parent) {
         selectedType = R.drawable.animals;
     }
+/*
+    private void runDialog(int pos)
+    {
+        Dialog mDialog = new Dialog(this);
+        mDialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
+        mDialog.setContentView(R.layout.activity_pop_up_my_request);
+        TextView txtclose;
+        TextView textName;
+        TextView textItemName;
+        TextView textDescription;
+        TextView textAddress;
+        TextView accpetButton;
+        ImageView imageView;
+        Button finish;
+        TextView status;
+
+        status = mDialog.findViewById(R.id.popStatus);
+        finish = mDialog.findViewById(R.id.finish101);
+        imageView = mDialog.findViewById(R.id.dialog_image);
+        txtclose = mDialog.findViewById(R.id.popTxtClose);
+        textName = mDialog.findViewById(R.id.popMyName);
+        textItemName = mDialog.findViewById(R.id.popItemName);
+        textDescription = mDialog.findViewById(R.id.popMyDescription);
+        textAddress = mDialog.findViewById(R.id.popAddress);
+        accpetButton = mDialog.findViewById(R.id.accept);
+
+        finish.setVisibility(View.INVISIBLE);
+        accpetButton.setVisibility(View.VISIBLE);
+        textName.setText(user.getUsername());
+
+        Item item = adapter.getItem(pos);
+        if (item.isAccepted())
+            status.setText(R.string.request_taken);
+
+        imageView.setImageResource((int)item.getType_id());
+        textItemName.setText(item.getName());
+        textDescription.setText(item.getDescription());
+        textAddress.setText(appLocationManager.generateAddress(item.getLatitude(), item.getLongtitude()));
+
+
+        txtclose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDialog.dismiss();
+            }
+        });
+
+
+
+        accpetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //mDialog.dismiss();
+                new AlertDialog.Builder(view.getContext())
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle(getString(R.string.request_accept_title))
+                        .setMessage(getString(R.string.request_accept_desc))
+                        .setPositiveButton(getString(R.string.request_accept_yes), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                new MenuScreenActivity.AsyncAcceptedItemsSetter().execute(user.getId(),item.getId());
+                                HyperLog.i(TAG,"Request accepted");
+                                mDialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton(getString(R.string.request_accept_no), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mDialog.dismiss();
+                            }
+                        })
+                        .show();
+            }
+        });
+        mDialog.show();
+    }
+
+ */
 }

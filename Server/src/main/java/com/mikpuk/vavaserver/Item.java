@@ -8,10 +8,10 @@ public class Item {
     private double longitude;
     private double latitude;
     private long  user_id;
-    private String user_name;
     private boolean accepted;
     private long type_id;
     private double distance;
+    private User user;
 
     public Item(){}
 
@@ -24,7 +24,6 @@ public class Item {
         this.user_id = user_id;
         this.accepted = accepted;
         this.type_id = type_id;
-
     }
 
     public long getId() {
@@ -67,19 +66,11 @@ public class Item {
         this.latitude = latitude;
     }
 
-    public String getUser_name() {
-        return user_name;
-    }
-
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
-    }
-
-    public long getUsed_id() {
+    public long getUser_id() {
         return user_id;
     }
 
-    public void setUsed_id(long used_id) {
+    public void setUser_id(long used_id) {
         this.user_id = used_id;
     }
 
@@ -105,5 +96,13 @@ public class Item {
 
     public void setDistance(double distance) {
         this.distance = distance;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
