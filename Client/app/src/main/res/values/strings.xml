@@ -89,4 +89,6 @@
     <string name="navigation_profile">Profile</string>
     <string name="finish_delete">Finish</string>
     <string name="delete_finish">Delete</string>
+    <string name="create_title_too_long">Title can only have up to 30 characters!</string>
+    <string name="create_desc_too_long">Description can only have up to 120 characters!</string>
 </resources>

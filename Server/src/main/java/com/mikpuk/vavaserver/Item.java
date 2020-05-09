@@ -11,6 +11,7 @@ public class Item {
     private String user_name;
     private boolean accepted;
     private long type_id;
+    private double distance;
 
     public Item(){}
 
@@ -23,6 +24,7 @@ public class Item {
         this.user_id = user_id;
         this.accepted = accepted;
         this.type_id = type_id;
+
     }
 
     public long getId() {
@@ -95,5 +97,13 @@ public class Item {
 
     public void setType_id(long type_id) {
         this.type_id = type_id;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 }

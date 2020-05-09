@@ -144,10 +144,15 @@ public class RecViewAdapter extends RecyclerView.Adapter<BaseViewHolder>  {
         imageView.setImageResource((int)item.getType_id());
         AppLocationManager appLocationManager = new AppLocationManager(context);
         textViewAddress.setText(appLocationManager.generateAddress(item.getLatitude(), item.getLongtitude()));
-        String dist = appLocationManager.calculationByDistance(new LatLng(item.getLatitude(),item.getLongtitude()),
+       /* String dist = appLocationManager.calculationByDistance(new LatLng(item.getLatitude(),item.getLongtitude()),
                 new LatLng(appLocationManager.getLatitude(),appLocationManager.getLongitude()));
 
-        textDistance.setText(dist+"km");
+        textDistance.setText(dist+"km");*/
+        if(item.getDistance() < 0) {
+            textDistance.setText("???");
+        }else {
+            textDistance.setText(new DecimalFormat("0.00").format(item.getDistance()) + "km");
+        }
     }
 
         @Override

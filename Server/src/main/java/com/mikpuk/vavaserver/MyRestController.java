@@ -1,5 +1,6 @@
 package com.mikpuk.vavaserver;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,8 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Stream;
@@ -192,20 +195,27 @@ public class MyRestController {
     }
 
     //Tato funkcia vracia vsetky itemy, ktore moze pouzivatel potvrdit, cize nie su jeho a nie su potvrdene.
-    @RequestMapping(value = "/getotheritems/limit/{id}/{limit_start}/{limit_end}")
+    @RequestMapping(value = "/getotheritems/limit/{id}/{limit_start}/{limit_end}/{user_long}/{user_lat}")
     @ResponseBody
-    public ResponseEntity<List<Item>> getOtherItemsByUserLimit(@PathVariable Long id,@PathVariable Long limit_start,@PathVariable Long limit_end, @RequestHeader("auth") String authorization)
+    public ResponseEntity<List<Item>> getOtherItemsByUserLimit(@PathVariable Long id,@PathVariable Long limit_start,@PathVariable Long limit_end,
+                                                               @PathVariable double user_long, @PathVariable double user_lat, @RequestHeader("auth") String authorization)
     {
         if(!isUserAuthorized(authorization)) {
             logger.info("Unauthorized access!");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        logger.info("CALLED /getotheritems/limit/{id}/{limit_start}/{limit_end} with variables: id {} limit_start {} limit_end {}",id,limit_start,limit_end);
+        logger.info("CALLED /getotheritems/limit/{id}/{limit_start}/{limit_end}/{user_long}/{user_lat} with variables: id {} limit_start {} " +
+                "limit_end {} user_long {} user_lat {}",id,limit_start,limit_end,user_long,user_lat);
 
         try {
             List<Item> items = itemJdbcTemplate.getOtherItemsByUserLimit(id,limit_start,limit_end);
             logger.info("Returning result with {}",HttpStatus.OK);
+
+            for(Item item:items){
+                item.setDistance(getDistance(item.getLatitude(),item.getLongtitude(),user_lat,user_long));
+            }
+
             return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
         }catch (Exception e)
         {
@@ -214,21 +224,27 @@ public class MyRestController {
         }
     }
 
-    //Tato funkcia vrati zoznam vsetkych itemov, ktore pouzivatel volal
-    @RequestMapping(value = "/getapproveditems/limit/{id}/{limit_start}/{limit_end}")
+    //Tato funkcia vrati zoznam vsetkych itemov, ktore pouzivatel prijal
+    @RequestMapping(value = "/getapproveditems/limit/{id}/{limit_start}/{limit_end}/{user_long}/{user_lat}")
     @ResponseBody
-    public ResponseEntity<List<Item>> getApprovedItemsLimit(@PathVariable Long id,@PathVariable Long limit_start,@PathVariable Long limit_end, @RequestHeader("auth") String authorization)
+    public ResponseEntity<List<Item>> getApprovedItemsLimit(@PathVariable Long id,@PathVariable Long limit_start,@PathVariable Long limit_end,
+                                                            @PathVariable double user_long, @PathVariable double user_lat, @RequestHeader("auth") String authorization)
     {
         if(!isUserAuthorized(authorization)) {
             logger.info("Unauthorized access!");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        logger.info("CALLED /getapproveditems/limit/{id}/{limit_start}/{limit_end} with variables: id {} limit_start {} limit_end{}",id,limit_start,limit_end);
+        logger.info("CALLED /getapproveditems/limit/{id}/{limit_start}/{limit_end}/{user_lon}/{user_lat} with variables: id {} " +
+                "limit_start {} limit_end {} user_long {} user_lat {}",id,limit_start,limit_end,user_long,user_lat);
 
         try {
             List<Item> items = itemJdbcTemplate.getApprovedItemsLimit(id,limit_start,limit_end);
             logger.info("Returning result with {}",HttpStatus.OK);
+
+            for(Item item:items){
+                item.setDistance(getDistance(item.getLatitude(),item.getLongtitude(),user_lat,user_long));
+            }
             return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
         }catch (Exception e)
         {
@@ -267,7 +283,8 @@ public class MyRestController {
                                            @PathVariable double latitude,@PathVariable long user_id, @PathVariable long type_id,
                                            @RequestHeader("auth") String authorization)
     {
-        description = new String(Base64.decodeBase64(description.getBytes()));
+        String rawString = new String(description.getBytes());
+        description = new String(Base64.decodeBase64(rawString.replaceAll("MySpaceLUL","\n")));
         if(!isUserAuthorized(authorization)) {
             logger.info("Unauthorized access!");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -286,6 +303,7 @@ public class MyRestController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
 
     //Toto zatial nepouzivame ale planujeme implementovat
     @RequestMapping(value = "/updateitem/{id}/{longtitude}/{latitude}/{accepted}")
@@ -365,6 +383,29 @@ public class MyRestController {
 
         return contentBuilder.toString();
     }
+
+    public double getDistance(double i_lat,double i_lon,double u_lat,double u_lon){
+        int Radius = 6371;// radius of earth in Km
+        double lat1 = i_lat;
+        double lat2 = u_lat;
+        double lon1 = i_lon;
+        double lon2 = u_lon;
+
+        //Ak nie je niekde nastavena vzdialenost
+        if (lat1 == 0 && lon1 == 0 || lat2 == 0 && lon2 == 0)
+        {
+            return -1;
+        }
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1))
+                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
+                * Math.sin(dLon / 2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        return (Radius * c);
+    }
+
 
     //Vrati true ak sa zhoduje prichadzajuci autorizacny token so serverovym
     public boolean isUserAuthorized(String string)
