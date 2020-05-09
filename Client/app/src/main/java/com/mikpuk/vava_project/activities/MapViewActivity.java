@@ -44,8 +44,9 @@ import java.util.ArrayList;
 import static com.mikpuk.vava_project.Constants.MAPVIEW_BUNDLE_KEY;
 
 
-/*
-https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/main/java/com/example/mapdemo/RawMapViewDemoActivity.java
+/**
+ * Inspired by https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/main/java/com/example/mapdemo/RawMapViewDemoActivity.java
+ * This activity handles the map view and adding custom markers.
  */
     public class MapViewActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -71,8 +72,10 @@ https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/
 
 
         }
-    /*
-     * Sets Map camera onto user
+
+    /**
+     * Sets map camera onto user location
+     * @param googleMap map
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -91,6 +94,10 @@ https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/
             new AsyncOtherItemsMapGetter().execute(user.getId(),(long) 0,(long) 100);
     }
 
+    /**
+     * Adding marker for every request. Function is triggered when turning on the map
+     * @param items list of all items
+     */
     private void addMapMarkers(Item[] items){
 
         if(mMap != null){
@@ -143,6 +150,9 @@ https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/
         }
     }
 
+    /**
+     * Function handles what happens when back button is pressed
+     */
     @Override
     public void onBackPressed() {
         // TODO Auto-generated method stub
@@ -151,55 +161,6 @@ https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/
                 R.anim.out_from_right);
     }
 
-   /* class AsyncOtherItemsMapGetter extends AsyncTask<Long,Void,Void>
-    {
-        Item[] items;
-
-        @Override
-        protected Void doInBackground(Long... args) {
-            Long user_id = args[0];
-            Long limit_start = args[1];
-            Long limit_end = args[2];
-
-            try {
-                String AUTH_TOKEN = ConfigManager.getAuthToken(getApplicationContext());
-
-                String uri = ConfigManager.getApiUrl(getApplicationContext())+
-                        "/getotheritems/limit/{id}/{limit_start}/{limit_end}";
-                RestTemplate restTemplate = new RestTemplate();
-                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-                HttpHeaders httpHeaders = new HttpHeaders();
-                httpHeaders.add("auth",AUTH_TOKEN);
-
-                items = restTemplate.exchange(uri, HttpMethod.GET,
-                        new HttpEntity<String>(httpHeaders), Item[].class,user_id,limit_start,limit_end).getBody();
-
-            } catch (HttpServerErrorException e)
-            {
-                //Error v pripade chyby servera
-               HyperLog.e(TAG,"Server exception ", e);
-
-            }
-            catch (HttpClientErrorException e2)
-            {
-                //Error v pripade ziadosti klienka
-                HyperLog.e(TAG,"Clients exception", e2);
-
-            }
-            catch (Exception e3)
-            {
-                HyperLog.e(TAG,"Unknown exception", e3);
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            addMapMarkers(items);
-        }
-
-    }*/
     class AsyncOtherItemsMapGetter extends AsyncTask<Long,Void,Void>
     {
         Item[] items;

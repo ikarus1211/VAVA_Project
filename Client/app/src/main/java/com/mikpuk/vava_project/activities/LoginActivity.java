@@ -48,14 +48,18 @@ import java.util.Locale;
 
 import static com.mikpuk.vava_project.Constants.ERROR_DIALOG_REQUEST;
 
-
+/**
+ *
+ *  This is the login activity which manages the login screen.
+ *  Login screen is the first screen that user sees.
+ *
+ **/
 public class LoginActivity extends AppCompatActivity {
 
     Button loginButton = null;
     Button registerButton = null;
     EditText loginText = null;
     EditText passwordText = null;
-
     TextInputLayout loginInputLayout;
     TextInputLayout passwordInputLayout;
 
@@ -75,14 +79,19 @@ public class LoginActivity extends AppCompatActivity {
         loadSettings();
         setContentView(R.layout.layout_login);
 
-        //Nacitanie UI premennych
+        /*
+          Loading parameters for UI
+         */
         registerButton = findViewById(R.id.RegisterButton);
         loginText = findViewById(R.id.loginEditText);
         passwordText = findViewById(R.id.passwEditText);
-
         loginInputLayout = findViewById(R.id.loginEditTextLayout);
         passwordInputLayout = findViewById(R.id.passwEditTextLayout);
 
+        /*
+          On click listener for registration button.
+          Switching scenes to registration.
+         */
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,6 +126,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Handling settings in login scene
+     **/
     public void loadSettings()
     {
 
@@ -134,7 +146,10 @@ public class LoginActivity extends AppCompatActivity {
         Locale.setDefault(new Locale(language));;
     }
 
-
+    /**
+     * Loading registration scene.
+     * Function is triggered when user clicks on registration button.
+     */
     public void loadRegistrationScreen()
     {
         HyperLog.i(TAG,"Switching to registration");
@@ -147,9 +162,9 @@ public class LoginActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
     }
 
-
-
-
+    /**
+     * Simple function for showing toasts.
+     */
     private void showToast(final String text)
     {
         //Toto vyhodi bublinu s infom
@@ -161,6 +176,12 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Switching scene to main menu.
+     * @param user is the user that was logged in.
+     *             We further need him in other activities.
+     *             He is passed from scene to scene so we don't lose him.
+     */
     private void loadMenuScreen (User user)
     {
 
@@ -176,8 +197,12 @@ public class LoginActivity extends AppCompatActivity {
         //startActivity(intent);
         finish();
     }
-    /*
-     * Checking if google play services are available
+
+
+    /**
+     * Checking idf services are available
+     * @return true if services are OK
+     *         false if error occurred.
      */
     private boolean services()
     {
@@ -203,8 +228,10 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-
-    //Pokus o najdenie pouzivatela v DB a nasledne prihlasenie
+    /**
+     * Function tries to log in user. It checks the database, looks for the correct
+     * user and then tries to log him in.
+     */
     private void logInUser() {
         final String username = loginText.getText().toString();
         final String password = passwordText.getText().toString();

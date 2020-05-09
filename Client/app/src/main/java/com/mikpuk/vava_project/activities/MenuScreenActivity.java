@@ -60,14 +60,19 @@ import butterknife.ButterKnife;
 import static com.mikpuk.vava_project.Constants.LOCATION_PERM_CODE;
 import static com.mikpuk.vava_project.PaginationScrollListener.PAGE_START;
 
-
+/**
+ * Main menu class. This is class that user sees after log in. It displays
+ * every available request. He can then click on each request to see detailed information.
+ *
+ * Google maps permissions and GPS availability are also checked here. If one of these are not available
+ * the app won't allow the user to continue.
+ *
+ */
 public class MenuScreenActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener,RecViewAdapter.OnItemListener {
 
     private boolean permissionGranted = false;
-    private FusedLocationProviderClient fusedLocationProviderClient;
     private Location mLocation;
     private User user = null;
-
     private AppLocationManager appLocationManager;
     private Dialog mDialog;
 
@@ -84,17 +89,16 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
     private int totalPage = 10;
     private boolean isLoading = false;
     private Item[] fetchedItems;
-
     int itemCount = 0;
     boolean allItemsLoaded = false;
 
     private static final String TAG = "Menu Screen";
 
-    //Navigation bar
     private Context context;
     private boolean initialized = false;
 
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         HyperLog.i(TAG,"Menu screen");
         super.onCreate(savedInstanceState);
@@ -108,23 +112,27 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         context = this;
         
     }
+
+    /**
+     * Initializing the list of items(requests) and setting on click listeners
+     */
     private void initialize()
     {
+        //If it was initialized before
         if(initialized)
             return;
 
         initialized = true;
 
+        // Init GPS for further use
         initGps();
         ButterKnife.bind(this);
 
+        // Filling up the request swipe view
         swipeRefresh.setOnRefreshListener(this);
         mRecyclerView.setHasFixedSize(true);
-
-        // use a linear layout manager
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
-
         adapter = new RecViewAdapter(new ArrayList<Item>(), this, this);
         mRecyclerView.setAdapter(adapter);
         doApiCall();
@@ -150,6 +158,12 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
 
     }
 
+    /**
+     * Function creates a dialog with detailed information about one request.
+     * Through this dialog user can also accept the request.
+     *
+     * @param pos position of clicked item in the list
+     */
     private void runDialog(int pos)
     {
         mDialog = new Dialog(this);
@@ -165,7 +179,9 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         Button finish;
         TextView status;
         TextView openProfile;
+        TextView distance;
 
+        distance = mDialog.findViewById(R.id.popDistance);
         status = mDialog.findViewById(R.id.popStatus);
         finish = mDialog.findViewById(R.id.finish101);
         imageView = mDialog.findViewById(R.id.dialog_image);
@@ -180,10 +196,11 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         finish.setVisibility(View.INVISIBLE);
         accpetButton.setVisibility(View.VISIBLE);
 
+        // Getting the item from list
         Item item = adapter.getItem(pos);
         if (item.isAccepted())
             status.setText(R.string.request_taken);
-
+        distance.setText(getString(R.string.menu_dis) +"\n"+ String.format("%.2f",item.getDistance()) + "km");
         textName.setText(item.getUser().getUsername());
         imageView.setImageResource((int)item.getType_id());
         textItemName.setText(item.getName());
@@ -208,6 +225,9 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
 
 
         accpetButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Accepting the request
+             */
             @Override
             public void onClick(View view) {
 
@@ -235,6 +255,9 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         mDialog.show();
     }
 
+    /**
+     * This function makes sure that user has the correct permissions
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -242,7 +265,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         if(initialized)
             return;
 
-        //HyperLog.w(TAG,"ON RESUME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -253,6 +276,9 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         }
     }
 
+    /**
+     * Function triggers when the Back button on mobile its pressed
+     */
     @Override
     public void onBackPressed() {
         // TODO Auto-generated method stub
@@ -267,6 +293,9 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         new AsyncOtherItemsGetter().execute();
     }
 
+    /**
+     * Filling the recycle view with items
+     */
     private void doneApiCall() {
         new Handler().postDelayed(new Runnable() {
 
@@ -281,9 +310,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
                     items.add(item);
                 }
 
-                /**
-                 * manage progress view
-                 */
+               //manages progress view
                 if (currentPage != PAGE_START || allItemsLoaded)
                     adapter.removeLoading();
 
@@ -317,39 +344,36 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
     }
 
 
-    private boolean getGpsStatus()
-    {
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-            Toast.makeText(this, "GPS Enabled", Toast.LENGTH_SHORT).show();
-            return true;
-        }else{
-            showGPSDisabledAlertToUser();
-            return false;
-        }
-    }
-
+    /**
+     * Initializing GPS its saves a location to global variable
+     */
     private void initGps() {
-        System.out.println("Everything ok");
+
         if (permissionGranted) {
 
             appLocationManager = new AppLocationManager(MenuScreenActivity.this);
-            //TODO zmazat?
             mLocation = appLocationManager.getmLocation();
-            System.out.println(appLocationManager.getmLocation());
-            System.out.println(appLocationManager.generateAddress());
+
         }
     }
 
-    // TODO maybe rework
+    /**
+     * When GPS is disabled this function is triggered.
+     * It asks if user wants to enable the gps and then redirect him into settings.
+     */
     private void showGPSDisabledAlertToUser()
     {
+        // Building the alert message
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         HyperLog.w(TAG, "GPS is disabled");
+
+        // Setting content and buttons of the alert message
         alertDialogBuilder.setMessage("GPS is disabled in your device. Would you like to enable it?")
                 .setCancelable(false)
                 .setPositiveButton("Goto Settings Page To Enable GPS", new DialogInterface.OnClickListener(){
+                    /**
+                     * This initialize the setting menu when user can turn on the GPS
+                     */
                             public void onClick(DialogInterface dialog, int id){
                                 dialog.cancel();
                                 Intent callGPSSettingIntent = new Intent(
@@ -359,6 +383,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
                         });
         alertDialogBuilder.setNegativeButton("Cancel",
                 new DialogInterface.OnClickListener(){
+
                     public void onClick(DialogInterface dialog, int id){
                         dialog.cancel();
                     }
@@ -366,8 +391,12 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         AlertDialog alert = alertDialogBuilder.create();
         alert.show();
     }
-    /*
-     * Function which checks if the permissions were granted
+
+    /**
+     * Function handles result of the permission check
+     * @param requestCode code of permission
+     * @param permissions array of permissions
+     * @param grantResults result of permission check
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
@@ -395,7 +424,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
 
     }
 
-    /*
+    /**
      * Request location permission, so that we can get the location of the
      * device.
      */

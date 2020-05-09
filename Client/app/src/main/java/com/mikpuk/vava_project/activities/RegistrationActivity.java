@@ -49,13 +49,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+/**
+ * Class which is made for user registration UI handling.
+ * Class is responsible for loading UI and checking if user put
+ * correct inputs in text fields.
+ */
+
 public class RegistrationActivity extends AppCompatActivity {
 
     Button registerButton = null;
     EditText usernameText = null;
     EditText passwordText1 = null;
     EditText passwordText2 = null;
-
     TextInputLayout usernameLayout;
     TextInputLayout password1Layout;
     TextInputLayout password2Layout;
@@ -74,7 +79,9 @@ public class RegistrationActivity extends AppCompatActivity {
 
         HyperLog.i(TAG, "Starting registration");
 
-        //Nacitanie UI premennych
+        /*
+         UI loading
+         */
         registerButton = findViewById(R.id.button);
         usernameText = findViewById(R.id.usernameEditText);
         passwordText1 = findViewById(R.id.passwEditTextReg);
@@ -93,11 +100,16 @@ public class RegistrationActivity extends AppCompatActivity {
         queue = Volley.newRequestQueue(getApplicationContext());
     }
 
-    //Zavretie registracneho okna a navrat do login screenu
+    /**
+     * Closing of registration window and returning into login screen
+     */
     private void loadLoginScreen()
     {
         Intent intent = new Intent(this, LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //Aby sa pouzivatel nevratil back tlacidlom do registracie
+        /*
+          This blocks user in returning into registration screen with Back button press.
+         */
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 
@@ -109,6 +121,13 @@ public class RegistrationActivity extends AppCompatActivity {
                 R.anim.out_from_right);
     }
 
+    /**
+     * This is validating text field.
+     * It checks if user put correct input into each text field
+     * @param username username that he entered
+     * @param password1 first password that he entered
+     * @param password2 second password. This must mach the first password.
+     */
     private void validateFields(String username, String password1, String password2)
     {
         boolean showError = false;
@@ -153,7 +172,12 @@ public class RegistrationActivity extends AppCompatActivity {
         callUsernameCheckRest(username,password1);
 
     }
-
+    //TODO domino help
+    /**
+     *
+     * @param username
+     * @param password1
+     */
     private void callRecaptcha(String username, String password1) {
 
         SafetyNet.getClient(this).verifyWithRecaptcha(SITE_KEY)
@@ -184,7 +208,9 @@ public class RegistrationActivity extends AppCompatActivity {
         return name.matches(control);
     }
 
-    //Registrovanie do DB
+    /**
+     * Registering user into database
+     */
     public void registerUser()
     {
         final String username = usernameText.getText().toString();
@@ -369,7 +395,10 @@ public class RegistrationActivity extends AppCompatActivity {
         queue.add(request);
     }
 
-    //Toto vyhodi bublinu s infom
+    /**
+     * Simple text toast show function
+     * @param text is the text that I want to be seen on output.
+     */
     private void showToast(final String text)
     {
         runOnUiThread(new Runnable() {

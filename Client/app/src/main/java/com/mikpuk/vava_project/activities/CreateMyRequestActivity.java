@@ -64,7 +64,7 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
         appLocationManager = new AppLocationManager(this);
 
         ArrayAdapter<CharSequence>  myAdapter = ArrayAdapter.createFromResource(this, R.array.cate, R.layout.create_request_spinner_layout);
-        myAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+        myAdapter.setDropDownViewResource(R.layout.simple_create_drop_down);
         spinner.setAdapter(myAdapter);
         spinner.setOnItemSelectedListener(this);
 

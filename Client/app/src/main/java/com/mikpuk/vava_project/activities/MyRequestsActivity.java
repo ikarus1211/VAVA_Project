@@ -154,7 +154,9 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
         Button finishButton;
         ImageView imageView;
         TextView status;
+        TextView distance;
 
+        distance = mDialog.findViewById(R.id.popDistance);
         status = mDialog.findViewById(R.id.popStatus);
         imageView = mDialog.findViewById(R.id.dialog_image);
         txtclose = mDialog.findViewById(R.id.popTxtClose);
@@ -173,6 +175,7 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
             status.setText(R.string.request_taken);
         else
             finishButton.setText(R.string.delete_finish);
+        distance.setText(getString(R.string.menu_dis) +"\n"+ String.format("%.2f",item.getDistance()) + "km");
         imageView.setImageResource((int)item.getType_id());
         textItemName.setText(item.getName());
         textDescription.setText(item.getDescription());
