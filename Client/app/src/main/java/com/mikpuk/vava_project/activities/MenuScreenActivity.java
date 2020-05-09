@@ -90,6 +90,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
 
     //Navigation bar
     private Context context;
+    private boolean initialized = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,8 +107,12 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
     }
     private void initialize()
     {
-        getLocationPermission();
+        if(initialized)
+            return;
 
+        initialized = true;
+
+        initGps();
         ButterKnife.bind(this);
 
         swipeRefresh.setOnRefreshListener(this);
@@ -121,9 +126,6 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         mRecyclerView.setAdapter(adapter);
         doApiCall();
 
-        /**
-         * add scroll listener while user reach in bottom load more will call
-         */
         mRecyclerView.addOnScrollListener(new PaginationScrollListener(layoutManager) {
             @Override
             protected void loadMoreItems() {
@@ -224,12 +226,17 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
     @Override
     protected void onResume() {
         super.onResume();
+
+        if(initialized)
+            return;
+
+        //HyperLog.w(TAG,"ON RESUME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             Toast.makeText(this, "GPS Enabled", Toast.LENGTH_SHORT).show();
-            initialize();
-        } else {
+            getLocationPermission();
+        } else{
             showGPSDisabledAlertToUser();
         }
     }
@@ -353,7 +360,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         permissionGranted = false;
-        System.out.println("4");
+        System.out.println("44444");
         switch (requestCode)
         {
             case LOCATION_PERM_CODE:
@@ -370,8 +377,6 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
                     }
                     permissionGranted = true;
                     HyperLog.i(TAG,"Permissions set to true");
-                    initGps();
-
                 }
             }
         }
@@ -399,7 +404,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
             {
                 HyperLog.i(TAG,"Permissions set to true");
                 permissionGranted = true;
-                initGps();
+                initialize();
             }
             else
             {
