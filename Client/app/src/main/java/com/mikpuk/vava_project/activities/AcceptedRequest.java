@@ -1,21 +1,15 @@
 package com.mikpuk.vava_project.activities;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.view.Gravity;
 import android.view.MenuItem;
-import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import android.os.Handler;
-import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -23,12 +17,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.mikpuk.vava_project.AppLocationManager;
 import com.mikpuk.vava_project.ConfigManager;
 import com.hypertrack.hyperlog.HyperLog;
-import com.mikpuk.vava_project.Item;
-import com.mikpuk.vava_project.OtherReqItemAdapter;
+import com.mikpuk.vava_project.data.Item;
 import com.mikpuk.vava_project.PaginationScrollListener;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.SceneManager;
-import com.mikpuk.vava_project.User;
+import com.mikpuk.vava_project.data.User;
 import com.mikpuk.vava_project.RecViewAdapter;
 
 import org.springframework.http.HttpEntity;
@@ -40,7 +33,6 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,12 +41,11 @@ import static com.mikpuk.vava_project.PaginationScrollListener.PAGE_START;
 
 public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, RecViewAdapter.OnItemListener {
 
+    //Infinite sctroll variables
     @BindView(R.id.recyclerView102)
     RecyclerView mRecyclerView;
-
     @BindView(R.id.swipeRefresh102)
     SwipeRefreshLayout swipeRefresh;
-
     private ArrayList<Item> items = new ArrayList<>();
     private RecViewAdapter adapter;
     private int currentPage = PAGE_START;
@@ -62,41 +53,43 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
     private int totalPage = 10;
     private boolean isLoading = false;
     private Item[] fetchedItems = new Item[0];
-
     int itemCount = 0;
     boolean allItemsLoaded = false;
 
+    //Logged in user
     private User user = null;
+
     private AppLocationManager appLocationManager;
 
-    private static final String TAG = "Accepted Request";
+    private static final String TAG = "AcceptedRequest";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        HyperLog.i(TAG,"Accepted request activity");
         super.onCreate(savedInstanceState);
+        HyperLog.i(TAG,"Accepted request activity");
         setContentView(R.layout.activity_accepted_request);
         user = (User)getIntent().getSerializableExtra("user");
 
         //Set up navigation bar
         SceneManager.initNavigationBar(getString(R.string.navigation_accepted_requests),R.id.accepted_requests_dl,R.id.accepted_requests_navView,this,this,user);
 
-        ButterKnife.bind(this);
         appLocationManager = new AppLocationManager(this);
 
+        setUpInfiniteScroll();
+    }
+
+    private void setUpInfiniteScroll()
+    {
+        ButterKnife.bind(this);
         swipeRefresh.setOnRefreshListener(this);
         mRecyclerView.setHasFixedSize(true);
 
-        // use a linear layout manager
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
 
         adapter = new RecViewAdapter(new ArrayList<Item>(), this, this);
         mRecyclerView.setAdapter(adapter);
         doApiCall();
-        /**
-         * add scroll listener while user reach in bottom load more will call
-         */
         mRecyclerView.addOnScrollListener(new PaginationScrollListener(layoutManager) {
             @Override
             protected void loadMoreItems() {
@@ -104,18 +97,15 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
                 currentPage++;
                 doApiCall();
             }
-
             @Override
             public boolean isLastPage() {
                 return isLastPage;
             }
-
             @Override
             public boolean isLoading() {
                 return isLoading;
             }
         });
-
     }
 
     @Override
@@ -146,16 +136,12 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
                     items.add(item);
                 }
 
-                /**
-                 * manage progress view
-                 */
                 if (currentPage != PAGE_START || allItemsLoaded)
                     adapter.removeLoading();
 
                 adapter.addItems(items);
                 swipeRefresh.setRefreshing(false);
 
-                // check weather is last page or not
                 if (currentPage < totalPage && !allItemsLoaded) {
                     adapter.addLoading();
                 } else {
@@ -165,6 +151,7 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
             }
         }, 100);
     }
+
     @Override
     public void onRefresh() {
         itemCount = 0;
@@ -178,7 +165,6 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
     @Override
     public void onItemClick(int posistion) {
     }
-
 
     class AsyncAcceptedItemsGetter extends AsyncTask<Void,Void,Void>
     {
@@ -219,19 +205,13 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
 
             } catch (HttpServerErrorException e)
             {
-                //Error v pripade chyby servera
-                System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
-                showToast("SERVER ERROR "+e.getStatusCode());
+                HyperLog.e(TAG,"Server exception",e);
             } catch (HttpClientErrorException e2)
             {
-                //Error v pripade ziadosti klienka
-                System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
-                e2.printStackTrace();
-                showToast("CLIENT ERROR "+e2.getStatusCode());
+                HyperLog.e(TAG,"Client exception",e2);
             } catch (Exception e3)
             {
-                e3.printStackTrace();
-                showToast("SOMETHING WENT WRONG");
+                HyperLog.e(TAG,"Server exception",e3);
             }
 
             return null;
@@ -245,7 +225,7 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
 
     }
 
-    //Nastavenie kliknutia na hornu listu
+    //Set up click on top navigaton bar
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -261,11 +241,6 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
     //Toto vyhodi bublinu s infom - len pre nas
     private void showToast(final String text)
     {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-            }
-        });
+        runOnUiThread(() -> Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show());
     }
 }

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -24,12 +25,12 @@ import android.widget.Toast;
 import com.hypertrack.hyperlog.HyperLog;
 import com.mikpuk.vava_project.AppLocationManager;
 import com.mikpuk.vava_project.ConfigManager;
-import com.mikpuk.vava_project.Item;
+import com.mikpuk.vava_project.data.Item;
 import com.mikpuk.vava_project.PaginationScrollListener;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.SceneManager;
 import com.mikpuk.vava_project.RecViewAdapter;
-import com.mikpuk.vava_project.User;
+import com.mikpuk.vava_project.data.User;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -42,6 +43,7 @@ import org.springframework.web.client.RestTemplate;
 
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,24 +51,25 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import static com.mikpuk.vava_project.PaginationScrollListener.PAGE_START;
 
-
 /*
     Class for displaying request that user created
  */
 public class MyRequestsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, RecViewAdapter.OnItemListener {
 
+    //UI
     Button createReq = null;
+    //Logged user
     User user = null;
+
     private Dialog mDialog;
     private AppLocationManager appLocationManager;
+    private Context context;
 
-
+    //Infinite scroll
     @BindView(R.id.recyclerView101)
     RecyclerView mRecyclerView;
-
     @BindView(R.id.swipeRefresh101)
     SwipeRefreshLayout swipeRefresh;
-
     private ArrayList<Item> items = new ArrayList<>();
     private RecViewAdapter adapter;
     private int currentPage = PAGE_START;
@@ -74,34 +77,36 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
     private int totalPage = 10;
     private boolean isLoading = false;
     private Item[] fetchedItems;
-
     int itemCount = 0;
     boolean allItemsLoaded = false;
-    private static final String TAG = "User requests";
+
+    private static final String TAG = "MyRequestsActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        HyperLog.i(TAG,"My request activity");
         super.onCreate(savedInstanceState);
+        HyperLog.i(TAG,"My request activity");
         setContentView(R.layout.layout_my_requests);
-        createReq = findViewById(R.id.createButton101);
 
         user = (User)getIntent().getSerializableExtra("user");
-        //Set up navigation bar
-        Toolbar test = findViewById(R.id.toolbar);
+        context=this;
+        appLocationManager = new AppLocationManager(this);
 
         SceneManager.initNavigationBar(getString(R.string.navigation_my_requests),R.id.my_requests_dl,R.id.my_requests_navView,this,this,user);
 
+        loadUI();
+    }
+
+    private void loadUI()
+    {
+        createReq = findViewById(R.id.createButton101);
         createReq.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                loadCreateReqWindow();
+                SceneManager.loadNewRequest(context,user);
             }
         });
         mDialog = new Dialog(this);
-        user = (User)getIntent().getSerializableExtra("user");
-
-        HyperLog.i(TAG,"Creating recycle view");
         ButterKnife.bind(this);
 
         swipeRefresh.setOnRefreshListener(this);
@@ -115,9 +120,6 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
         mRecyclerView.setAdapter(adapter);
         doApiCall();
 
-        /**
-         * add scroll listener while user reach in bottom load more will call
-         */
         mRecyclerView.addOnScrollListener(new PaginationScrollListener(layoutManager) {
             @Override
             protected void loadMoreItems() {
@@ -136,37 +138,26 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
                 return isLoading;
             }
         });
-
-
-        appLocationManager = new AppLocationManager(this);
     }
 
+    //Open dialog after item click
     private void runDialog(int pos)
     {
         mDialog = new Dialog(this);
-        mDialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
+        Objects.requireNonNull(mDialog.getWindow()).getAttributes().windowAnimations = R.style.DialogTheme;
         mDialog.setContentView(R.layout.activity_pop_up_my_request);
-        TextView txtclose;
-        TextView textName;
-        TextView textItemName;
-        TextView textDescription;
-        TextView textAddress;
-        Button finishButton;
-        ImageView imageView;
-        TextView status;
 
-        status = mDialog.findViewById(R.id.popStatus);
-        imageView = mDialog.findViewById(R.id.dialog_image);
-        txtclose = mDialog.findViewById(R.id.popTxtClose);
-        textName = mDialog.findViewById(R.id.popMyName);
-        textItemName = mDialog.findViewById(R.id.popItemName);
-        textDescription = mDialog.findViewById(R.id.popMyDescription);
-        textAddress = mDialog.findViewById(R.id.popAddress);
-        finishButton = mDialog.findViewById(R.id.finish101);
-
+        //Set up references
+        TextView status = mDialog.findViewById(R.id.popStatus);
+        ImageView imageView = mDialog.findViewById(R.id.dialog_image);
+        TextView txtclose = mDialog.findViewById(R.id.popTxtClose);
+        TextView textName = mDialog.findViewById(R.id.popMyName);
+        TextView textItemName = mDialog.findViewById(R.id.popItemName);
+        TextView textDescription = mDialog.findViewById(R.id.popMyDescription);
+        TextView textAddress = mDialog.findViewById(R.id.popAddress);
+        Button finishButton = mDialog.findViewById(R.id.finish101);
 
         textName.setText(user.getUsername());
-        //Item item = items.get(pos); TU BOLA CHYBA! ITEMS VYPRAZDNUJEME!
         Item item = adapter.getItem(pos);
         finishButton.setText(R.string.finish_delete);
         if (item.isAccepted())
@@ -178,85 +169,46 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
         textDescription.setText(item.getDescription());
         textAddress.setText(appLocationManager.generateAddress(item.getLatitude(), item.getLongtitude()));
 
-        finishButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //ak je prijaty tak potvrdit dorucenie ak nie tak potvrdit zrusenie
-                if(item.isAccepted()) {
-                    new AlertDialog.Builder(view.getContext())
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle(getString(R.string.request_confirm_title))
-                            .setMessage(getString(R.string.request_confirm_desc))
-                            .setPositiveButton(getString(R.string.answer_yes), new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    new AsyncItemConfirm().execute(item.getId());
-                                    mDialog.dismiss();
-                                }
-                            })
-                            .setNegativeButton(getString(R.string.answer_no), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    mDialog.dismiss();
-                                }
-                            })
-                            .show();
-                }else {
-                    new AlertDialog.Builder(view.getContext())
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle(getString(R.string.request_delete_title))
-                            .setMessage(getString(R.string.request_delete_desc))
-                            .setPositiveButton(getString(R.string.answer_yes), new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    new AsyncItemDelete().execute(item.getId());
-                                    mDialog.dismiss();
-                                }
-                            })
-                            .setNegativeButton(getString(R.string.answer_no), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    mDialog.dismiss();
-                                }
-                            })
-                            .show();
-                }
+        finishButton.setOnClickListener(view -> {
+            //if item is accepted then show confirm otherwise delete item
+            if(item.isAccepted()) {
+                new AlertDialog.Builder(view.getContext())
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle(getString(R.string.request_confirm_title))
+                        .setMessage(getString(R.string.request_confirm_desc))
+                        .setPositiveButton(getString(R.string.answer_yes), (dialog, which) -> {
+                            new AsyncItemConfirm().execute(item.getId());
+                            mDialog.dismiss();
+                        })
+                        .setNegativeButton(getString(R.string.answer_no), (dialog, which) -> mDialog.dismiss())
+                        .show();
+            }else {
+                new AlertDialog.Builder(view.getContext())
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle(getString(R.string.request_delete_title))
+                        .setMessage(getString(R.string.request_delete_desc))
+                        .setPositiveButton(getString(R.string.answer_yes), (dialog, which) -> {
+                            new AsyncItemDelete().execute(item.getId());
+                            mDialog.dismiss();
+                        })
+                        .setNegativeButton(getString(R.string.answer_no), (dialog, which) -> mDialog.dismiss())
+                        .show();
             }
         });
 
-        txtclose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mDialog.dismiss();
-            }
-        });
+        txtclose.setOnClickListener(view -> mDialog.dismiss());
 
         mDialog.show();
     }
 
-    private void loadCreateReqWindow()
-    {
-        Intent intent = new Intent(this, CreateMyRequestActivity.class);
-        intent.putExtra("user",user);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        startActivity(intent);
-        overridePendingTransition(R.anim.in_from_bottom, R.anim.out_from_top);
-    }
-
-
-
-    //Toto vyhodi bublinu s infom - len pre nas
+    //Show text to user
     private void showToast(final String text)
     {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-            }
-        });
+        runOnUiThread(() -> Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show());
     }
 
     @Override
     public void onBackPressed() {
-        // TODO Auto-generated method stub
         super.onBackPressed();
         MyRequestsActivity.this.overridePendingTransition(R.anim.in_from_left,
                 R.anim.out_from_right);
@@ -276,16 +228,13 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
                     items.add(item);
                 }
 
-                /**
-                 * manage progress view
-                 */
+
                 if (currentPage != PAGE_START || allItemsLoaded)
                     adapter.removeLoading();
 
                 adapter.addItems(items);
                 swipeRefresh.setRefreshing(false);
 
-                // check weather is last page or not
                 if (currentPage < totalPage && !allItemsLoaded) {
                     adapter.addLoading();
                 } else {
@@ -335,7 +284,6 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
                 fetchedItems = restTemplate.exchange(uri, HttpMethod.GET,
                         new HttpEntity<String>(httpHeaders), Item[].class,user.getId(),itemCount,itemCount+10).getBody();
 
-
                 if(fetchedItems.length < 10) {
                     allItemsLoaded = true;
                 }
@@ -346,21 +294,12 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
             } catch (HttpServerErrorException e)
             {
                 HyperLog.e(TAG,"Server exception",e);
-                //Error v pripade chyby servera
-                System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
-                showToast("SERVER ERROR "+e.getStatusCode());
             } catch (HttpClientErrorException e2)
             {
                 HyperLog.e(TAG,"Client exception",e2);
-                //Error v pripade ziadosti klienka
-                System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
-                e2.printStackTrace();
-                showToast("CLIENT ERROR "+e2.getStatusCode());
             } catch (Exception e3)
             {
-                HyperLog.e(TAG,"Unknown error",e3);
-                e3.printStackTrace();
-                showToast("SOMETHING WENT WRONG");
+                HyperLog.e(TAG,"Other exception",e3);
             }
 
             return null;
@@ -393,29 +332,18 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
                 restTemplate.exchange(uri, HttpMethod.POST,
                         new HttpEntity<String>(httpHeaders), Item[].class,itemId).getBody();
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        onRefresh();
-                    }
-                });
+                runOnUiThread(MyRequestsActivity.this::onRefresh);
 
 
             } catch (HttpServerErrorException e)
             {
-                //Error v pripade chyby servera
-                System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
-                showToast("SERVER ERROR "+e.getStatusCode());
+                HyperLog.e(TAG,"Server exception",e);
             } catch (HttpClientErrorException e2)
             {
-                //Error v pripade ziadosti klienka
-                System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
-                e2.printStackTrace();
-                showToast("CLIENT ERROR "+e2.getStatusCode());
+                HyperLog.e(TAG,"Client exception",e2);
             } catch (Exception e3)
             {
-                e3.printStackTrace();
-                showToast("SOMETHING WENT WRONG");
+                HyperLog.e(TAG,"Other exception",e3);
             }
 
             return null;
@@ -442,29 +370,18 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
                 restTemplate.exchange(uri, HttpMethod.POST,
                         new HttpEntity<String>(httpHeaders), Item[].class,itemId).getBody();
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        onRefresh();
-                    }
-                });
+                runOnUiThread(MyRequestsActivity.this::onRefresh);
 
 
             } catch (HttpServerErrorException e)
             {
-                //Error v pripade chyby servera
-                System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
-                showToast("SERVER ERROR "+e.getStatusCode());
+                HyperLog.e(TAG,"Server exception",e);
             } catch (HttpClientErrorException e2)
             {
-                //Error v pripade ziadosti klienka
-                System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
-                e2.printStackTrace();
-                showToast("CLIENT ERROR "+e2.getStatusCode());
+                HyperLog.e(TAG,"Client exception",e2);
             } catch (Exception e3)
             {
-                e3.printStackTrace();
-                showToast("SOMETHING WENT WRONG");
+                HyperLog.e(TAG,"Other exception",e3);
             }
 
             return null;
@@ -472,17 +389,15 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
 
     }
 
-    //Nastavenie kliknutia na hornu listu
+    //Set up top navigatio nabr click
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                DrawerLayout drawerLayout = (DrawerLayout)findViewById(R.id.my_requests_dl);
-                drawerLayout.openDrawer(Gravity.LEFT);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            DrawerLayout drawerLayout = findViewById(R.id.my_requests_dl);
+            drawerLayout.openDrawer(Gravity.LEFT);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
 }

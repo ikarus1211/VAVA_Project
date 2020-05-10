@@ -3,9 +3,8 @@ package com.mikpuk.vava_project.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Base64;
@@ -14,18 +13,17 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.hypertrack.hyperlog.HyperLog;
 import com.mikpuk.vava_project.AppLocationManager;
 import com.mikpuk.vava_project.ConfigManager;
-import com.mikpuk.vava_project.Item;
+import com.mikpuk.vava_project.SceneManager;
+import com.mikpuk.vava_project.data.Item;
 import com.mikpuk.vava_project.R;
-import com.mikpuk.vava_project.User;
+import com.mikpuk.vava_project.data.User;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -41,18 +39,21 @@ import org.springframework.web.client.RestTemplate;
  */
 public class CreateMyRequestActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
+    //UI elements
     Button createReq = null;
     EditText itemNameText = null;
     EditText descriptionText = null;
-
     TextInputLayout titleLayout;
     TextInputLayout descLayout;
-    User user = null;
     Spinner spinner = null;
-    private static final String TAG = "Create new request activity";
     private int selectedType = R.drawable.tools;
-    private AppLocationManager appLocationManager;
 
+    //Logged in user
+    User user = null;
+
+    private AppLocationManager appLocationManager;
+    private Context context;
+    private static final String TAG = "CreateMyRequestActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,15 +61,20 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_my_request_creation);
-        spinner = findViewById(R.id.category_spinner);
+        user = (User)getIntent().getSerializableExtra("user");
         appLocationManager = new AppLocationManager(this);
+        context=this;
 
+        loadUI();
+    }
+
+    private void loadUI()
+    {
+        spinner = findViewById(R.id.category_spinner);
         ArrayAdapter<CharSequence>  myAdapter = ArrayAdapter.createFromResource(this, R.array.cate, R.layout.create_request_spinner_layout);
         myAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
         spinner.setAdapter(myAdapter);
         spinner.setOnItemSelectedListener(this);
-
-        user = (User)getIntent().getSerializableExtra("user");
 
         createReq = findViewById(R.id.createReqButton);
         itemNameText = findViewById(R.id.createTitle);
@@ -84,6 +90,7 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
         });
     }
 
+    //Return true if all fields are valid
     private boolean checkFields() {
         boolean showError = false;
 
@@ -120,6 +127,7 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
         return !showError;
     }
 
+    //Show user that we cant get his location
     private void showGPSErrorDialog(){
         new AlertDialog.Builder(this)
                 .setIcon(android.R.drawable.ic_dialog_alert)
@@ -150,7 +158,7 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
         }
 
         if(appLocationManager.getLongitude() == 0 && appLocationManager.getLatitude() ==0){
-            //Pokus o znova dostanie GPS
+            //Try to get position again
             appLocationManager = new AppLocationManager(this);
             showGPSErrorDialog();
             return;
@@ -159,9 +167,6 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
         final double latitude = appLocationManager.getLatitude();
         final double longitude = appLocationManager.getLongitude();
 
-        System.out.println("!!!!!!!!!!!!!!!!! "+longitude+" | "+latitude);
-
-        //Call REST web services
         new Thread()
         {
             public void run() {
@@ -183,26 +188,18 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
 
                     showToast("ITEM ADDED!");
                     HyperLog.i(TAG, "Item created");
-                    loadNewRequestScreen();
+
+                    SceneManager.loadMyRequests(context,user,true);
 
                 } catch (HttpServerErrorException e)
                 {
                     HyperLog.e(TAG, "Server exception",e);
-                    //Error v pripade chyby servera
-                    System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
-                    showToast("SERVER ERROR "+e.getStatusCode());
                 } catch (HttpClientErrorException e2)
                 {
                     HyperLog.e(TAG, "Client exception",e2);
-                    //Error v pripade ziadosti klienka
-                    System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
-                    e2.printStackTrace();
-                    showToast("CLIENT ERROR "+e2.getStatusCode());
                 } catch (Exception e3)
                 {
-                    HyperLog.e(TAG, "Unknown error",e3);
-                    e3.printStackTrace();
-                    showToast("SOMETHING WENT WRONG");
+                    HyperLog.e(TAG, "Other exception",e3);
                 }
             }
         }.start();
@@ -220,20 +217,7 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
     //Toto vyhodi bublinu s infom - len pre nas
     private void showToast(final String text)
     {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void loadNewRequestScreen()
-    {
-        Intent intent = new Intent(this, MyRequestsActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //Aby sa pouzivatel nevratil back tlacidlom do vytvorenia requestu
-        intent.putExtra("user",user);
-        startActivity(intent);
+        runOnUiThread(() -> Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show());
     }
 
     @Override
@@ -287,82 +271,5 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
     public void onNothingSelected(AdapterView<?> parent) {
         selectedType = R.drawable.animals;
     }
-/*
-    private void runDialog(int pos)
-    {
-        Dialog mDialog = new Dialog(this);
-        mDialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
-        mDialog.setContentView(R.layout.activity_pop_up_my_request);
-        TextView txtclose;
-        TextView textName;
-        TextView textItemName;
-        TextView textDescription;
-        TextView textAddress;
-        TextView accpetButton;
-        ImageView imageView;
-        Button finish;
-        TextView status;
 
-        status = mDialog.findViewById(R.id.popStatus);
-        finish = mDialog.findViewById(R.id.finish101);
-        imageView = mDialog.findViewById(R.id.dialog_image);
-        txtclose = mDialog.findViewById(R.id.popTxtClose);
-        textName = mDialog.findViewById(R.id.popMyName);
-        textItemName = mDialog.findViewById(R.id.popItemName);
-        textDescription = mDialog.findViewById(R.id.popMyDescription);
-        textAddress = mDialog.findViewById(R.id.popAddress);
-        accpetButton = mDialog.findViewById(R.id.accept);
-
-        finish.setVisibility(View.INVISIBLE);
-        accpetButton.setVisibility(View.VISIBLE);
-        textName.setText(user.getUsername());
-
-        Item item = adapter.getItem(pos);
-        if (item.isAccepted())
-            status.setText(R.string.request_taken);
-
-        imageView.setImageResource((int)item.getType_id());
-        textItemName.setText(item.getName());
-        textDescription.setText(item.getDescription());
-        textAddress.setText(appLocationManager.generateAddress(item.getLatitude(), item.getLongtitude()));
-
-
-        txtclose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mDialog.dismiss();
-            }
-        });
-
-
-
-        accpetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                //mDialog.dismiss();
-                new AlertDialog.Builder(view.getContext())
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setTitle(getString(R.string.request_accept_title))
-                        .setMessage(getString(R.string.request_accept_desc))
-                        .setPositiveButton(getString(R.string.request_accept_yes), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                new MenuScreenActivity.AsyncAcceptedItemsSetter().execute(user.getId(),item.getId());
-                                HyperLog.i(TAG,"Request accepted");
-                                mDialog.dismiss();
-                            }
-                        })
-                        .setNegativeButton(getString(R.string.request_accept_no), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mDialog.dismiss();
-                            }
-                        })
-                        .show();
-            }
-        });
-        mDialog.show();
-    }
-
- */
 }

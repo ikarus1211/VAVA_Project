@@ -16,11 +16,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.transition.Scene;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -31,16 +29,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.hypertrack.hyperlog.HyperLog;
 import com.mikpuk.vava_project.AppLocationManager;
 import com.mikpuk.vava_project.ConfigManager;
-import com.mikpuk.vava_project.Item;
+import com.mikpuk.vava_project.data.Item;
 import com.mikpuk.vava_project.PaginationScrollListener;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.SceneManager;
 import com.mikpuk.vava_project.RecViewAdapter;
-import com.mikpuk.vava_project.User;
+import com.mikpuk.vava_project.data.User;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -49,7 +46,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -63,20 +59,16 @@ import static com.mikpuk.vava_project.PaginationScrollListener.PAGE_START;
 
 public class MenuScreenActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener,RecViewAdapter.OnItemListener {
 
+    //Gps
     private boolean permissionGranted = false;
-    private FusedLocationProviderClient fusedLocationProviderClient;
-    private Location mLocation;
-    private User user = null;
-
     private AppLocationManager appLocationManager;
-    private Dialog mDialog;
+    private boolean initializedUI = false;
 
+    //Infinite scroll
     @BindView(R.id.recyclerView100)
     RecyclerView mRecyclerView;
-
     @BindView(R.id.swipeRefresh100)
     SwipeRefreshLayout swipeRefresh;
-
     private ArrayList<Item> items = new ArrayList<>();
     private RecViewAdapter adapter;
     private int currentPage = PAGE_START;
@@ -84,15 +76,17 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
     private int totalPage = 10;
     private boolean isLoading = false;
     private Item[] fetchedItems;
-
     int itemCount = 0;
     boolean allItemsLoaded = false;
 
     private static final String TAG = "Menu Screen";
 
+    //Logged in user
+    private User user = null;
+    private Dialog mDialog;
+
     //Navigation bar
     private Context context;
-    private boolean initialized = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,12 +102,13 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         context = this;
         
     }
-    private void initialize()
+
+    private void initializeUI()
     {
-        if(initialized)
+        if(initializedUI)
             return;
 
-        initialized = true;
+        initializedUI = true;
 
         initGps();
         ButterKnife.bind(this);
@@ -150,32 +145,24 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
 
     }
 
+    //Opens dialog after item click
     private void runDialog(int pos)
     {
         mDialog = new Dialog(this);
         mDialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
         mDialog.setContentView(R.layout.activity_pop_up_my_request);
-        TextView txtclose;
-        TextView textName;
-        TextView textItemName;
-        TextView textDescription;
-        TextView textAddress;
-        TextView accpetButton;
-        ImageView imageView;
-        Button finish;
-        TextView status;
-        TextView openProfile;
 
-        status = mDialog.findViewById(R.id.popStatus);
-        finish = mDialog.findViewById(R.id.finish101);
-        imageView = mDialog.findViewById(R.id.dialog_image);
-        txtclose = mDialog.findViewById(R.id.popTxtClose);
-        textName = mDialog.findViewById(R.id.popMyName);
-        textItemName = mDialog.findViewById(R.id.popItemName);
-        textDescription = mDialog.findViewById(R.id.popMyDescription);
-        textAddress = mDialog.findViewById(R.id.popAddress);
-        accpetButton = mDialog.findViewById(R.id.accept);
-        openProfile = mDialog.findViewById(R.id.popTxtInfo);
+        //Set up references
+        Button finish = mDialog.findViewById(R.id.finish101);
+        TextView status = mDialog.findViewById(R.id.popStatus);
+        ImageView imageView = mDialog.findViewById(R.id.dialog_image);
+        TextView txtclose = mDialog.findViewById(R.id.popTxtClose);
+        TextView textName = mDialog.findViewById(R.id.popMyName);
+        TextView textItemName = mDialog.findViewById(R.id.popItemName);
+        TextView textDescription = mDialog.findViewById(R.id.popMyDescription);
+        TextView textAddress = mDialog.findViewById(R.id.popAddress);
+        TextView accpetButton = mDialog.findViewById(R.id.accept);
+        TextView openProfile = mDialog.findViewById(R.id.popTxtInfo);
 
         finish.setVisibility(View.INVISIBLE);
         accpetButton.setVisibility(View.VISIBLE);
@@ -191,47 +178,23 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         textAddress.setText(appLocationManager.generateAddress(item.getLatitude(), item.getLongtitude()));
 
 
-        openProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SceneManager.loadOtherProfile(context,user,item.getUser());
-            }
+        openProfile.setOnClickListener(v -> SceneManager.loadOtherProfile(context,user,item.getUser()));
+        txtclose.setOnClickListener(view -> mDialog.dismiss());
+        accpetButton.setOnClickListener(view -> {
+            new AlertDialog.Builder(view.getContext())
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle(getString(R.string.request_accept_title))
+                    .setMessage(getString(R.string.request_accept_desc))
+                    .setPositiveButton(getString(R.string.request_accept_yes), (dialog, which) -> {
+                        new AsyncAcceptedItemsSetter().execute(user.getId(),item.getId());
+                        HyperLog.i(TAG,"Request accepted");
+                        mDialog.dismiss();
+                    })
+                    .setNegativeButton(getString(R.string.request_accept_no), (dialog, which) ->
+                            mDialog.dismiss())
+                    .show();
         });
 
-        txtclose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mDialog.dismiss();
-            }
-        });
-
-
-
-        accpetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                //mDialog.dismiss();
-                new AlertDialog.Builder(view.getContext())
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setTitle(getString(R.string.request_accept_title))
-                        .setMessage(getString(R.string.request_accept_desc))
-                        .setPositiveButton(getString(R.string.request_accept_yes), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                new AsyncAcceptedItemsSetter().execute(user.getId(),item.getId());
-                                HyperLog.i(TAG,"Request accepted");
-                                mDialog.dismiss();
-                            }
-                        })
-                        .setNegativeButton(getString(R.string.request_accept_no), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mDialog.dismiss();
-                            }
-                        })
-                        .show();
-            }
-        });
         mDialog.show();
     }
 
@@ -239,10 +202,9 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
     protected void onResume() {
         super.onResume();
 
-        if(initialized)
+        if(initializedUI)
             return;
 
-        //HyperLog.w(TAG,"ON RESUME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -316,29 +278,10 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         doApiCall();
     }
 
-
-    private boolean getGpsStatus()
-    {
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-            Toast.makeText(this, "GPS Enabled", Toast.LENGTH_SHORT).show();
-            return true;
-        }else{
-            showGPSDisabledAlertToUser();
-            return false;
-        }
-    }
-
     private void initGps() {
-        System.out.println("Everything ok");
         if (permissionGranted) {
 
             appLocationManager = new AppLocationManager(MenuScreenActivity.this);
-            //TODO zmazat?
-            mLocation = appLocationManager.getmLocation();
-            System.out.println(appLocationManager.getmLocation());
-            System.out.println(appLocationManager.generateAddress());
         }
     }
 
@@ -347,22 +290,16 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
     {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         HyperLog.w(TAG, "GPS is disabled");
-        alertDialogBuilder.setMessage("GPS is disabled in your device. Would you like to enable it?")
+        alertDialogBuilder.setMessage(getString(R.string.gps_disabled))
                 .setCancelable(false)
-                .setPositiveButton("Goto Settings Page To Enable GPS", new DialogInterface.OnClickListener(){
-                            public void onClick(DialogInterface dialog, int id){
-                                dialog.cancel();
-                                Intent callGPSSettingIntent = new Intent(
-                                        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                startActivity(callGPSSettingIntent);
-                            }
-                        });
-        alertDialogBuilder.setNegativeButton("Cancel",
-                new DialogInterface.OnClickListener(){
-                    public void onClick(DialogInterface dialog, int id){
-                        dialog.cancel();
-                    }
+                .setPositiveButton(getString(R.string.go_to_settings_gps), (dialog, id) -> {
+                    dialog.cancel();
+                    Intent callGPSSettingIntent = new Intent(
+                            android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(callGPSSettingIntent);
                 });
+        alertDialogBuilder.setNegativeButton(getString(R.string.cancel),
+                (dialog, id) -> dialog.cancel());
         AlertDialog alert = alertDialogBuilder.create();
         alert.show();
     }
@@ -372,7 +309,6 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         permissionGranted = false;
-        System.out.println("44444");
         switch (requestCode)
         {
             case LOCATION_PERM_CODE:
@@ -416,21 +352,17 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
             {
                 HyperLog.i(TAG,"Permissions set to true");
                 permissionGranted = true;
-                initialize();
+                initializeUI();
             }
             else
             {
-
-                System.out.println("2");
                 ActivityCompat.requestPermissions(this, premissions, LOCATION_PERM_CODE );
             }
         }
         else
         {
-            System.out.println("3");
             ActivityCompat.requestPermissions(this, premissions, LOCATION_PERM_CODE );
         }
-
     }
 
     @Override
@@ -482,21 +414,12 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
             } catch (HttpServerErrorException e)
             {
                 HyperLog.e(TAG,"Server exception",e);
-                //Error v pripade chyby servera
-                System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
-                showToast(""+e.getStatusCode());
             } catch (HttpClientErrorException e2)
             {
                 HyperLog.e(TAG,"Client exception",e2);
-                //Error v pripade ziadosti klienka
-                System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
-                e2.printStackTrace();
-                showToast("CLIENT ERROR "+e2.getStatusCode());
             } catch (Exception e3)
             {
                 HyperLog.e(TAG,"Unknown error",e3);
-                e3.printStackTrace();
-                showToast("SOMETHING WENT WRONG");
             }
 
             return null;
@@ -528,7 +451,8 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
 
                 restTemplate.exchange(uri, HttpMethod.POST,
                         new HttpEntity<String>(httpHeaders), Item[].class,user_id,item_id).getBody();
-                showToast("Item accepted!");
+
+                showToast(getString(R.string.item_accepted));
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -539,19 +463,13 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
 
             } catch (HttpServerErrorException e)
             {
-                //Error v pripade chyby servera
-                System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
-                showToast("SERVER ERROR "+e.getStatusCode());
+                HyperLog.e(TAG,"Server exception",e);
             } catch (HttpClientErrorException e2)
             {
-                //Error v pripade ziadosti klienka
-                System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
-                e2.printStackTrace();
-                showToast("CLIENT ERROR "+e2.getStatusCode());
+                HyperLog.e(TAG,"Client exception",e2);
             } catch (Exception e3)
             {
-                e3.printStackTrace();
-                showToast("SOMETHING WENT WRONG");
+                HyperLog.e(TAG,"Unknown error",e3);
             }
 
             return null;
@@ -559,7 +477,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
 
     }
 
-    //Nastavenie kliknutia na hornu listu
+    //Set up top navigation bar onClick
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -572,8 +490,8 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         }
     }
 
-    //Skopirovane z https://stackoverflow.com/questions/7563725/android-how-can-i-detect-if-the-back-button-will-exit-the-app-i-e-this-is-the
-    //Aby sme zabranili nechcenemu vypnutiu
+    //Copied from https://stackoverflow.com/questions/7563725/android-how-can-i-detect-if-the-back-button-will-exit-the-app-i-e-this-is-the
+    //To prevent accidental quit of app
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         //Handle the back button
@@ -598,8 +516,7 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         }
     }
 
-
-    //Toto vyhodi bublinu s infom - len pre nas
+    //Show info to user
     private void showToast(final String text)
     {
         runOnUiThread(new Runnable() {

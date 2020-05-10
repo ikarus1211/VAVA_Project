@@ -97,4 +97,13 @@
     <string name="gps_not_available_desc">We can`t locate you! If you want to add item make sure you are at right location with a good signal.</string>
     <string name="try_again">Try again.</string>
     <string name="cancel">Cancel.</string>
+    <string name="no_google_services">Gooogle play services not available</string>
+    <string name="long_username_error">Your username can have max 25 characters</string>
+    <string name="long_password_error">Your password can have max 25 characters!</string>
+    <string name="registration_succesful">Account registered!</string>
+    <string name="go_to_settings_gps">Go to settings to enable GPS</string>
+    <string name="gps_disabled">Gps is disabled! Please enable it to continue.</string>
+    <string name="item_accepted">Item accepted!</string>
+    <string name="level">Level</string>
+    <string name="reputation">Reputation</string>
 </resources>

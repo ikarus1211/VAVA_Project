@@ -10,8 +10,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.mikpuk.vava_project.data.Item;
+
 import java.util.List;
-import java.util.Random;
 
 /*
    This is custom adapter for list view.

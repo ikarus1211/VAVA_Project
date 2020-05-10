@@ -4,22 +4,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.transition.Explode;
-import android.transition.Slide;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.Menu;
 import android.view.View;
-import android.view.Window;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -31,7 +25,8 @@ import com.hypertrack.hyperlog.HyperLog;
 import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.MD5Hashing;
-import com.mikpuk.vava_project.User;
+import com.mikpuk.vava_project.SceneManager;
+import com.mikpuk.vava_project.data.User;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -48,78 +43,82 @@ import java.util.Locale;
 
 import static com.mikpuk.vava_project.Constants.ERROR_DIALOG_REQUEST;
 
-
+//This activity controls login screen
 public class LoginActivity extends AppCompatActivity {
 
+    //UI elements
     Button loginButton = null;
     Button registerButton = null;
     EditText loginText = null;
     EditText passwordText = null;
-
     TextInputLayout loginInputLayout;
     TextInputLayout passwordInputLayout;
 
-    private static final String TAG = "Login Activity";
-
+    Context context;
+    private static final String TAG = "LoginActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         HyperLog.initialize(this);
         HyperLog.setLogLevel(Log.VERBOSE);
-
-
         HyperLog.i(TAG, "Starting login activity");
 
-
-        super.onCreate(savedInstanceState);
-        loadSettings();
         setContentView(R.layout.layout_login);
+        loadSettings();
+        context = this;
 
-        //Nacitanie UI premennych
+        loadUI();
+    }
+
+    private void loadUI()
+    {
         registerButton = findViewById(R.id.RegisterButton);
         loginText = findViewById(R.id.loginEditText);
         passwordText = findViewById(R.id.passwEditText);
-
         loginInputLayout = findViewById(R.id.loginEditTextLayout);
         passwordInputLayout = findViewById(R.id.passwEditTextLayout);
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadRegistrationScreen();
+                SceneManager.loadRegistrationScreen(context);
             }
         });
 
-
-        new Thread(new Runnable() {
+        loginButton = findViewById(R.id.LoginButton);
+        loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
+            public void onClick(View v) {
+                logInUser();
+            }
+        });
+
+        Handler handler = new Handler();
+        final Runnable r = new Runnable() {
             public void run() {
-                while(true) {
-                    if (services()) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                loginButton = findViewById(R.id.LoginButton);
-                                loginButton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        logInUser();
-                                    }
-                                });
-                            }
-                        });
-                        break;
-                    }
+                if(services()){
+                    loginButton = findViewById(R.id.LoginButton);
+                    loginButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            logInUser();
+                        }
+                    });
+                }
+                else{
+                    showToast(getString(R.string.no_google_services));
+                    handler.postDelayed(this, 800);
                 }
             }
-        }).start();
-
+        };
+        handler.postDelayed(r, 5);
     }
 
-
-    public void loadSettings()
+    //Loads language preferences
+    private void loadSettings()
     {
-
         HyperLog.i(TAG, "Loading settings");
 
         SharedPreferences sharedPreferences = getSharedPreferences("com.mikpukvava_project.PREFERENCES", Activity.MODE_PRIVATE);
@@ -134,51 +133,13 @@ public class LoginActivity extends AppCompatActivity {
         Locale.setDefault(new Locale(language));;
     }
 
-
-    public void loadRegistrationScreen()
-    {
-        HyperLog.i(TAG,"Switching to registration");
-        //Intent intent = new Intent(this, RegistrationActivity.class);
-        //startActivity(intent);
-        Intent intent = new Intent(this,RegistrationActivity.class);
-
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        startActivity(intent);
-        overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
-    }
-
-
-
-
+    //Shows info to user
     private void showToast(final String text)
     {
-        //Toto vyhodi bublinu s infom
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-            }
-        });
+        runOnUiThread(() -> Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show());
     }
 
-    private void loadMenuScreen (User user)
-    {
-
-        System.out.println("*******************************************");
-        System.out.println(HyperLog.getDeviceLogsAsStringList());
-        //Nacitanie hlavneho menu
-        Intent intent = new Intent(this, MenuScreenActivity.class);
-        showToast(user.getUsername());
-        intent.putExtra("user",user);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        startActivity(intent);
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-        //startActivity(intent);
-        finish();
-    }
-    /*
-     * Checking if google play services are available
-     */
+    //Checking if google play services are available
     private boolean services()
     {
         HyperLog.i(TAG,"Checking services");
@@ -197,14 +158,12 @@ public class LoginActivity extends AppCompatActivity {
         else
             {
                 HyperLog.w(TAG,"Permissions were not granted");
-            Toast.makeText(this, "You cant do anything", Toast.LENGTH_SHORT).show();
         }
         return false;
 
     }
 
-
-    //Pokus o najdenie pouzivatela v DB a nasledne prihlasenie
+    //Check is user exists and then log him in and change scene to main menu
     private void logInUser() {
         final String username = loginText.getText().toString();
         final String password = passwordText.getText().toString();
@@ -239,58 +198,52 @@ public class LoginActivity extends AppCompatActivity {
                     String uri = ConfigManager.getApiUrl(getApplicationContext())+"/getuserbydata/{username}/{password}";
                     RestTemplate restTemplate = new RestTemplate();
 
-                    //Nezabudnut pridat pri HttpMethod.GET !!!
                     restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
-                    //Vytvorenie hlaviciek s tokenom
                     HttpHeaders httpHeaders = new HttpHeaders();
                     httpHeaders.add("auth", AUTH_TOKEN);
 
-                    //Poslanie udajov a cakanie na objekt
+                    //Returns logged in user
                     ResponseEntity<User> user = restTemplate.exchange(uri, HttpMethod.GET,
                             new HttpEntity<String>(httpHeaders), User.class,
                             username,MD5Hashing.getSecurePassword(password));
 
-                    System.out.println("User: " + user.getBody().getUsername());
+                    //Check if username is correct - because DB is case insensitive and Test == test
+                    if(!username.equals(user.getBody().getUsername())) {
+                        showWrongCredError();
+                        return;
+                    }
 
-                    loadMenuScreen(user.getBody());
+                    SceneManager.loadMainMenu(context,user.getBody(),true);
                 } catch (HttpServerErrorException e)
                 {
-                    //Error v pripade chyby servera
-                    HyperLog.e(TAG,"Server exception "+e.getStatusCode());
-
-                    showToast("SERVER ERROR "+e.getStatusCode());
+                    HyperLog.e(TAG,"Server exception "+e);
                 } catch (HttpClientErrorException e2)
                 {
-                    HyperLog.e(TAG,"Client Exception "+e2.getStatusCode());
-                    //Error v pripade ziadosti klienka
-                    //System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
+                    HyperLog.e(TAG,"Client Exception "+e2);
                     if(e2.getStatusCode() == HttpStatus.BAD_REQUEST)
                     {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                loginInputLayout.setError(getString(R.string.wrong_credentials_error));
-                                loginInputLayout.setErrorIconDrawable(R.drawable.ic_error);
-                                passwordInputLayout.setError(getString(R.string.wrong_credentials_error));
-                                passwordInputLayout.setErrorIconDrawable(R.drawable.ic_error);
-                            }
-                        });
+                        showWrongCredError();
                         return;
                     }
                     e2.printStackTrace();
-                    showToast("CLIENT ERROR "+e2.getStatusCode());
                 } catch (Exception e3)
                 {
-                    HyperLog.e(TAG,"Unknown exception while signing in "+e3.getMessage());
-                    //System.out.println("caught other exception");
+                    HyperLog.e(TAG,"Unknown exception while signing in "+e3);
                     e3.printStackTrace();
-                    showToast("SOMETHING WENT WRONG");
                 }
-
             }
         }.start();
     }
 
+    //Show user that he has wrong credentials
+    private void showWrongCredError(){
+        runOnUiThread(() -> {
+            loginInputLayout.setError(getString(R.string.wrong_credentials_error));
+            loginInputLayout.setErrorIconDrawable(R.drawable.ic_error);
+            passwordInputLayout.setError(getString(R.string.wrong_credentials_error));
+            passwordInputLayout.setErrorIconDrawable(R.drawable.ic_error);
+        });
+    }
 
 }

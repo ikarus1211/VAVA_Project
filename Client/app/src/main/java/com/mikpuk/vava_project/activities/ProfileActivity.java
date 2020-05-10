@@ -11,7 +11,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.SceneManager;
-import com.mikpuk.vava_project.User;
+import com.mikpuk.vava_project.data.User;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -55,28 +55,25 @@ public class ProfileActivity extends AppCompatActivity {
             xp_next *= 2;
         }
 
-        levelText.setText("Level "+lvl);
-        experienceText.setText("Reputation "+xp_act+" / "+xp_next);
+        levelText.setText(getString(R.string.level)+" "+lvl);
+        experienceText.setText(getString(R.string.reputation)+" "+xp_act+" / "+xp_next);
         levelBar.setMax(xp_next);
         levelBar.setProgress(xp_act);
     }
 
-    //Nastavenie kliknutia na hornu listu
+    //Set up top nav bar onClick
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                DrawerLayout drawerLayout = (DrawerLayout)findViewById(R.id.profile_dl);
-                drawerLayout.openDrawer(Gravity.LEFT);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.profile_dl);
+            drawerLayout.openDrawer(Gravity.LEFT);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onBackPressed() {
-        // TODO Auto-generated method stub
         super.onBackPressed();
         ProfileActivity.this.overridePendingTransition(R.anim.in_from_left,
                 R.anim.out_from_right);

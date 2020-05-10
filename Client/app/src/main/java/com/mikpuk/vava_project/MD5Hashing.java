@@ -3,7 +3,7 @@ package com.mikpuk.vava_project;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-//MD5 hashing bol prevzany zo stranky https://howtodoinjava.com/security/how-to-generate-secure-password-hash-md5-sha-pbkdf2-bcrypt-examples/
+//MD5 hashing was copied from https://howtodoinjava.com/security/how-to-generate-secure-password-hash-md5-sha-pbkdf2-bcrypt-examples/
 public class MD5Hashing {
         public static String getSecurePassword(String passwordToHash)
         {

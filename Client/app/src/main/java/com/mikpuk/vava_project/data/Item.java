@@ -1,4 +1,4 @@
-package com.mikpuk.vava_project;
+package com.mikpuk.vava_project.data;
 
 public class Item {
 

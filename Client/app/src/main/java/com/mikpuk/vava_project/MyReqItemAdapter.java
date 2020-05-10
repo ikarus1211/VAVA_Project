@@ -2,7 +2,6 @@ package com.mikpuk.vava_project;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +12,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.mikpuk.vava_project.activities.MyRequestsActivity;
-import com.mikpuk.vava_project.activities.PopUpMyRequest;
+import com.mikpuk.vava_project.data.Item;
 
 import java.util.List;
-import java.util.Random;
-import java.util.zip.Inflater;
 
 public class MyReqItemAdapter extends ArrayAdapter<Item> {
 

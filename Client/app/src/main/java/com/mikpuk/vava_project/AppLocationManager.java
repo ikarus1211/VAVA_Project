@@ -1,6 +1,5 @@
 package com.mikpuk.vava_project;
 
-
 import android.Manifest;
 import android.content.Context;
 
@@ -10,14 +9,12 @@ import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 
-
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.hypertrack.hyperlog.HyperLog;
@@ -25,12 +22,9 @@ import com.hypertrack.hyperlog.HyperLog;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
-
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
-
 
 public class AppLocationManager implements LocationListener {
 
@@ -97,43 +91,11 @@ public class AppLocationManager implements LocationListener {
 
     }
 
-    public String calculationByDistance(LatLng StartP, LatLng EndP) {
-
-        HyperLog.i(TAG,"Calculating distance");
-
-        int Radius = 6371;// radius of earth in Km
-        double lat1 = StartP.latitude;
-        double lat2 = EndP.latitude;
-        double lon1 = StartP.longitude;
-        double lon2 = EndP.longitude;
-
-        if (lat1 == 0 && lon1 == 0 || lat2 == 0 && lon2 == 0)
-        {
-            return "Not given ";
-        }
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                + Math.cos(Math.toRadians(lat1))
-                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
-                * Math.sin(dLon / 2);
-        double c = 2 * Math.asin(Math.sqrt(a));
-        double valueResult = Radius * c;
-        double km = valueResult / 1;
-        DecimalFormat newFormat = new DecimalFormat("####");
-        int kmInDec = Integer.parseInt(newFormat.format(km));
-        double meter = valueResult % 1000;
-        int meterInDec = Integer.parseInt(newFormat.format(meter));
-        DecimalFormat df = new DecimalFormat("0.00");
-        return df.format(valueResult);
-    }
-
     private void setMostRecentLocation(Location lastKnownLocation) {
         System.out.println(lastKnownLocation);
         mLocation = lastKnownLocation;
-
-
     }
+
     public String generateAddress() {
         HyperLog.i(TAG,"Generating address");
         Geocoder geocoder;
@@ -170,19 +132,20 @@ public class AppLocationManager implements LocationListener {
 
     }
 
-    //DOCASNE RIESENI!!! Aby som dokazal pridat ziadost
     public double getLatitude() {
         if(mLocation == null)
             return 0.0;
         else
             return mLocation.getLatitude();
     }
+
     public double getLongitude() {
         if(mLocation == null)
             return 0.00;
         else
             return mLocation.getLongitude();
     }
+
     public Location getmLocation()
     {
         return mLocation;
@@ -190,12 +153,14 @@ public class AppLocationManager implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        double lon = (double) (location.getLongitude());/// * 1E6);
-        double lat = (double) (location.getLatitude());// * 1E6);
+        double lon = (double) (location.getLongitude());
+        double lat = (double) (location.getLatitude());
 
         String latitude = lat + "";
         String longitude = lon + "";
 
+        mLocation.setLongitude(lon);
+        mLocation.setLatitude(lat);
     }
 
     @Override
@@ -207,7 +172,5 @@ public class AppLocationManager implements LocationListener {
     @Override
     public void onProviderEnabled(String arg0) {
     }
-
-
 
 }
