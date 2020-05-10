@@ -12,11 +12,13 @@ import java.util.Random;
  */
 public class BackGrounPicker {
 
-
+    private int lastResult = 1;
     public void randomBackground(TextView textDistance)
     {
         SecureRandom random = new SecureRandom();
-        int result = random.nextInt()%1200;
+        int result = random.nextInt(1200);
+        while(result/200 == lastResult/200)
+            result = random.nextInt(1200);
         if (result <= 200)
         {
             textDistance.setBackgroundResource(R.drawable.fullcircle2);
@@ -41,5 +43,7 @@ public class BackGrounPicker {
         {
             textDistance.setBackgroundResource(R.drawable.fullcircle4);
         }
+        lastResult = result;
+
     }
 }

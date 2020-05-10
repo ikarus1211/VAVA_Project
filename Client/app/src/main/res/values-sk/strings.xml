@@ -91,4 +91,9 @@
     <string name="long_username_error">Používateľské meno môže mať maximálne 25 znakov</string>
     <string name="long_password_error">Heslo môže mať maximálne 25 znakov</string>
     <string name="registration_succesful">Účet vytvorený!</string>
+    <string name="level">Level</string>
+    <string name="item_accepted">Položka prijatá</string>
+    <string name="reputation">Reputácia</string>
+    <string name="go_to_settings_gps">Otvoriť nastavanie pre zapnutie GPS</string>
+    <string name="gps_disabled">GPS je vypnutá! Prosím zapnite ju.</string>
 </resources>

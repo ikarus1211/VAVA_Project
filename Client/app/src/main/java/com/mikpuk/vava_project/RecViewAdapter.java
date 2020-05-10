@@ -127,7 +127,7 @@ public class RecViewAdapter extends RecyclerView.Adapter<BaseViewHolder>  {
         ImageView imageView;
         @BindView(R.id.acceptImage)
         ImageView acceptedImage;
-
+        BackGrounPicker backGrounPicker = new BackGrounPicker();
 
         OnItemListener onItemListener;
 
@@ -160,6 +160,7 @@ public class RecViewAdapter extends RecyclerView.Adapter<BaseViewHolder>  {
         }else {
             textDistance.setText(new DecimalFormat("0.00").format(item.getDistance()) + "km");
         }
+        backGrounPicker.randomBackground(textDistance);
     }
 
         @Override

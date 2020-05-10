@@ -65,13 +65,12 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        loadSettings();
         HyperLog.initialize(this);
         HyperLog.setLogLevel(Log.VERBOSE);
         HyperLog.i(TAG, "Starting login activity");
 
         setContentView(R.layout.layout_login);
-        loadSettings();
         context = this;
 
         loadUI();
