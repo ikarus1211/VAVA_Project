@@ -24,17 +24,22 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.hypertrack.hyperlog.HyperLog;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.SceneManager;
-import com.mikpuk.vava_project.User;
+import com.mikpuk.vava_project.data.User;
 
 import java.util.Locale;
 
 // TODO coment
 public class SettingsActivity  extends AppCompatActivity {
 
+    //Logged in user
     private User user = null;
+    //UI
     Spinner spinner;
+
     String language = "";
+
     private static final String TAG = "Settings activity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         HyperLog.i(TAG, "Starting settings activity");
@@ -56,7 +61,6 @@ public class SettingsActivity  extends AppCompatActivity {
 
         //Load language dropdown menu
         loadLanguageSpinner();
-
     }
 
     @SuppressLint("ResourceType")
@@ -86,6 +90,7 @@ public class SettingsActivity  extends AppCompatActivity {
         });
     }
 
+    //Change language setting
     public void setLocale(String lang) {
         HyperLog.i(TAG, "Setting location");
         Locale myLocale = new Locale(lang);
@@ -97,6 +102,7 @@ public class SettingsActivity  extends AppCompatActivity {
 
         saveLocale(lang);
 
+        //Refresh activity
         Intent intent = new Intent(this, MenuScreenActivity.class);
         intent.putExtra("user",user);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -104,6 +110,7 @@ public class SettingsActivity  extends AppCompatActivity {
         finish();
     }
 
+    //Save language settings
     public void saveLocale(String language) {
         SharedPreferences sharedPreferences = getSharedPreferences("com.mikpukvava_project.PREFERENCES", Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -111,22 +118,19 @@ public class SettingsActivity  extends AppCompatActivity {
         editor.commit();
     }
 
-    //Nastavenie kliknutia na hornu listu
+    //Set top nav bar onClick
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                DrawerLayout drawerLayout = (DrawerLayout)findViewById(R.id.settings_dl);
-                drawerLayout.openDrawer(Gravity.LEFT);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.settings_dl);
+            drawerLayout.openDrawer(Gravity.LEFT);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onBackPressed() {
-        // TODO Auto-generated method stub
         super.onBackPressed();
         SettingsActivity.this.overridePendingTransition(R.anim.in_from_left,
                 R.anim.out_from_right);

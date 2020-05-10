@@ -3,14 +3,15 @@ package com.mikpuk.vava_project.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
-import android.transition.Slide;
-import android.view.Gravity;
+import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -18,8 +19,6 @@ import android.widget.Toast;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.api.ApiException;
@@ -33,6 +32,7 @@ import com.hypertrack.hyperlog.HyperLog;
 import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.MD5Hashing;
+import com.mikpuk.vava_project.SceneManager;
 
 import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
@@ -46,6 +46,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -57,6 +58,7 @@ import java.util.Map;
 
 public class RegistrationActivity extends AppCompatActivity {
 
+    //UI elements
     Button registerButton = null;
     EditText usernameText = null;
     EditText passwordText1 = null;
@@ -65,12 +67,14 @@ public class RegistrationActivity extends AppCompatActivity {
     TextInputLayout password1Layout;
     TextInputLayout password2Layout;
 
-    private static final String TAG = "Registration activity";
+    private static final String TAG = "RegistrationActivity";
 
     RequestQueue queue;
-    String SITE_KEY = "6LfN2u4UAAAAAAw5mySE7FT56yQEj2fVRv7HQXVG";
-    String SECRET_KEY = "6LfN2u4UAAAAAK3_yn0WnYd5gy45stVr8SoTBmOR";
+    Context context;
 
+    //Keys used for recaptcha
+    String SITE_KEY;
+    String SECRET_KEY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +83,15 @@ public class RegistrationActivity extends AppCompatActivity {
 
         HyperLog.i(TAG, "Starting registration");
 
-        /*
-         UI loading
-         */
+        context=this;
+        SECRET_KEY = ConfigManager.getSecretKey(this);
+        SITE_KEY = ConfigManager.getSiteKey(this);
+        loadUI();
+        queue = Volley.newRequestQueue(context);
+    }
+
+    private void loadUI()
+    {
         registerButton = findViewById(R.id.button);
         usernameText = findViewById(R.id.usernameEditText);
         passwordText1 = findViewById(R.id.passwEditTextReg);
@@ -97,37 +107,16 @@ public class RegistrationActivity extends AppCompatActivity {
                 registerUser();
             }
         });
-        queue = Volley.newRequestQueue(getApplicationContext());
-    }
-
-    /**
-     * Closing of registration window and returning into login screen
-     */
-    private void loadLoginScreen()
-    {
-        Intent intent = new Intent(this, LoginActivity.class);
-        /*
-          This blocks user in returning into registration screen with Back button press.
-         */
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
     }
 
     @Override
     public void onBackPressed() {
-        // TODO Auto-generated method stub
         super.onBackPressed();
         RegistrationActivity.this.overridePendingTransition(R.anim.in_from_left,
                 R.anim.out_from_right);
     }
 
-    /**
-     * This is validating text field.
-     * It checks if user put correct input into each text field
-     * @param username username that he entered
-     * @param password1 first password that he entered
-     * @param password2 second password. This must mach the first password.
-     */
+    //Checks if all field inputs are valid
     private void validateFields(String username, String password1, String password2)
     {
         boolean showError = false;
@@ -139,7 +128,12 @@ public class RegistrationActivity extends AppCompatActivity {
             showError = true;
         }
         else {
-            if(!isValidUserName(username)) {
+            if(username.length() > 25) {
+                usernameLayout.setErrorIconDrawable(R.drawable.ic_error);
+                usernameLayout.setError(getString(R.string.long_username_error));
+                showError = true;
+            }
+            else if(!isValidUserName(username)) {
                 usernameLayout.setErrorIconDrawable(R.drawable.ic_error);
                 usernameLayout.setError(getString(R.string.invalid_chars_error));
                 showError = true;
@@ -158,10 +152,18 @@ public class RegistrationActivity extends AppCompatActivity {
             password1Layout.setErrorIconDrawable(R.drawable.ic_error);
             password1Layout.setError(getString(R.string.short_password_error));
             showError = true;
+        } else if(password1.length() > 25) {
+            password1Layout.setErrorIconDrawable(R.drawable.ic_error);
+            password1Layout.setError(getString(R.string.long_password_error));
+            showError = true;
         }
         if(password2.length() < 8) {
             password2Layout.setErrorIconDrawable(R.drawable.ic_error);
             password2Layout.setError(getString(R.string.short_password_error));
+            showError = true;
+        } else if(password2.length() > 25) {
+            password2Layout.setErrorIconDrawable(R.drawable.ic_error);
+            password2Layout.setError(getString(R.string.long_password_error));
             showError = true;
         }
 
@@ -172,14 +174,12 @@ public class RegistrationActivity extends AppCompatActivity {
         callUsernameCheckRest(username,password1);
 
     }
-    //TODO domino help
     /**
-     *
-     * @param username
-     * @param password1
+     *This calles the recaptcha window to show
+     * @param username user username
+     * @param password1 user password
      */
     private void callRecaptcha(String username, String password1) {
-
         SafetyNet.getClient(this).verifyWithRecaptcha(SITE_KEY)
                 .addOnSuccessListener(this, new OnSuccessListener<SafetyNetApi.RecaptchaTokenResponse>() {
                     @Override
@@ -203,6 +203,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 });
     }
 
+    //Returns true if user doesnt use special chars in username
     public static boolean isValidUserName(String name) {
         String control = "^[a-zA-Z0-9._-]+";
         return name.matches(control);
@@ -229,6 +230,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
     }
 
+    //Set all fields text to msg
     private void setFieldErrors(String msg) {
         password1Layout.setErrorIconDrawable(R.drawable.ic_error);
         password1Layout.setError(msg);
@@ -238,30 +240,29 @@ public class RegistrationActivity extends AppCompatActivity {
         usernameLayout.setError(msg);
     }
 
+    //Set username fields text to msg
     public void setUsernameFieldError(String msg) {
         usernameLayout.setErrorIconDrawable(R.drawable.ic_error);
         usernameLayout.setError(msg);
     }
 
+    //Call REST fucntion to check if username is not taken
     private void callUsernameCheckRest(String username, String password1) {
-        //Call REST web services
         new Thread()
         {
             public void run() {
                 try {
                     String AUTH_TOKEN = ConfigManager.getAuthToken(getApplicationContext());
 
-                    String uri2 = ConfigManager.getApiUrl(getApplicationContext())+"/checkusername/{username}";
+                    String uri = ConfigManager.getApiUrl(getApplicationContext())+"/checkusername/{username}";
                     RestTemplate restTemplate = new RestTemplate();
 
                     restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
-                    //Vytvorenie hlaviciek s tokenom
                     HttpHeaders httpHeaders = new HttpHeaders();
                     httpHeaders.add("auth", AUTH_TOKEN);
 
-                    //Poslanie udajov na vytvorenie zaznamu v databaze
-                    ResponseEntity<Integer> response = restTemplate.exchange(uri2, HttpMethod.GET, new HttpEntity<String>(httpHeaders),
+                    ResponseEntity<Integer> response = restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity<String>(httpHeaders),
                             Integer.class, username);
 
                     if(response.getBody() > 0) {
@@ -278,40 +279,28 @@ public class RegistrationActivity extends AppCompatActivity {
 
                 } catch (HttpServerErrorException e)
                 {
-                    //Error v pripade chyby servera
                     HyperLog.e(TAG, "Server error",e);
-                    System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
-                    showToast("SERVER ERROR "+e.getStatusCode());
                 } catch (HttpClientErrorException e2)
                 {
-                    //Error v pripade ziadosti klienka
                     HyperLog.e(TAG, "Client exception",e2);
-                    System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
                     if(e2.getStatusCode() == HttpStatus.BAD_REQUEST)
                     {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                usernameLayout.setErrorIconDrawable(R.drawable.ic_error);
-                                usernameLayout.setError(getString(R.string.username_taken_error));
-                            }
+                        runOnUiThread(() -> {
+                            usernameLayout.setErrorIconDrawable(R.drawable.ic_error);
+                            usernameLayout.setError(getString(R.string.username_taken_error));
                         });
                         return;
                     }
-                    e2.printStackTrace();
-                    showToast("CLIENT ERROR "+e2.getStatusCode());
                 } catch (Exception e3)
                 {
-                    e3.printStackTrace();
-                    showToast("SOMETHING WENT WRONG");
+                    HyperLog.e(TAG, "Other error",e3);
                 }
             }
         }.start();
     }
 
+    //Call REST function to register User to DB
     private void callRegistrationRest(String username, String password1) {
-        showToast("Recaptcha succesful!");
-        //Call REST web services
         new Thread()
         {
             public void run() {
@@ -321,40 +310,32 @@ public class RegistrationActivity extends AppCompatActivity {
                     String uri2 = ConfigManager.getApiUrl(getApplicationContext())+"/register/{username}/{password}";
                     RestTemplate restTemplate = new RestTemplate();
 
-                    //Vytvorenie hlaviciek s tokenom
                     HttpHeaders httpHeaders = new HttpHeaders();
                     httpHeaders.add("auth", AUTH_TOKEN);
 
-                    //Poslanie udajov na vytvorenie zaznamu v databaze
                     restTemplate.exchange(uri2, HttpMethod.POST, new HttpEntity<String>(httpHeaders),
                             Void.class, username,MD5Hashing.getSecurePassword(password1));
 
-                    showToast("User registered");
+                    showToast(getString(R.string.registration_succesful));
                     HyperLog.i(TAG, "User registered");
-                    loadLoginScreen();
+
+                    SceneManager.loadLoginScreen(context);
+
                 } catch (HttpServerErrorException e)
                 {
-                    //Error v pripade chyby servera
                     HyperLog.e(TAG, "Server error",e);
-                    System.out.println("SERVER EXCEPTION! "+e.getStatusCode());
-                    showToast("SERVER ERROR "+e.getStatusCode());
                 } catch (HttpClientErrorException e2)
                 {
-                    //Error v pripade ziadosti klienka
                     HyperLog.e(TAG, "Client exception",e2);
-                    System.out.println("CLIENT EXCEPTION! "+e2.getStatusCode());
-                    e2.printStackTrace();
-                    showToast("CLIENT ERROR "+e2.getStatusCode());
                 } catch (Exception e3)
                 {
-                    e3.printStackTrace();
-                    showToast("SOMETHING WENT WRONG");
+                    HyperLog.e(TAG,"Other exception",e3);
                 }
             }
         }.start();
     }
 
-    //Inspirovane z https://www.javatpoint.com/using-google-recaptcha-in-android-application
+    //Inspired by https://www.javatpoint.com/using-google-recaptcha-in-android-application
     private  void verifyUser(final String responseToken, String username, String password1){
         String url = "https://www.google.com/recaptcha/api/siteverify";
         StringRequest request = new StringRequest(Request.Method.POST, url,
@@ -401,11 +382,6 @@ public class RegistrationActivity extends AppCompatActivity {
      */
     private void showToast(final String text)
     {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-            }
-        });
+        runOnUiThread(() -> Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show());
     }
 }

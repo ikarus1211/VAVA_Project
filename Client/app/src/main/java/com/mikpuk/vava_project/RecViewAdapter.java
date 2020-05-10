@@ -2,7 +2,6 @@ package com.mikpuk.vava_project;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.nfc.NfcAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.hypertrack.hyperlog.HyperLog;
+import com.mikpuk.vava_project.data.Item;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

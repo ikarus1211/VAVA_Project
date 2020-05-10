@@ -87,4 +87,8 @@
     <string name="gps_not_available_desc">Nemôžeme zistiť vašu polohu. Pred pridávaním žiadosti sa uistite, že ste na mieste s dobrým signálom</string>
     <string name="try_again">Skúsiť znova</string>
     <string name="cancel">Zrušiť</string>
+    <string name="no_google_services">Google play služby nie sú dostupné</string>
+    <string name="long_username_error">Používateľské meno môže mať maximálne 25 znakov</string>
+    <string name="long_password_error">Heslo môže mať maximálne 25 znakov</string>
+    <string name="registration_succesful">Účet vytvorený!</string>
 </resources>

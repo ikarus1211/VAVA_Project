@@ -1,35 +1,29 @@
 package com.mikpuk.vava_project.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.hypertrack.hyperlog.HyperLog;
 import com.mikpuk.vava_project.AppLocationManager;
 import com.mikpuk.vava_project.ConfigManager;
-import com.mikpuk.vava_project.Item;
+import com.mikpuk.vava_project.data.Item;
 import com.mikpuk.vava_project.MyClusterRender;
 import com.mikpuk.vava_project.MyMarker;
 import com.mikpuk.vava_project.R;
-import com.mikpuk.vava_project.User;
+import com.mikpuk.vava_project.data.User;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -40,8 +34,6 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
-
-import static com.mikpuk.vava_project.Constants.MAPVIEW_BUNDLE_KEY;
 
 
 /**
@@ -56,13 +48,13 @@ import static com.mikpuk.vava_project.Constants.MAPVIEW_BUNDLE_KEY;
         private MyClusterRender mClusterRender;
         private ArrayList<MyMarker> mClusterMarkers = new ArrayList<>();
         private User user;
-        private static final String TAG = "Map Activity";
+        private static final String TAG = "MapViewActivity";
         private AppLocationManager appLocationManager;
         @Override
 
         protected void onCreate(Bundle savedInstanceState) {
 
-            HyperLog.i(TAG, "Map view activity");
+            HyperLog.i(TAG, "Map view activity start");
             user = (User)getIntent().getSerializableExtra("user");
             super.onCreate(savedInstanceState);
             setContentView(R.layout.layout_map_view);

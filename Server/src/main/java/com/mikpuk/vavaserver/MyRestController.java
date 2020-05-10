@@ -1,6 +1,5 @@
 package com.mikpuk.vavaserver;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,29 +14,27 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.DecimalFormat;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Stream;
 
-//Tato classa sluzi na spristupnenie REST sluzieb
+//This class is used to make REST services available
 @RestController
 public class MyRestController {
     Logger logger = LoggerFactory.getLogger(MyRestController.class);
 
-    //Nacitanie XML a bean
+    //Load XML and bean
     ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
     UserJdbcTemplate userJdbcTemplate = (UserJdbcTemplate) context.getBean("userJdbcTemplate");
     ItemJdbcTemplate itemJdbcTemplate = (ItemJdbcTemplate) context.getBean("itemJdbcTemplate");
 
 
-    //Tato funkcia registruje pouzivatela do nasho systemu
+    //This function insert User into our DB
     @RequestMapping(value = "/register/{username}/{password}")
     @ResponseBody
     public ResponseEntity<Void> registerUser(@PathVariable String username, @PathVariable String password, @RequestHeader("auth") String authorization)
     {
-        if(!isUserAuthorized(authorization)) {
+        if(isUserNotAuthorized(authorization)) {
             logger.info("Unauthorized access!");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -55,12 +52,12 @@ public class MyRestController {
         }
     }
 
-    //Zatial nepouzivame ale moze sa hodit neskor
+    //This function returns User with specific ID
     @RequestMapping(value = "/getuserbyid/{id}")
     @ResponseBody
     public ResponseEntity<User> getUserById(@PathVariable long id, @RequestHeader("auth") String authorization)
     {
-        if(!isUserAuthorized(authorization)) {
+        if(isUserNotAuthorized(authorization)) {
             logger.info("Unauthorized access!");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -70,20 +67,20 @@ public class MyRestController {
         try {
             User user = userJdbcTemplate.getUserById(id);
             logger.info("Returning result with {}",HttpStatus.OK);
-            return new ResponseEntity<User>(user, HttpStatus.OK);
+            return new ResponseEntity<>(user, HttpStatus.OK);
         }catch (Exception e)
         {
             logger.error("Caught expection",e);
-            return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    //Tato funkcia sa vola pri prihlasovani a vracia uzivatela, ktory sa prihlasuje
+    //This function is called to verify User credentials and returns logged User
     @RequestMapping(value = "/getuserbydata/{username}/{password}")
     @ResponseBody
     public ResponseEntity<User> getUserByData(@PathVariable String username, @PathVariable String password, @RequestHeader("auth") String authorization)
     {
-        if(!isUserAuthorized(authorization)) {
+        if(isUserNotAuthorized(authorization)) {
             logger.info("Unauthorized access!");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -93,20 +90,20 @@ public class MyRestController {
         try {
             User user = userJdbcTemplate.getUserByData(username,password);
             logger.info("Returning result with {}",HttpStatus.OK);
-            return new ResponseEntity<User>(user, HttpStatus.OK);
+            return new ResponseEntity<>(user, HttpStatus.OK);
         }catch (Exception e)
         {
             logger.error("Caught expection",e);
-            return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    //Tato funkcia nastavi item ako prijaty
+    //This function set item as accepted in DB
     @RequestMapping(value = "/setaccepteditem/{user_id}/{item_id}")
     @ResponseBody
-    public ResponseEntity<Item> setAcceptedItem(@PathVariable Long user_id,@PathVariable Long item_id,@RequestHeader("auth") String authorization)
+    public ResponseEntity<Void> setAcceptedItem(@PathVariable Long user_id,@PathVariable Long item_id,@RequestHeader("auth") String authorization)
     {
-        if(!isUserAuthorized(authorization)) {
+        if(isUserNotAuthorized(authorization)) {
             logger.info("Unauthorized access!");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -124,12 +121,12 @@ public class MyRestController {
         }
     }
 
-    //Tato funkcia zmaze item, co znamena, ze ponuka bola vybavena
+    //This function set request as done so it removes item from DB and increase reputation for user.
     @RequestMapping(value = "/removeaccepteditem/{item_id}")
     @ResponseBody
     public ResponseEntity<Item> removeAcceptedItem(@PathVariable Long item_id,@RequestHeader("auth") String authorization)
     {
-        if(!isUserAuthorized(authorization)) {
+        if(isUserNotAuthorized(authorization)) {
             logger.info("Unauthorized access!");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -147,12 +144,12 @@ public class MyRestController {
         }
     }
 
-    //Tato funkcia sa vola ak sa pouzivatel rozhodne sitahnut ponuku
+    //This functions is called when user decides to delete request
     @RequestMapping(value = "/removeitem/{item_id}")
     @ResponseBody
-    public ResponseEntity<Item> removeItem(@PathVariable Long item_id,@RequestHeader("auth") String authorization)
+    public ResponseEntity<Void> removeItem(@PathVariable Long item_id,@RequestHeader("auth") String authorization)
     {
-        if(!isUserAuthorized(authorization)) {
+        if(isUserNotAuthorized(authorization)) {
             logger.info("Unauthorized access!");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -170,13 +167,12 @@ public class MyRestController {
         }
     }
 
-
-    //Tato funkcia vrati vsetky itemy, ktore pouzivatel vytvoril
+    //This function return list of all requests which user created
     @RequestMapping(value = "/getitems/limit/{id}/{limit_start}/{limit_end}")
     @ResponseBody
     public ResponseEntity<List<Item>> getItemsByUserLimit(@PathVariable Long id,@PathVariable Long limit_start,@PathVariable Long limit_end, @RequestHeader("auth") String authorization)
     {
-        if(!isUserAuthorized(authorization)) {
+        if(isUserNotAuthorized(authorization)) {
             logger.info("Unauthorized access!");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -186,21 +182,21 @@ public class MyRestController {
         try {
             List<Item> items = itemJdbcTemplate.getItemsByUserLimit(id,limit_start,limit_end);
             logger.info("Returning result with {}",HttpStatus.OK);
-            return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
+            return new ResponseEntity<>(items, HttpStatus.OK);
         }catch (Exception e)
         {
             logger.error("Caught expection",e);
-            return new ResponseEntity<List<Item>>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    //Tato funkcia vracia vsetky itemy, ktore moze pouzivatel potvrdit, cize nie su jeho a nie su potvrdene.
+    //This function return all requests which user can confirm - this means that requests are not his and are not confirmed
     @RequestMapping(value = "/getotheritems/limit/{id}/{limit_start}/{limit_end}/{user_long}/{user_lat}")
     @ResponseBody
     public ResponseEntity<List<Item>> getOtherItemsByUserLimit(@PathVariable Long id,@PathVariable Long limit_start,@PathVariable Long limit_end,
                                                                @PathVariable double user_long, @PathVariable double user_lat, @RequestHeader("auth") String authorization)
     {
-        if(!isUserAuthorized(authorization)) {
+        if(isUserNotAuthorized(authorization)) {
             logger.info("Unauthorized access!");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -217,21 +213,21 @@ public class MyRestController {
                 item.setUser(userJdbcTemplate.getUserById(item.getUser_id()));
             }
 
-            return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
+            return new ResponseEntity<>(items, HttpStatus.OK);
         }catch (Exception e)
         {
             logger.error("Caught expection",e);
-            return new ResponseEntity<List<Item>>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    //Tato funkcia vrati zoznam vsetkych itemov, ktore pouzivatel prijal
+    //This function return list of requests which user accepted
     @RequestMapping(value = "/getapproveditems/limit/{id}/{limit_start}/{limit_end}/{user_long}/{user_lat}")
     @ResponseBody
     public ResponseEntity<List<Item>> getApprovedItemsLimit(@PathVariable Long id,@PathVariable Long limit_start,@PathVariable Long limit_end,
                                                             @PathVariable double user_long, @PathVariable double user_lat, @RequestHeader("auth") String authorization)
     {
-        if(!isUserAuthorized(authorization)) {
+        if(isUserNotAuthorized(authorization)) {
             logger.info("Unauthorized access!");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -246,20 +242,20 @@ public class MyRestController {
             for(Item item:items){
                 item.setDistance(getDistance(item.getLatitude(),item.getLongtitude(),user_lat,user_long));
             }
-            return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
+            return new ResponseEntity<>(items, HttpStatus.OK);
         }catch (Exception e)
         {
             logger.error("Caught expection",e);
-            return new ResponseEntity<List<Item>>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    //Tato funkcia overi, ci sa pouzivatelske meno nachadza v tabulke. Vrati 0 ak nie alebo >0 ak ano
+    //This function checks if username is free. Return 0 if username is free or 1 if username is taken;
     @RequestMapping(value = "/checkusername/{username}")
     @ResponseBody
     public ResponseEntity<Integer> checkUsername(@PathVariable String username, @RequestHeader("auth") String authorization)
     {
-        if(!isUserAuthorized(authorization)) {
+        if(isUserNotAuthorized(authorization)) {
             logger.info("Unauthorized access!");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -269,15 +265,15 @@ public class MyRestController {
         try {
             Integer count = userJdbcTemplate.checkUsername(username);
             logger.info("Returning result with {}",HttpStatus.OK);
-            return new ResponseEntity<Integer>(count, HttpStatus.OK);
+            return new ResponseEntity<>(count, HttpStatus.OK);
         }catch (Exception e)
         {
             logger.error("Caught expection",e);
-            return new ResponseEntity<Integer>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    //Tato funkcia vlozi do databazy novy item
+    //This function create new request and inserts it into DB
     @RequestMapping(value = "/createitem/{longtitude}/{latitude}/{user_id}/{type_id}")
     @ResponseBody
     public ResponseEntity<Void> createItem(@RequestHeader("name") String name, @RequestHeader("description") String description,@PathVariable double longtitude,
@@ -286,7 +282,7 @@ public class MyRestController {
     {
         String rawString = new String(description.getBytes());
         description = new String(Base64.decodeBase64(rawString.replaceAll("MySpaceLUL","\n")));
-        if(!isUserAuthorized(authorization)) {
+        if(isUserNotAuthorized(authorization)) {
             logger.info("Unauthorized access!");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -305,8 +301,7 @@ public class MyRestController {
         }
     }
 
-
-    //Toto zatial nepouzivame ale planujeme implementovat
+    //TODO - we still don`t use it
     @RequestMapping(value = "/updateitem/{id}/{longtitude}/{latitude}/{accepted}")
     @ResponseBody
     public ResponseEntity<Void> updateItem(@RequestHeader("name") String name, @RequestHeader("description") String description,@PathVariable double longtitude,
@@ -314,7 +309,7 @@ public class MyRestController {
                                            @RequestHeader("auth") String authorization)
     {
         description = new String(Base64.decodeBase64(description.getBytes()));
-        if(!isUserAuthorized(authorization)) {
+        if(isUserNotAuthorized(authorization)) {
             logger.info("Unauthorized access!");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -333,14 +328,14 @@ public class MyRestController {
         }
     }
 
-    //Tato funkcia vypise vsetky logy na serveri
+    //This function prints all logs from last delete
     @RequestMapping(value = "/show_logs/string")
     @ResponseBody
     public ResponseEntity<String> getLogString()
     {
         try {
             logger.info("CALLED /show_logs/string");
-            return new ResponseEntity<String>(readLineByLine("my_logs.log"),HttpStatus.OK);
+            return new ResponseEntity<>(readLineByLine("my_logs.log"), HttpStatus.OK);
         }catch (Exception e)
         {
             logger.error("Caught expection",e);
@@ -348,7 +343,7 @@ public class MyRestController {
         }
     }
 
-    //Tato funkcia vymaze subor s logmi na serveri
+    //This function deletes all logs
     @RequestMapping(value = "/delete_logs")
     @ResponseBody
     public ResponseEntity<Void> deleteLogs()
@@ -360,7 +355,7 @@ public class MyRestController {
             new PrintWriter("my_logs.log").close();
 
             logger.info("SUCCESS deleting logs");
-            return new ResponseEntity<Void>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e)
         {
             logger.error("Caught expection",e);
@@ -368,7 +363,7 @@ public class MyRestController {
         }
     }
 
-    //Pouziva sa pri citani logov. Vraci cely obsah logu
+    //This function is used to read log file and return it as String
     private String readLineByLine(String filePath)
     {
         StringBuilder contentBuilder = new StringBuilder();
@@ -385,36 +380,32 @@ public class MyRestController {
         return contentBuilder.toString();
     }
 
+    //This function is used to calculate distance from item to user
     public double getDistance(double i_lat,double i_lon,double u_lat,double u_lon){
         int Radius = 6371;// radius of earth in Km
-        double lat1 = i_lat;
-        double lat2 = u_lat;
-        double lon1 = i_lon;
-        double lon2 = u_lon;
 
         //Ak nie je niekde nastavena vzdialenost
-        if (lat1 == 0 && lon1 == 0 || lat2 == 0 && lon2 == 0)
+        if (i_lat == 0 && i_lon == 0 || u_lat == 0 && u_lon == 0)
         {
             return -1;
         }
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
+        double dLat = Math.toRadians(u_lat - i_lat);
+        double dLon = Math.toRadians(u_lon - i_lon);
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                + Math.cos(Math.toRadians(lat1))
-                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
+                + Math.cos(Math.toRadians(i_lat))
+                * Math.cos(Math.toRadians(u_lat)) * Math.sin(dLon / 2)
                 * Math.sin(dLon / 2);
         double c = 2 * Math.asin(Math.sqrt(a));
         return (Radius * c);
     }
 
-
-    //Vrati true ak sa zhoduje prichadzajuci autorizacny token so serverovym
-    public boolean isUserAuthorized(String string)
+    //This function checks if header authorisation is the same as server authorization
+    public boolean isUserNotAuthorized(String string)
     {
-        return string.equals(MD5Hashing.getSecurePassword(getAuthToken()));
+        return !string.equals(MD5Hashing.getSecurePassword(getAuthToken()));
     }
 
-    //Vyberie token z configu
+    //This function takes token from config file
     private String getAuthToken()
     {
         Properties properties = new Properties();

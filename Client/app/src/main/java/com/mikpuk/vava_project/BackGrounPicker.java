@@ -15,7 +15,6 @@ public class BackGrounPicker {
 
     public void randomBackground(TextView textDistance)
     {
-
         SecureRandom random = new SecureRandom();
         int result = random.nextInt()%1200;
         if (result <= 200)
