@@ -3,6 +3,9 @@ package com.mikpuk.vava_project;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
 
+/**
+ * My custom marker for map view
+ */
 
 public class MyMarker implements ClusterItem {
 

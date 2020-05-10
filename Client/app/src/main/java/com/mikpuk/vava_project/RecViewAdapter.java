@@ -21,6 +21,9 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Basic recycle view that stores every request for user to see
+ */
 public class RecViewAdapter extends RecyclerView.Adapter<BaseViewHolder>  {
 
     private static final int VIEW_TYPE_LOADING = 0;

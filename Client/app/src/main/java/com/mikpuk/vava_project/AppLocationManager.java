@@ -31,7 +31,10 @@ import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
 
-
+/**
+ * This class controls everything connected to GPS
+ * Through this class location and address can be obtained
+ */
 public class AppLocationManager implements LocationListener {
 
     private Location mLocation = null;
@@ -42,29 +45,40 @@ public class AppLocationManager implements LocationListener {
         loadLocationManager(context);
     }
 
+    /**
+     * Initializing location manager, checking permissions and
+     * getting device location
+     *
+     * @param context current state of application
+     */
     private void loadLocationManager(Context context) {
         HyperLog.i(TAG,"Initializing location manager");
         mContext = context;
+
+        // Base initialization
         LocationManager locationManager = (LocationManager) context
                 .getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
         String provider = locationManager.getBestProvider(criteria, true);
 
+        // Checking for permissions
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED)
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
-                System.out.println("You dont have permissions");
                 HyperLog.w(TAG,"Permission were not granted");
             }
-        // TODO Oprav HyperLog.i(TAG,"Permission check successful");
+
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1,
                 0, this);
         setMostRecentLocation(locationManager.getLastKnownLocation(provider));
         getDeviceLocation();
     }
 
+    /**
+     * Getting Device location and setting global variable mLocation to it
+     */
     private void getDeviceLocation()
     {
         HyperLog.i(TAG,"Getting device location");
@@ -97,39 +111,12 @@ public class AppLocationManager implements LocationListener {
 
     }
 
-    public String calculationByDistance(LatLng StartP, LatLng EndP) {
-
-        HyperLog.i(TAG,"Calculating distance");
-
-        int Radius = 6371;// radius of earth in Km
-        double lat1 = StartP.latitude;
-        double lat2 = EndP.latitude;
-        double lon1 = StartP.longitude;
-        double lon2 = EndP.longitude;
-
-        if (lat1 == 0 && lon1 == 0 || lat2 == 0 && lon2 == 0)
-        {
-            return "Not given ";
-        }
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                + Math.cos(Math.toRadians(lat1))
-                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
-                * Math.sin(dLon / 2);
-        double c = 2 * Math.asin(Math.sqrt(a));
-        double valueResult = Radius * c;
-        double km = valueResult / 1;
-        DecimalFormat newFormat = new DecimalFormat("####");
-        int kmInDec = Integer.parseInt(newFormat.format(km));
-        double meter = valueResult % 1000;
-        int meterInDec = Integer.parseInt(newFormat.format(meter));
-        DecimalFormat df = new DecimalFormat("0.00");
-        return df.format(valueResult);
-    }
-
+    /**
+     * This function is called in initialization and set the last known location in case
+     * of error while setting current location
+     * @param lastKnownLocation last known location
+     */
     private void setMostRecentLocation(Location lastKnownLocation) {
-        System.out.println(lastKnownLocation);
         mLocation = lastKnownLocation;
 
 
@@ -151,6 +138,12 @@ public class AppLocationManager implements LocationListener {
 
     }
 
+    /**
+     * Generate address based on latitude and longitude
+     * @param lat latitude of location that you want to generate address to
+     * @param lon longitude of location that you want to generate address to
+     * @return returns String which represents address
+     */
     public String generateAddress(double lat, double lon) {
         HyperLog.i(TAG,"Generating address");
         Geocoder geocoder;
@@ -170,31 +163,39 @@ public class AppLocationManager implements LocationListener {
 
     }
 
-    //DOCASNE RIESENI!!! Aby som dokazal pridat ziadost
+    /**
+     * Function gets and return latitude if mLocation is null returns 0.0 coordinates
+     * @return double which represents latitude
+     */
     public double getLatitude() {
         if(mLocation == null)
             return 0.0;
         else
             return mLocation.getLatitude();
     }
+    /**
+     * Function gets and return longitude if mLocation is null returns 0.0 coordinates
+     * @return double which represents longitude
+     */
     public double getLongitude() {
         if(mLocation == null)
             return 0.00;
         else
             return mLocation.getLongitude();
     }
+
     public Location getmLocation()
     {
         return mLocation;
     }
 
+    /**
+     * this method is called when user changes his location thus rewriting mLocation
+     * @param location current location
+     */
     @Override
     public void onLocationChanged(Location location) {
-        double lon = (double) (location.getLongitude());/// * 1E6);
-        double lat = (double) (location.getLatitude());// * 1E6);
-
-        String latitude = lat + "";
-        String longitude = lon + "";
+        mLocation = location;
 
     }
 

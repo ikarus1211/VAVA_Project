@@ -1,6 +1,6 @@
 package com.mikpuk.vava_project;
 
-/*
+/**
     This class is made for defining and storing CONSTANTS
  */
 public class Constants {

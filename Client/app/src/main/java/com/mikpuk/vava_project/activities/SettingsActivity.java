@@ -28,6 +28,7 @@ import com.mikpuk.vava_project.User;
 
 import java.util.Locale;
 
+// TODO coment
 public class SettingsActivity  extends AppCompatActivity {
 
     private User user = null;

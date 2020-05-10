@@ -47,6 +47,10 @@ import butterknife.ButterKnife;
 
 import static com.mikpuk.vava_project.PaginationScrollListener.PAGE_START;
 
+/**
+ * This class controls UI which displays request accepted by User
+ * It controls adding item into a recycle view
+ */
 public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, RecViewAdapter.OnItemListener {
 
     @BindView(R.id.recyclerView102)
@@ -78,23 +82,25 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
         setContentView(R.layout.activity_accepted_request);
         user = (User)getIntent().getSerializableExtra("user");
 
-        //Set up navigation bar
-        SceneManager.initNavigationBar(getString(R.string.navigation_accepted_requests),R.id.accepted_requests_dl,R.id.accepted_requests_navView,this,this,user);
-
-        ButterKnife.bind(this);
+        /*
+         *  Location manager for getting user location
+         */
         appLocationManager = new AppLocationManager(this);
 
+        /*
+         * UI initialization
+         */
+        SceneManager.initNavigationBar(getString(R.string.navigation_accepted_requests),R.id.accepted_requests_dl,R.id.accepted_requests_navView,this,this,user);
+        ButterKnife.bind(this);
         swipeRefresh.setOnRefreshListener(this);
         mRecyclerView.setHasFixedSize(true);
-
-        // use a linear layout manager
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
-
         adapter = new RecViewAdapter(new ArrayList<Item>(), this, this);
         mRecyclerView.setAdapter(adapter);
         doApiCall();
-        /**
+
+        /*
          * add scroll listener while user reach in bottom load more will call
          */
         mRecyclerView.addOnScrollListener(new PaginationScrollListener(layoutManager) {
@@ -118,6 +124,9 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
 
     }
 
+    /**
+     * Controls what happens when back button is pressed
+     */
     @Override
     public void onBackPressed() {
         // TODO Auto-generated method stub
@@ -126,12 +135,19 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
                 R.anim.out_from_right);
     }
 
+    /**
+     * Calling items filling
+     * It first grabs the items from database in Async class
+     */
     private void doApiCall() {
         items.clear();
         fetchedItems = new Item[0];
         new AsyncAcceptedItemsGetter().execute();
     }
 
+    /**
+     * Filling recycle view with items
+     */
     private void doneApiCall() {
         new Handler().postDelayed(new Runnable() {
 
@@ -146,7 +162,7 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
                     items.add(item);
                 }
 
-                /**
+                /*
                  * manage progress view
                  */
                 if (currentPage != PAGE_START || allItemsLoaded)
@@ -165,6 +181,11 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
             }
         }, 100);
     }
+
+    /**
+     * Triggers when user refreshes the recycle view
+     * It again calls the filling of the list
+     */
     @Override
     public void onRefresh() {
         itemCount = 0;
@@ -245,7 +266,12 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
 
     }
 
-    //Nastavenie kliknutia na hornu listu
+    // TODO coment
+    /**
+     * Setting
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -258,7 +284,10 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
         }
     }
 
-    //Toto vyhodi bublinu s infom - len pre nas
+    /**
+     * Function for showing toasts
+     * @param text string that you wanna display
+     */
     private void showToast(final String text)
     {
         runOnUiThread(new Runnable() {

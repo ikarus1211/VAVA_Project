@@ -7,8 +7,9 @@ import java.security.SecureRandom;
 import java.util.Random;
 
 
-
-
+/**
+ * Class which only purpose is to pick random background for distance text field
+ */
 public class BackGrounPicker {
 
 

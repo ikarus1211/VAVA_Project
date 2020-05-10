@@ -17,6 +17,12 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 
+/**
+ * Custom cluster render
+ *
+ * This class manages custom markers on the map
+ *
+ */
 public class MyClusterRender extends DefaultClusterRenderer<MyMarker> {
 
     private final IconGenerator iconGenerator;
@@ -41,6 +47,11 @@ public class MyClusterRender extends DefaultClusterRenderer<MyMarker> {
 
     }
 
+    /**
+     * Setting custom image to marker
+     * @param item marker
+     * @param markerOptions options for marker
+     */
 
     @Override
     protected void onBeforeClusterItemRendered(MyMarker item, MarkerOptions markerOptions) {

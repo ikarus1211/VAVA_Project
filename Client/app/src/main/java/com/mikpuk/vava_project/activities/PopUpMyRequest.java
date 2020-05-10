@@ -17,6 +17,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.SceneManager;
 
+/**
+ * Class represents custom dialog that is displayed after clicking on item
+ */
 public class PopUpMyRequest extends AppCompatActivity
 {
 

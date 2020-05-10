@@ -13,6 +13,9 @@ import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.SceneManager;
 import com.mikpuk.vava_project.User;
 
+/**
+ * Activity which controls profile screen
+ */
 public class ProfileActivity extends AppCompatActivity {
 
     User user;
@@ -35,6 +38,9 @@ public class ProfileActivity extends AppCompatActivity {
         SceneManager.initNavigationBar(getString(R.string.navigation_profile),R.id.profile_dl,R.id.profile_navView,this,this,userTmp);
     }
 
+    /**
+     * Function creates Progress bar which shows current user level
+     */
     private void loadProgressBar()
     {
         ProgressBar levelBar;

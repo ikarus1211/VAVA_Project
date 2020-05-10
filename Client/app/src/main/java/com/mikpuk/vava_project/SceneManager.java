@@ -24,7 +24,7 @@ import com.mikpuk.vava_project.activities.MenuScreenActivity;
 import com.mikpuk.vava_project.activities.MyRequestsActivity;
 import com.mikpuk.vava_project.activities.ProfileActivity;
 import com.mikpuk.vava_project.activities.SettingsActivity;
-
+// TODO comment
 public class SceneManager {
 
     public static void initNavigationBar(String title,int drawerLayoutID,int navViewID, final Context context, final AppCompatActivity appCompatActivity, final User user)

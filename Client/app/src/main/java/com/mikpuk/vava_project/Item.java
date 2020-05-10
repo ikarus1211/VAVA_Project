@@ -1,5 +1,9 @@
 package com.mikpuk.vava_project;
 
+/**
+ * Class represent one request
+ * This class stores every useful information about request
+ */
 public class Item {
 
     private long id;

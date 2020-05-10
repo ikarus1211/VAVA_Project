@@ -11,7 +11,7 @@ import java.util.Properties;
 
 public class ConfigManager {
 
-    //Mena v config subore
+   //TODO  commit
     private final static String TOKEN = "token";
     private final static String API_URL = "api_url";
     private static final String TAG = "Config manager";

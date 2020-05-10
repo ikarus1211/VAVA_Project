@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
-/*
+/**
    This is custom adapter for list view.
    It creates one block of different textViews witch is than taken to create list view.
  */

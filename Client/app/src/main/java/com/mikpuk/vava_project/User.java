@@ -2,7 +2,9 @@ package com.mikpuk.vava_project;
 
 import java.io.Serializable;
 
-//Classa, ktora v sebe udrziava udaje o pouzivatelovi
+/**
+ * This class is use to store data about user
+ */
 public class User implements Serializable {
 
     private long id;
