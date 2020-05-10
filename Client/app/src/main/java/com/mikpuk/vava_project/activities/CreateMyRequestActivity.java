@@ -34,8 +34,8 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 
-/*
-    Class for working wotch request creating
+/**
+ * Class manages creating requests
  */
 public class CreateMyRequestActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -68,6 +68,9 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
         loadUI();
     }
 
+    /**
+     * Loading UI
+     */
     private void loadUI()
     {
         spinner = findViewById(R.id.category_spinner);
@@ -90,7 +93,10 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
         });
     }
 
-    //Return true if all fields are valid
+    /**
+     * Checking input fields
+     * @return
+     */
     private boolean checkFields() {
         boolean showError = false;
 
@@ -127,7 +133,9 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
         return !showError;
     }
 
-    //Show user that we cant get his location
+    /**
+     * Show user that we cant get his location.
+     */
     private void showGPSErrorDialog(){
         new AlertDialog.Builder(this)
                 .setIcon(android.R.drawable.ic_dialog_alert)
