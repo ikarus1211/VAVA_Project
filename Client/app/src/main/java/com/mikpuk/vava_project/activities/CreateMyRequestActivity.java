@@ -234,7 +234,7 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
                 selectedType = R.drawable.home;
                 break;
             case 3:
-                selectedType = R.drawable.kategorie_gauc;
+                selectedType = R.drawable.furniture;
                 break;
             case 4:
                 selectedType = R.drawable.garden;
@@ -255,13 +255,13 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
                 selectedType = R.drawable.tools;
                 break;
             case 10:
-                selectedType = R.drawable.animals;
+                selectedType = R.drawable.art;
                 break;
             case 11:
-                selectedType = R.drawable.animals;
+                selectedType = R.drawable.medication;
                 break;
             case 12:
-                selectedType = R.drawable.animals;
+                selectedType = R.drawable.square;
                 break;
         }
 

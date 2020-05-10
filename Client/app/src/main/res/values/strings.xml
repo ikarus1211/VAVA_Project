@@ -1,4 +1,4 @@
-<resources>
+    <resources>
     <string-array name="cate">
         <item>Animals</item>
         <item>Children</item>
