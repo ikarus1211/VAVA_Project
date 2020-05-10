@@ -15,7 +15,7 @@ public class Item {
     private boolean accepted;
     private long type_id;
     private double distance;
-    private User user;
+    private User user; // User who accepted request
 
     public Item(){}
 

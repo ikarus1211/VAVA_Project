@@ -157,6 +157,7 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
         TextView textAddress = mDialog.findViewById(R.id.popAddress);
         Button finishButton = mDialog.findViewById(R.id.finish101);
         TextView distance = mDialog.findViewById(R.id.popDistance);
+        TextView openProfile = mDialog.findViewById(R.id.popTxtInfo);
         textName.setText(user.getUsername());
         Item item = adapter.getItem(pos);
         finishButton.setText(R.string.finish_delete);
@@ -164,12 +165,19 @@ public class MyRequestsActivity extends AppCompatActivity implements SwipeRefres
             status.setText(R.string.request_taken);
         else
             finishButton.setText(R.string.delete_finish);
-        distance.setText(getString(R.string.menu_dis) +"\n"+ String.format("%.2f",item.getDistance()) + "km");
+        if (item.getUser() == null)
+            openProfile.setVisibility(View.INVISIBLE);
+        if (item.getDistance() < 0){
+            distance.setText("???");
+        } else {
+            distance.setText(getString(R.string.menu_dis) + "\n" + String.format("%.2f", item.getDistance()) + "km");
+        }
         imageView.setImageResource((int)item.getType_id());
         textItemName.setText(item.getName());
         textDescription.setText(item.getDescription());
         textAddress.setText(appLocationManager.generateAddress(item.getLatitude(), item.getLongtitude()));
 
+        openProfile.setOnClickListener(v -> SceneManager.loadOtherProfile(context,user,item.getUser()));
         finishButton.setOnClickListener(view -> {
             //if item is accepted then show confirm otherwise delete item
             if(item.isAccepted()) {

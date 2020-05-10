@@ -9,9 +9,22 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.hypertrack.hyperlog.HyperLog;
+import com.mikpuk.vava_project.ConfigManager;
+import com.mikpuk.vava_project.MD5Hashing;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.SceneManager;
 import com.mikpuk.vava_project.data.User;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Activity which controls profile screen
@@ -20,13 +33,15 @@ public class ProfileActivity extends AppCompatActivity {
 
     User user;
     TextView profileNameText;
+    User userTmp;
+    private static final String TAG = "ProfileActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_profile);
 
-        User userTmp = (User)getIntent().getSerializableExtra("user");
+        userTmp = (User)getIntent().getSerializableExtra("user");
         user = (User)getIntent().getSerializableExtra("show_user");
 
         profileNameText=findViewById(R.id.profileNameText);
@@ -43,6 +58,8 @@ public class ProfileActivity extends AppCompatActivity {
      */
     private void loadProgressBar()
     {
+        profileNameText.setText(user.getUsername());
+
         ProgressBar levelBar;
         TextView levelText;
         TextView experienceText;
@@ -83,5 +100,47 @@ public class ProfileActivity extends AppCompatActivity {
         super.onBackPressed();
         ProfileActivity.this.overridePendingTransition(R.anim.in_from_left,
                 R.anim.out_from_right);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (user.getId() != userTmp.getId())
+            return;
+        new Thread() {
+            public void run() {
+                String AUTH_TOKEN = ConfigManager.getAuthToken(getApplicationContext());
+
+                try {
+                    String uri = ConfigManager.getApiUrl(getApplicationContext()) + "/getuserbyid/{id}";
+                    RestTemplate restTemplate = new RestTemplate();
+
+                    restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+
+                    HttpHeaders httpHeaders = new HttpHeaders();
+                    httpHeaders.add("auth", AUTH_TOKEN);
+
+                    //Returns logged in user
+                    ResponseEntity<User> usertmp = restTemplate.exchange(uri, HttpMethod.GET,
+                            new HttpEntity<String>(httpHeaders), User.class,
+                            user.getId());
+                    user = usertmp.getBody();
+                    userTmp = user;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadProgressBar();
+                        }
+                    });
+                } catch (HttpServerErrorException e) {
+                    HyperLog.e(TAG, "Server exception " + e);
+                } catch (HttpClientErrorException e2) {
+                    HyperLog.e(TAG, "Client Exception " + e2);
+                } catch (Exception e3) {
+                    HyperLog.e(TAG, "Unknown exception while signing in " + e3);
+                    e3.printStackTrace();
+                }
+            }
+        }.start();
     }
 }

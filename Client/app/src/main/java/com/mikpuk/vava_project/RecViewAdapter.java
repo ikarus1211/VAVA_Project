@@ -2,12 +2,14 @@ package com.mikpuk.vava_project;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hypertrack.hyperlog.HyperLog;
@@ -102,6 +104,7 @@ public class RecViewAdapter extends RecyclerView.Adapter<BaseViewHolder>  {
     }
 
     public void clear() {
+
         mPostItems.clear();
         notifyDataSetChanged();
     }
@@ -122,6 +125,9 @@ public class RecViewAdapter extends RecyclerView.Adapter<BaseViewHolder>  {
         TextView textDistance;
         @BindView(R.id.imageView)
         ImageView imageView;
+        @BindView(R.id.acceptImage)
+        ImageView acceptedImage;
+
 
         OnItemListener onItemListener;
 
@@ -134,10 +140,10 @@ public class RecViewAdapter extends RecyclerView.Adapter<BaseViewHolder>  {
         }
 
         protected void clear() {
-
+            acceptedImage.setVisibility(View.INVISIBLE);
         }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "ResourceType"})
     public void onBind(int position) {
         super.onBind(position);
         Item item = mPostItems.get(position);
@@ -146,10 +152,9 @@ public class RecViewAdapter extends RecyclerView.Adapter<BaseViewHolder>  {
         imageView.setImageResource((int)item.getType_id());
         AppLocationManager appLocationManager = new AppLocationManager(context);
         textViewAddress.setText(appLocationManager.generateAddress(item.getLatitude(), item.getLongtitude()));
-       /* String dist = appLocationManager.calculationByDistance(new LatLng(item.getLatitude(),item.getLongtitude()),
-                new LatLng(appLocationManager.getLatitude(),appLocationManager.getLongitude()));
+        if (item.isAccepted())
+            acceptedImage.setVisibility(View.VISIBLE);
 
-        textDistance.setText(dist+"km");*/
         if(item.getDistance() < 0) {
             textDistance.setText("???");
         }else {

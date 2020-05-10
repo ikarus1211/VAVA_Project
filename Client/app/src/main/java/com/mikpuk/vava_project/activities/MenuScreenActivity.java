@@ -188,7 +188,11 @@ public class MenuScreenActivity extends AppCompatActivity implements SwipeRefres
         Item item = adapter.getItem(pos);
         if (item.isAccepted())
             status.setText(R.string.request_taken);
-        distance.setText(getString(R.string.menu_dis) +"\n"+ String.format("%.2f",item.getDistance()) + "km");
+        if (item.getDistance() < 0){
+            distance.setText("???");
+        } else {
+            distance.setText(getString(R.string.menu_dis) + "\n" + String.format("%.2f", item.getDistance()) + "km");
+        }
         textName.setText(item.getUser().getUsername());
         imageView.setImageResource((int)item.getType_id());
         textItemName.setText(item.getName());
