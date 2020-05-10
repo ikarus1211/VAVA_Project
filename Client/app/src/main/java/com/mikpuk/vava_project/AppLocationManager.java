@@ -159,8 +159,10 @@ public class AppLocationManager implements LocationListener {
         String latitude = lat + "";
         String longitude = lon + "";
 
-        mLocation.setLongitude(lon);
-        mLocation.setLatitude(lat);
+        if(mLocation != null) {
+            mLocation.setLongitude(lon);
+            mLocation.setLatitude(lat);
+        }
     }
 
     @Override
