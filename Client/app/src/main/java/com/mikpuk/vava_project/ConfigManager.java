@@ -12,7 +12,7 @@ import java.util.Properties;
 /**
  * This class is used for retrieving data from config file
  */
-This class is used for retrieving data from config file
+
 public class ConfigManager {
 
     //Names in config file

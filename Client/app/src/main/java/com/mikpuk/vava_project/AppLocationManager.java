@@ -14,7 +14,11 @@ import android.location.LocationManager;
 import android.os.Bundle;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.hypertrack.hyperlog.HyperLog;
@@ -36,6 +40,7 @@ public class AppLocationManager implements LocationListener {
     private Context mContext;
     private static final String TAG = "Location Manager";
 
+
     public AppLocationManager(Context context) {
         loadLocationManager(context);
     }
@@ -47,7 +52,7 @@ public class AppLocationManager implements LocationListener {
      * @param context current state of application
      */
     private void loadLocationManager(Context context) {
-        HyperLog.i(TAG,"Initializing location manager");
+        HyperLog.i(TAG, "Initializing location manager");
         mContext = context;
 
         // Base initialization
@@ -62,14 +67,65 @@ public class AppLocationManager implements LocationListener {
                 != PackageManager.PERMISSION_GRANTED)
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
-                HyperLog.w(TAG,"Permission were not granted");
+                HyperLog.w(TAG, "Permission were not granted");
             }
+        askForLocation(locationManager, provider, this);
 
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1,
-                0, this);
-        setMostRecentLocation(locationManager.getLastKnownLocation(provider));
-        getDeviceLocation();
     }
+
+    private void askForLocation(LocationManager locationManager, String provider, LocationListener ll) {
+        LocationRequest mLocationRequest = LocationRequest.create();
+        mLocationRequest.setInterval(60000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        LocationCallback mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    if (location != null) {
+                        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                                && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            return;
+                        }
+                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1,
+                                0, ll);
+                        if (provider != null) {
+                            //setMostRecentLocation(locationManager.getLastKnownLocation(provider));
+                            mLocation = getLastKnownLocation(locationManager);
+                        }
+
+                        getDeviceLocation();
+                        break;
+                    }
+                }
+            }
+        };
+        LocationServices.getFusedLocationProviderClient(mContext).requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+    }
+    private Location getLastKnownLocation(LocationManager mLocationManager) {
+        List<String> providers = mLocationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                HyperLog.i(TAG,"Permission check");
+            }
+            Location l = mLocationManager.getLastKnownLocation(provider);
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null
+                    || l.getAccuracy() < bestLocation.getAccuracy()) {
+                bestLocation = l;
+            }
+        }
+
+        return bestLocation;
+    }
+
 
     /**
      * Getting Device location and setting global variable mLocation to it
@@ -87,7 +143,11 @@ public class AppLocationManager implements LocationListener {
                         {
 
                             System.out.println("Found it");
-                            mLocation = (Location) task.getResult();
+                            Location tempLocation = (Location) task.getResult();
+                            if (tempLocation != null){
+                                System.out.println("Found it 2");
+                                mLocation = tempLocation;
+                            }
                             HyperLog.i(TAG,"Device location found"+mLocation);
                         }
                         else
@@ -115,22 +175,6 @@ public class AppLocationManager implements LocationListener {
         mLocation = lastKnownLocation;
     }
 
-    public String generateAddress() {
-        HyperLog.i(TAG,"Generating address");
-        Geocoder geocoder;
-        List<Address> addresses;
-        String finalAddress = null;
-        geocoder = new Geocoder(mContext, Locale.getDefault());
-        try {
-            addresses = geocoder.getFromLocation(mLocation.getLatitude(), mLocation.getLongitude(), 1);
-            finalAddress = addresses.get(0).getAddressLine(0);
-            System.out.println("Final address " + finalAddress);
-        } catch (Exception e) {
-            System.out.println("Exception in generateAdress()");
-        }
-        return finalAddress;
-
-    }
 
     /**
      * Generate address based on latitude and longitude
@@ -195,8 +239,10 @@ public class AppLocationManager implements LocationListener {
         String latitude = lat + "";
         String longitude = lon + "";
 
-        mLocation.setLongitude(lon);
-        mLocation.setLatitude(lat);
+        if (mLocation != null) {
+            mLocation.setLongitude(lon);
+            mLocation.setLatitude(lat);
+        }
     }
 
     @Override

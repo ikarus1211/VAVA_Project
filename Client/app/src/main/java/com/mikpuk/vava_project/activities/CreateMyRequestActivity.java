@@ -143,7 +143,7 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
                             }
                         };
 
-                        handler.postDelayed(r, 1000);
+                        handler.postDelayed(r, 1500);
 
                     }
                 })
