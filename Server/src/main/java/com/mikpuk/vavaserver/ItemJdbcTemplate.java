@@ -35,7 +35,7 @@ public class ItemJdbcTemplate implements ItemDAO {
     //Returns all items created by user
     @Override
     public List<Item> getItemsByUserLimit(long id, long limit_start, long limit_end) {
-        String query = "SELECT * from vavaDB.items a INNER JOIN vavaDB.users i ON a.user_id = i.id where a.user_id = ? ORDER BY a.id ASC LIMIT ? , ?";
+        String query = "SELECT * from vavaDB.items a INNER JOIN vavaDB.users i ON a.user_id = i.id where a.user_id = ? ORDER BY a.accepted DESC LIMIT ? , ?";
         logger.info("Executing query - {} with variable {} {} {}",query,id,limit_start,limit_end);
         return jdbcTemplate.query(query, new Object[]{id,limit_start,limit_end}, new ItemMapper());
     }
@@ -53,7 +53,7 @@ public class ItemJdbcTemplate implements ItemDAO {
     @Override
     public List<Item> getOtherItemsByUserLimit(long id, long limit_start, long limit_end) {
         String query = "SELECT * from vavaDB.items a INNER JOIN vavaDB.users i ON a.user_id = i.id" +
-                " where a.user_id != ? and a.accepted = false ORDER BY a.id DESC LIMIT ? , ?";
+                " where a.user_id != ? and a.accepted = false ORDER BY i.reputation DESC, a.id ASC LIMIT ? , ?";
         logger.info("Executing query - {} with variables {} {} {}",query,id,limit_start,limit_end);
         return jdbcTemplate.query(query, new Object[]{id,limit_start,limit_end}, new ItemMapper());
     }

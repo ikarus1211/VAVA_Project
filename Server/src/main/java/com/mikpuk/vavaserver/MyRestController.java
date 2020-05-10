@@ -170,7 +170,7 @@ public class MyRestController {
     //This function return list of all requests which user created
     @RequestMapping(value = "/getitems/limit/{id}/{limit_start}/{limit_end}")
     @ResponseBody
-    public ResponseEntity<List<Item>> getItemsByUserLimit(@PathVariable Long id,@PathVariable Long limit_start,@PathVariable Long limit_end, @RequestHeader("auth") String authorization)
+    public ResponseEntity<List<Item>> getMyItemsByUserLimit(@PathVariable Long id,@PathVariable Long limit_start,@PathVariable Long limit_end, @RequestHeader("auth") String authorization)
     {
         if(isUserNotAuthorized(authorization)) {
             logger.info("Unauthorized access!");
@@ -182,6 +182,10 @@ public class MyRestController {
         try {
             List<Item> items = itemJdbcTemplate.getItemsByUserLimit(id,limit_start,limit_end);
             logger.info("Returning result with {}",HttpStatus.OK);
+            for(Item item:items){
+                item.setUser(userJdbcTemplate.getAcceptedUser(item.getId()));
+            }
+
             return new ResponseEntity<>(items, HttpStatus.OK);
         }catch (Exception e)
         {
@@ -241,6 +245,7 @@ public class MyRestController {
 
             for(Item item:items){
                 item.setDistance(getDistance(item.getLatitude(),item.getLongtitude(),user_lat,user_long));
+                item.setUser(userJdbcTemplate.getUserById(item.getUser_id()));
             }
             return new ResponseEntity<>(items, HttpStatus.OK);
         }catch (Exception e)

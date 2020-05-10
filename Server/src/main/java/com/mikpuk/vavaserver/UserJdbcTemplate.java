@@ -42,6 +42,19 @@ public class UserJdbcTemplate implements UserDAO {
         return jdbcTemplate.queryForObject(query, new Object[]{username,password}, new UserMapper());
     }
 
+    @Override
+    public User getAcceptedUser(long item_id) {
+        try {
+            String user_getter_query = "select user_id from vavaDB.approved_items WHERE item_id = ?";
+            logger.info("Executing query - {} with variables {}", user_getter_query, item_id);
+            long userId = jdbcTemplate.queryForObject(user_getter_query, new Object[]{item_id}, Long.class);
+            return getUserById(userId);
+        }catch (Exception e) {
+            logger.error("Exception in getAcceptedUser",e);
+            return null;
+        }
+    }
+
     //Check if username exists
     @Override
     public int checkUsername(String username) {
