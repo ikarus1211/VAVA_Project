@@ -18,10 +18,14 @@
     <string-array name="languages">
         <item>English</item>
         <item>Slovenčina</item>
+        <item>Čeština</item>
+        <item>中文</item>
     </string-array>
     <string-array name="languages_short">
         <item>en</item>
         <item>sk</item>
+        <item>cs</item>
+        <item>zh</item>
     </string-array>
 
 
@@ -85,7 +89,7 @@
     <string name="short_password_error">Your password needs to have at least 8 characters</string>
     <string name="username_taken_error">Username already exists</string>
     <string name="no_more_items_error">No more available items!</string>
-    <string name="recaptcha_error">Recaptcha error!</string>
+    <string name="recaptcha_error">ReCAPTCHA error!</string>
     <string name="navigation_profile">Profile</string>
     <string name="finish_delete">Finish</string>
     <string name="delete_finish">Delete</string>

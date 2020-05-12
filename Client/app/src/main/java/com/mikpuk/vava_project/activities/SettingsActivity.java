@@ -28,7 +28,10 @@ import com.mikpuk.vava_project.data.User;
 
 import java.util.Locale;
 
-// TODO coment
+/**
+ * This class is used to show settings menu to user.
+ * Right now the only thing user can do is change language
+ */
 public class SettingsActivity  extends AppCompatActivity {
 
     //Logged in user

@@ -121,7 +121,6 @@ public class AcceptedRequest extends AppCompatActivity implements SwipeRefreshLa
      */
     @Override
     public void onBackPressed() {
-        // TODO Auto-generated method stub
         super.onBackPressed();
         AcceptedRequest.this.overridePendingTransition(R.anim.in_from_left,
                 R.anim.out_from_right);

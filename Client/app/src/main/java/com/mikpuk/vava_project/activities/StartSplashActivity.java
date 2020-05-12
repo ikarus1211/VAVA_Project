@@ -33,7 +33,6 @@ public class StartSplashActivity extends AppCompatActivity {
 
     }
 
-    //TODO make first time screen
     private void loadLoginScreen()
     {
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);

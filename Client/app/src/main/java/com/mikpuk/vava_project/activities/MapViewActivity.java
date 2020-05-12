@@ -147,7 +147,6 @@ import java.util.ArrayList;
      */
     @Override
     public void onBackPressed() {
-        // TODO Auto-generated method stub
         super.onBackPressed();
         MapViewActivity.this.overridePendingTransition(R.anim.in_from_left,
                 R.anim.out_from_right);
