@@ -95,7 +95,7 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
 
     /**
      * Checking input fields
-     * @return
+     * @return true if valid
      */
     private boolean checkFields() {
         boolean showError = false;
@@ -215,7 +215,6 @@ public class CreateMyRequestActivity extends AppCompatActivity implements Adapte
 
     @Override
     public void onBackPressed() {
-        // TODO Auto-generated method stub
         super.onBackPressed();
         CreateMyRequestActivity.this.overridePendingTransition(R.anim.in_from_top,
                 R.anim.out_from_bottom);

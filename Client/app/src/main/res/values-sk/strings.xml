@@ -28,17 +28,17 @@
     <string name="acepted_req">Prijaté</string>
     <string name="myreq_button">Moje žiadosti</string>
     <string name="map_req">Zobrazenie mapy</string>
-    <string name="menu_dis">Vzdialenost</string>
+    <string name="menu_dis">Vzdialenosť</string>
     <string name="menu_adres">Adresa</string>
-    <string name="item_name">Nazov predmetu</string>
+    <string name="item_name">Názov predmetu</string>
     <string name="menu_description">Popis</string>
-    <string name="button_accept">Prijat ponuku</string>
-    <string name="create_st">Vytvorit</string>
+    <string name="button_accept">Prijať ponuku</string>
+    <string name="create_st">Vytvoriť</string>
     <string name="info">Info</string>
     <string name="googleAPI">AIzaSyCitQoGdLxXW0z4zIy7bqwHSrSx0P1xKhU</string>
     <string name="Open">Opening?</string>
     <string name="Close">Closing?</string>
-    <string name="finish_req">Dokoncit</string>
+    <string name="finish_req">Dokončiť</string>
     <string name="navigation_main_menu">Hlavné menu</string>
     <string name="navigation_my_account">Môj účet</string>
     <string name="navigation_my_requests">Moje žiadosti</string>
@@ -63,7 +63,7 @@
     <string name="request_accept_no">Odmietnuť</string>
     <string name="request_confirm_title">Chcete označiť žiadosť za vybavenú?</string>
     <string name="request_confirm_desc">Toto označí žiadosť ako vybavenú. Chcete pokračovať?</string>
-    <string name="request_delete_title">Chcete zmaza vašu ponuku?</string>
+    <string name="request_delete_title">Chcete zmazať vašu ponuku?</string>
     <string name="request_delete_desc">Toto zmaže túto ponuku. Chcete pokračovať?</string>
     <string name="answer_yes">Áno.</string>
     <string name="answer_no">Nie.</string>
@@ -75,7 +75,7 @@
     <string name="short_password_error">Heslo musí mať aspoň 8 znakov</string>
     <string name="username_taken_error">Používateľské meno sa už používa</string>
     <string name="no_more_items_error">Žiadne ďalšie dostupné ponuky</string>
-    <string name="recaptcha_error">Recaptcha problém!</string>
+    <string name="recaptcha_error">ReCAPTCHA problém!</string>
     <string name="navigation_profile">Profil</string>
     <string name="finish_delete">Dokončiť</string>
     <string name="delete_finish">Zmazať</string>
@@ -91,9 +91,9 @@
     <string name="long_username_error">Používateľské meno môže mať maximálne 25 znakov</string>
     <string name="long_password_error">Heslo môže mať maximálne 25 znakov</string>
     <string name="registration_succesful">Účet vytvorený!</string>
-    <string name="level">Level</string>
+    <string name="level">Úroveň</string>
     <string name="item_accepted">Položka prijatá</string>
     <string name="reputation">Reputácia</string>
-    <string name="go_to_settings_gps">Otvoriť nastavanie pre zapnutie GPS</string>
+    <string name="go_to_settings_gps">Otvoriť nastavenia pre zapnutie GPS</string>
     <string name="gps_disabled">GPS je vypnutá! Prosím zapnite ju.</string>
 </resources>
