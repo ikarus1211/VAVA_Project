@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="cate">
+        <item>Zvířata</item>
+        <item>Děti</item>
+        <item>Domov</item>
+        <item>Nábytek</item>
+        <item>Zahrada</item>
+        <item>Sport</item>
+        <item>Jídlo</item>
+        <item>Oblečení</item>
+        <item>Elektronika</item>
+        <item>Nástroje</item>
+        <item>Umění</item>
+        <item>Zdraví</item>
+        <item>Jiný</item>
+    </string-array>
+
     <string name="app_name">Vava_Project</string>
     <string name="user_name">Přihlašovací jméno</string>
     <string name="log_button">Přihlásit</string>

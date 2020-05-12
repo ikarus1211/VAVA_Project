@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="cate">
+        <item>动物</item>
+        <item>小孩儿</item>
+        <item>家</item>
+        <item>火影忍者</item>
+        <item>拉森甘</item>
+        <item>樱</item>
+        <item>迅猛龙</item>
+        <item>电晕</item>
+        <item>胎儿</item>
+        <item>艺术</item>
+        <item>工具类</item>
+        <item>佐助</item>
+        <item>十十</item>
+    </string-array>
+
     <string name="app_name">Vava_Project</string>
     <string name="user_name">用户名</string>
     <string name="log_button">登录</string>
