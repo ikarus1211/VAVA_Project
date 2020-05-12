@@ -1,5 +1,6 @@
 package com.mikpuk.vava_project.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -18,10 +19,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.VolleyError;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.material.textfield.TextInputLayout;
+import com.hypertrack.hyperlog.HLCallback;
 import com.hypertrack.hyperlog.HyperLog;
+import com.hypertrack.hyperlog.error.HLErrorResponse;
 import com.mikpuk.vava_project.ConfigManager;
 import com.mikpuk.vava_project.R;
 import com.mikpuk.vava_project.MD5Hashing;
@@ -69,6 +73,21 @@ public class LoginActivity extends AppCompatActivity {
         HyperLog.initialize(this);
         HyperLog.setLogLevel(Log.VERBOSE);
         HyperLog.i(TAG, "Starting login activity");
+        HyperLog.setURL("https://encfyiz9yudyp.x.pipedream.net");
+        HyperLog.pushLogs(this, true, new HLCallback() {
+            @Override
+            public void onSuccess(@NonNull Object response) {
+                HyperLog.i(TAG, "Log push successful");
+                HyperLog.deleteLogs();
+            }
+
+            @Override
+            public void onError(@NonNull HLErrorResponse HLErrorResponse) {
+                HyperLog.e(TAG, "Log push failed");
+            }
+
+
+        });
 
         setContentView(R.layout.layout_login);
         context = this;
